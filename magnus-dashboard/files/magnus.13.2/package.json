@@ -1,0 +1,8 @@
+{
+  "name": "magnus-13-2",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node magnus-13-2-test.js"
+  }
+}

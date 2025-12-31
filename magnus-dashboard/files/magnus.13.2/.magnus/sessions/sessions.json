@@ -1,0 +1,170 @@
+[
+  {
+    "id": "sess-1767171103037",
+    "request": {
+      "title": "Harmonia Cosmica - analysis engine",
+      "description": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz"
+    },
+    "analysis": {
+      "request": {
+        "title": "Harmonia Cosmica - analysis engine",
+        "description": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz"
+      },
+      "timestamp": 1767171103015,
+      "understanding": {},
+      "complexity": {
+        "overall": {
+          "score": 1,
+          "detail": {
+            "components": 1,
+            "integrations": 0,
+            "externalDeps": 0,
+            "dataMagnitude": 0
+          }
+        }
+      },
+      "recommendation": "GENERATE",
+      "canProceed": true,
+      "reasoning": [],
+      "hermetic": {
+        "planckMirror": {
+          "stage": "INTENTION_SURFACING",
+          "principle": "MENTALISM"
+        },
+        "hermeticPrinciples": [
+          {
+            "principle": "MENTALISM",
+            "status": "analyzed"
+          },
+          {
+            "principle": "CORRESPONDENCE",
+            "status": "analyzed"
+          },
+          {
+            "principle": "VIBRATION",
+            "status": "analyzed"
+          },
+          {
+            "principle": "POLARITY",
+            "status": "analyzed"
+          },
+          {
+            "principle": "RHYTHM",
+            "status": "analyzed"
+          },
+          {
+            "principle": "CAUSALITY",
+            "status": "analyzed"
+          },
+          {
+            "principle": "GENDER",
+            "status": "analyzed"
+          }
+        ],
+        "cosmicMembranes": [],
+        "revelationPhase": 0,
+        "philologyNotes": []
+      },
+      "convergenceReady": true
+    },
+    "state": "IN_PROGRESS",
+    "createdAt": 1767171103037,
+    "history": []
+  },
+  {
+    "id": "sess-1767171123473",
+    "request": {
+      "title": "Harmonia Cosmica - analysis engine",
+      "description": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz"
+    },
+    "analysis": {
+      "request": {
+        "title": "Harmonia Cosmica - analysis engine",
+        "description": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz"
+      },
+      "timestamp": 1767171123449,
+      "understanding": {
+        "clarityScore": 42,
+        "title": "Harmonia Cosmica - analysis engine",
+        "description": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz",
+        "intent": {
+          "raw": "Analyze frequency consciousness and generate an analysis engine tuned to 432Hz",
+          "keywords": [
+            "analyze",
+            "generate",
+            "frequency",
+            "consciousness",
+            "analysis",
+            "engine"
+          ],
+          "summary": "analyze generate frequency consciousness"
+        },
+        "details": {
+          "words": 11,
+          "examples": null
+        },
+        "suggestedQuestions": [
+          "Do you have an example input/output?"
+        ]
+      },
+      "complexity": {
+        "overall": {
+          "score": 1,
+          "detail": {
+            "components": 1,
+            "integrations": 0,
+            "externalDeps": 0,
+            "dataMagnitude": 0
+          }
+        }
+      },
+      "recommendation": "GENERATE",
+      "canProceed": true,
+      "reasoning": [],
+      "hermetic": {
+        "planckMirror": {
+          "stage": "INTENTION_SURFACING",
+          "clarity": 42,
+          "principle": "MENTALISM"
+        },
+        "hermeticPrinciples": [
+          {
+            "principle": "MENTALISM",
+            "status": "analyzed"
+          },
+          {
+            "principle": "CORRESPONDENCE",
+            "status": "analyzed"
+          },
+          {
+            "principle": "VIBRATION",
+            "status": "analyzed"
+          },
+          {
+            "principle": "POLARITY",
+            "status": "analyzed"
+          },
+          {
+            "principle": "RHYTHM",
+            "status": "analyzed"
+          },
+          {
+            "principle": "CAUSALITY",
+            "status": "analyzed"
+          },
+          {
+            "principle": "GENDER",
+            "status": "analyzed"
+          }
+        ],
+        "cosmicMembranes": [],
+        "revelationPhase": 0,
+        "philologyNotes": []
+      },
+      "convergenceReady": true
+    },
+    "state": "IN_PROGRESS",
+    "createdAt": 1767171123473,
+    "history": []
+  }
+]
