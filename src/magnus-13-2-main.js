@@ -180,6 +180,11 @@ export class Magnus {
       this.initialize();
     }
 
+    // Ensure convergence is initialized
+    if (!this.convergence.convergenceState.active) {
+      this.convergence.initialize();
+    }
+
     return this.convergence.converge(patterns);
   }
 
@@ -191,6 +196,7 @@ export class Magnus {
       this.initialize();
     }
 
+    // Mirror doesn't require convergence initialization
     return this.convergence.planckMirror(pattern);
   }
 
