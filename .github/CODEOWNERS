@@ -1,0 +1,18 @@
+# Magnus Universe Code Owners
+# These owners will be automatically requested for review
+
+# Default owners for everything
+*       @fullmeo
+
+# Core framework
+/src/   @fullmeo
+
+# Documentation
+/docs/  @fullmeo
+*.md    @fullmeo
+
+# Examples
+/examples/  @fullmeo
+
+# CI/CD
+/.github/   @fullmeo
