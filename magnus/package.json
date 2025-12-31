@@ -1,0 +1,37 @@
+{
+  "name": "magnus-13",
+  "version": "13.0.0",
+  "description": "AI Understanding & Coherence Engine - Evolution from resource management to understanding management",
+  "type": "module",
+  "main": "magnus-13.js",
+  "scripts": {
+    "start": "node magnus-13-examples.js",
+    "example:simple": "node -e \"import('./magnus-13-examples.js').then(m => m.example1_SimpleRequest())\"",
+    "example:ambiguous": "node -e \"import('./magnus-13-examples.js').then(m => m.example2_AmbiguousRequest())\"",
+    "example:complex": "node -e \"import('./magnus-13-examples.js').then(m => m.example3_ComplexRequest())\"",
+    "example:learning": "node -e \"import('./magnus-13-examples.js').then(m => m.example4_WithLearning())\"",
+    "example:multisession": "node -e \"import('./magnus-13-examples.js').then(m => m.example5_MultiSession())\"",
+    "example:report": "node -e \"import('./magnus-13-examples.js').then(m => m.example6_ComprehensiveReport())\"",
+    "clean": "rm -rf .magnus"
+  },
+  "keywords": [
+    "ai",
+    "code-generation",
+    "understanding",
+    "coherence",
+    "learning",
+    "meta-development",
+    "orchestration"
+  ],
+  "author": "Serigne (Meta-Developer)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serigne/magnus-13"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

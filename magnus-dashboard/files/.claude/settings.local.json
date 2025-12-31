@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node test-mars-system.js:*)",
+      "Bash(timeout 10 node -e \"import(''./test-mars-system.js'').then(m => console.log(''Module loaded'')).catch(e => console.error(''Error:'', e.message))\")"
+    ]
+  }
+}

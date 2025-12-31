@@ -1,0 +1,268 @@
+{
+  "version": "13.0",
+  "timestamp": 1764183592474,
+  "patterns": [
+    [
+      "SIMPLE:SIMPLE:CLEAR",
+      {
+        "pattern": "SIMPLE:SIMPLE:CLEAR",
+        "samples": [
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 1000,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 400,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 1000,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 500,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 1000,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 400,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 1000,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 500,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 1000,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 400,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 5400,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 11.11111111111111,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 4685,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 6.7235859124866595,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 4168,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 43.953934740882914,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 3827,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 30.650640188136926,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 3547,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 69.15703411333521,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 3362,
+              "iterationsEstimated": 1,
+              "complexityScore": 1,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 5000,
+              "filesGenerated": 3,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 48.720999405116,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          },
+          {
+            "estimate": {
+              "scope": "SIMPLE",
+              "tokensEstimated": 3191,
+              "iterationsEstimated": 1,
+              "complexityScore": 2,
+              "clarityScore": 85
+            },
+            "actual": {
+              "tokensActual": 6000,
+              "filesGenerated": 5,
+              "errorsEncountered": 0
+            },
+            "variance": {
+              "tokenVariance": 88.0288310874334,
+              "iterationVariance": null
+            },
+            "outcome": "SUCCESS"
+          }
+        ],
+        "avgTokenVariance": 208.19551137987517,
+        "avgIterationVariance": null,
+        "successRate": 100,
+        "recommendations": [
+          {
+            "type": "ESTIMATION",
+            "issue": "Token estimates consistently off",
+            "recommendation": "For SIMPLE:SIMPLE:CLEAR patterns, multiply estimate by 3.0819551137987515x",
+            "confidence": "MEDIUM"
+          },
+          {
+            "type": "TREND",
+            "issue": "Token usage increasing over time",
+            "recommendation": "Pattern may be accumulating complexity - consider refactoring approach",
+            "confidence": "MEDIUM"
+          }
+        ],
+        "trends": {
+          "tokenTrend": "DEGRADING",
+          "iterationTrend": "STABLE"
+        }
+      }
+    ]
+  ],
+  "failures": [],
+  "summary": {
+    "totalSamples": 2,
+    "patternsLearned": 1
+  }
+}

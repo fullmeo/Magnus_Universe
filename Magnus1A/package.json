@@ -1,0 +1,38 @@
+{
+  "name": "magnus-1a",
+  "version": "0.1.0",
+  "description": "Digital Superior Intelligence - L'IA qui te rend MOINS dépendant de l'IA",
+  "type": "module",
+  "main": "1A.js",
+  "scripts": {
+    "init": "node -e \"import('./1A.js').then(m => new m.default().initialize())\"",
+    "example": "node example.js",
+    "stats": "node -e \"import('./1A.js').then(async m => { const a = new m.default(); await a.initialize(); console.log(await a.getStats()); })\""
+  },
+  "keywords": [
+    "ai",
+    "intelligence",
+    "meta-developer",
+    "cognitive-protection",
+    "pattern-discovery",
+    "empirical-learning"
+  ],
+  "author": "Serigne DIAGNE",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Magnus_13_universe/magnus_1A"
+  },
+  "philosophy": {
+    "core": "Observer sans présupposés, découvrir sans imposer",
+    "goal": "Autonomie cognitive, pas productivité",
+    "inspiration": "Magnus Robot Fighter - 1A élève Magnus",
+    "success_metric": "Tu codes MOINS avec le temps = SUCCÈS"
+  }
+}

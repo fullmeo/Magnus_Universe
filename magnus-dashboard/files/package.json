@@ -1,0 +1,24 @@
+{
+  "name": "mars-magnus-autonomous-research-system",
+  "version": "1.0.0",
+  "description": "Magnus Autonomous Research System - Self-improving intelligence for Magnus 13",
+  "type": "module",
+  "main": "magnus-autonomous-research-system.js",
+  "scripts": {
+    "test": "node test-mars-system.js",
+    "start": "node magnus-13-with-mars.js"
+  },
+  "keywords": [
+    "mars",
+    "magnus",
+    "autonomous",
+    "research",
+    "ai",
+    "self-improving"
+  ],
+  "author": "Serigne",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "magnus-14",
+  "version": "14.0.0",
+  "description": "Magnus 14: Transcendental Signature Framework - Your operating system becoming self-aware",
+  "main": "magnus-14-core.js",
+  "scripts": {
+    "start": "node examples/example-aimastery-analysis.js",
+    "example:aimastery": "node examples/example-aimastery-analysis.js",
+    "cli": "node cli.js",
+    "analyze": "node cli.js",
+    "test": "node __tests__/magnus-14.test.js"
+  },
+  "keywords": [
+    "magnus",
+    "framework",
+    "project-analysis",
+    "transcendental",
+    "signature",
+    "ai",
+    "learning",
+    "systems-thinking"
+  ],
+  "author": "Serigne Diagne",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Magnus-universe/magnus-14"
+  },
+  "homepage": "https://github.com/Magnus-universe",
+  "bugs": {
+    "url": "https://github.com/Magnus-universe/issues"
+  }
+}

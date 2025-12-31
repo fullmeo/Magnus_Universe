@@ -1,0 +1,31 @@
+{
+  "name": "cloudzero-proxy",
+  "version": "1.0.0",
+  "description": "Zero Friction Development - Unified API for all cloud services with smart mocks",
+  "type": "module",
+  "main": "cloudzero-proxy.js",
+  "scripts": {
+    "example": "node examples/basic-usage.js",
+    "clean": "rm -rf dev-data"
+  },
+  "keywords": [
+    "cloud",
+    "stripe",
+    "sendgrid",
+    "twilio",
+    "s3",
+    "auth0",
+    "mock",
+    "development",
+    "zero-config"
+  ],
+  "author": "Serigne (Meta-Developer)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {}
+}

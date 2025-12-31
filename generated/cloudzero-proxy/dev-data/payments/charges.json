@@ -1,0 +1,25 @@
+[
+  {
+    "id": "ch_mock_a41b9340c2fb2fb884ebada8",
+    "object": "charge",
+    "amount": 1000,
+    "currency": "eur",
+    "status": "succeeded",
+    "created": 1764047706,
+    "description": "Test charge",
+    "metadata": {},
+    "customer": null,
+    "receipt_email": null,
+    "source": {
+      "id": "card_mock_88ca7d01c172002844e08970",
+      "object": "card",
+      "brand": "Visa",
+      "last4": "4242",
+      "exp_month": 12,
+      "exp_year": 2025
+    },
+    "paid": true,
+    "refunded": false,
+    "amount_refunded": 0
+  }
+]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Magnus Dashboard - Real-time pattern visualization and monitoring">
+  <title>Magnus Dashboard 15.3</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/dashboard-styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+</head>
+<body>
+  <div id="root"></div>
+  
+  <!-- React & ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone for JSX transformation (development only) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Dashboard App -->
+  <script type="text/babel" src="/dashboard-app.jsx"></script>
+  
+  <!-- Initialize App -->
+  <script type="text/babel">
+    const { StrictMode } = React;
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    
+    root.render(
+      <StrictMode>
+        <MagnusDashboard />
+      </StrictMode>
+    );
+  </script>
+</body>
+</html>

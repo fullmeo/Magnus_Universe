@@ -1,0 +1,11 @@
+{
+  "id": "msg_mock_a07d4e3e27648a6c",
+  "to": "user@example.com",
+  "from": "noreply@example.com",
+  "subject": "Welcome!",
+  "body": "<h1>Welcome!</h1>",
+  "html": true,
+  "timestamp": "2025-11-25T05:15:06.885Z",
+  "status": "delivered",
+  "metadata": {}
+}

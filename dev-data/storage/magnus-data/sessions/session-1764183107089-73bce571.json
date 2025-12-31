@@ -1,0 +1,251 @@
+{
+  "sessionId": "session-1764183107089-73bce571",
+  "timestamp": 1764183107092,
+  "version": "13.0",
+  "type": "session",
+  "data": {
+    "analysis": {
+      "request": "\n      Create REST API for product management with Express.js.\n      Include: GET products with pagination, POST create, PUT update, DELETE remove.\n    ",
+      "timestamp": 1764183107081,
+      "understanding": {
+        "request": "\n      Create REST API for product management with Express.js.\n      Include: GET products with pagination, POST create, PUT update, DELETE remove.\n    ",
+        "ambiguities": [
+          {
+            "type": "TECHNICAL_AMBIGUITY",
+            "severity": "MEDIUM",
+            "implications": [
+              {
+                "aspect": "backend framework",
+                "ambiguity": "Backend needed but no framework preference",
+                "question": "Prefer Express (traditional), Fastify (modern), or Next.js API routes (integrated)?"
+              }
+            ],
+            "impact": "May choose inappropriate tech stack or over/under-engineer"
+          },
+          {
+            "type": "CONSTRAINT_AMBIGUITY",
+            "severity": "LOW",
+            "missingConstraints": [
+              {
+                "constraint": "deployment target",
+                "question": "Where will this run? (Local dev, static hosting, cloud, etc.)",
+                "impact": "Affects build configuration and dependencies"
+              }
+            ],
+            "impact": "May violate unstated constraints or waste effort"
+          }
+        ],
+        "assumptions": [],
+        "risks": [],
+        "clarityScore": 85,
+        "missingContext": []
+      },
+      "complexity": {
+        "dimensions": {
+          "domain": {
+            "score": 1,
+            "level": "STANDARD",
+            "domains": [],
+            "expertise": {
+              "required": false,
+              "domains": [],
+              "recommendation": "Standard software engineering knowledge sufficient"
+            },
+            "warning": null
+          },
+          "technical": {
+            "score": 0,
+            "level": "LOW",
+            "aspects": [],
+            "estimate": "MEDIUM - Standard implementation practices"
+          },
+          "integration": {
+            "score": 0,
+            "level": "LOW",
+            "points": [],
+            "risk": "Manageable integration surface"
+          },
+          "scale": {
+            "score": 1,
+            "level": "SMALL",
+            "scales": {},
+            "warning": null
+          },
+          "novelty": {
+            "score": 0,
+            "level": "ESTABLISHED",
+            "aspects": [],
+            "risk": "Known problem space"
+          }
+        },
+        "overall": {
+          "score": 1,
+          "level": "STANDARD",
+          "summary": "Complexity dominated by domain (STANDARD)"
+        },
+        "bottleneck": {
+          "dimension": "domain",
+          "score": 1,
+          "level": "STANDARD"
+        },
+        "recommendation": {
+          "action": "GENERATE",
+          "reason": "Complexity is manageable",
+          "alternative": null
+        }
+      },
+      "recommendation": "GENERATE",
+      "clarificationNeeded": false,
+      "questions": [],
+      "canProceed": true,
+      "reasoning": [
+        {
+          "type": "LEARNING",
+          "issue": "Historical data available for this pattern",
+          "impact": "POSITIVE - Can adjust based on past experience",
+          "action": "Applying 1 learned adjustments"
+        },
+        {
+          "type": "DECISION",
+          "issue": "Analysis complete - ready to generate",
+          "impact": "Ready to proceed with generation",
+          "action": "Using Single-Pass Generation strategy"
+        }
+      ],
+      "learned": {
+        "available": true,
+        "pattern": "SIMPLE:SIMPLE:CLEAR",
+        "stats": {
+          "samples": 6,
+          "successRate": 100,
+          "avgTokenVariance": 368.51851851851853
+        },
+        "recommendations": [
+          {
+            "type": "ESTIMATION",
+            "issue": "Token estimates consistently off",
+            "recommendation": "For SIMPLE:SIMPLE:CLEAR patterns, multiply estimate by 4.685185185185185x",
+            "confidence": "LOW"
+          }
+        ]
+      }
+    },
+    "session": {
+      "sessionId": "session-1764183107089-73bce571",
+      "estimate": {
+        "scope": "SIMPLE",
+        "tokensEstimated": 4685,
+        "iterationsEstimated": 1,
+        "complexityScore": 1,
+        "clarityScore": 85
+      },
+      "session": {
+        "id": "session-1764183107089-73bce571",
+        "startTime": 1764183107089,
+        "request": "\n      Create REST API for product management with Express.js.\n      Include: GET products with pagination, POST create, PUT update, DELETE remove.\n    ",
+        "analysis": {
+          "complexity": {
+            "dimensions": {
+              "domain": {
+                "score": 1,
+                "level": "STANDARD",
+                "domains": [],
+                "expertise": {
+                  "required": false,
+                  "domains": [],
+                  "recommendation": "Standard software engineering knowledge sufficient"
+                },
+                "warning": null
+              },
+              "technical": {
+                "score": 0,
+                "level": "LOW",
+                "aspects": [],
+                "estimate": "MEDIUM - Standard implementation practices"
+              },
+              "integration": {
+                "score": 0,
+                "level": "LOW",
+                "points": [],
+                "risk": "Manageable integration surface"
+              },
+              "scale": {
+                "score": 1,
+                "level": "SMALL",
+                "scales": {},
+                "warning": null
+              },
+              "novelty": {
+                "score": 0,
+                "level": "ESTABLISHED",
+                "aspects": [],
+                "risk": "Known problem space"
+              }
+            },
+            "overall": {
+              "score": 1,
+              "level": "STANDARD",
+              "summary": "Complexity dominated by domain (STANDARD)"
+            },
+            "bottleneck": {
+              "dimension": "domain",
+              "score": 1,
+              "level": "STANDARD"
+            },
+            "recommendation": {
+              "action": "GENERATE",
+              "reason": "Complexity is manageable",
+              "alternative": null
+            }
+          }
+        },
+        "architecture": {
+          "decisions": [],
+          "constraints": [],
+          "patterns": []
+        },
+        "artifacts": [],
+        "context": {
+          "requirements": {
+            "functional": [],
+            "nonFunctional": [],
+            "implicit": []
+          },
+          "assumptions": [],
+          "risks": []
+        },
+        "iterations": [],
+        "status": "ACTIVE"
+      },
+      "context": {
+        "assumptions": [],
+        "risks": [],
+        "constraints": [
+          {
+            "constraint": "deployment target",
+            "impact": "Affects build configuration and dependencies",
+            "type": "IMPLICIT"
+          }
+        ],
+        "learned": {
+          "available": true,
+          "pattern": "SIMPLE:SIMPLE:CLEAR",
+          "stats": {
+            "samples": 6,
+            "successRate": 100,
+            "avgTokenVariance": 368.51851851851853
+          },
+          "recommendations": [
+            {
+              "type": "ESTIMATION",
+              "issue": "Token estimates consistently off",
+              "recommendation": "For SIMPLE:SIMPLE:CLEAR patterns, multiply estimate by 4.685185185185185x",
+              "confidence": "LOW"
+            }
+          ]
+        }
+      }
+    },
+    "timestamp": 1764183107091
+  }
+}

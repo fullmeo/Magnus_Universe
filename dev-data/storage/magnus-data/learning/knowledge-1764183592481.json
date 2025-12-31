@@ -1,0 +1,75 @@
+{
+  "timestamp": 1764183592481,
+  "version": "13.0",
+  "type": "learning",
+  "data": {
+    "patterns": [],
+    "estimates": [],
+    "actuals": [],
+    "failures": [],
+    "metrics": {
+      "estimates": [
+        {
+          "sessionId": "session-1764183591989-8e7a791c",
+          "timestamp": 1764183592006,
+          "estimate": {
+            "scope": "SIMPLE",
+            "tokensEstimated": 3362,
+            "iterationsEstimated": 1,
+            "complexityScore": 1,
+            "clarityScore": 85
+          }
+        },
+        {
+          "sessionId": "session-1764183592394-ba4aabf1",
+          "timestamp": 1764183592418,
+          "estimate": {
+            "scope": "SIMPLE",
+            "tokensEstimated": 3191,
+            "iterationsEstimated": 1,
+            "complexityScore": 2,
+            "clarityScore": 85
+          }
+        }
+      ],
+      "actuals": [
+        {
+          "sessionId": "session-1764183591989-8e7a791c",
+          "timestamp": 1764183592187,
+          "actual": {
+            "tokensActual": 5000,
+            "filesGenerated": 3,
+            "errorsEncountered": 0
+          },
+          "variance": {
+            "tokenVariance": 48.720999405116,
+            "iterationVariance": null
+          },
+          "outcome": "SUCCESS"
+        },
+        {
+          "sessionId": "session-1764183592394-ba4aabf1",
+          "timestamp": 1764183592474,
+          "actual": {
+            "tokensActual": 6000,
+            "filesGenerated": 5,
+            "errorsEncountered": 0
+          },
+          "variance": {
+            "tokenVariance": 88.0288310874334,
+            "iterationVariance": null
+          },
+          "outcome": "SUCCESS"
+        }
+      ],
+      "patterns": {},
+      "failures": []
+    }
+  },
+  "stats": {
+    "patterns": 0,
+    "estimates": 0,
+    "actuals": 0,
+    "failures": 0
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "projectId": "magnus-13-v2.0",
+  "timestamp": "2025-12-20T14:30:00.000Z",
+  "estimationLearnings": {
+    "accuracy": "97.33",
+    "complexityAccuracy": "96.00",
+    "effortAccuracy": "98.00",
+    "timelineAccuracy": "98.00",
+    "complexityDrivers": [
+      {
+        "factor": "framework_enhancement",
+        "impact": "high",
+        "adjustment": 1.5
+      },
+      {
+        "factor": "testing_formalization",
+        "impact": "medium",
+        "adjustment": 1.0
+      }
+    ],
+    "effortDrivers": [
+      {
+        "factor": "unexpected_complexity",
+        "impact": 2
+      },
+      {
+        "factor": "learning_curve",
+        "impact": 1
+      },
+      {
+        "factor": "scope_creep",
+        "impact": 0
+      }
+    ],
+    "adjustmentFactors": {
+      "complexityMultiplier": 0.98,
+      "effortMultiplier": 1.01,
+      "timelineMultiplier": 1.00
+    }
+  },
+  "decisionLearnings": {
+    "totalDecisions": 7,
+    "successRate": "100.00",
+    "successfulDecisions": [
+      {
+        "decision": "Formalize Phase 5 testing",
+        "clarity": 0.94,
+        "complexity": 5,
+        "precedent": false,
+        "outcome": "success"
+      },
+      {
+        "decision": "Add Tool Selection Engine",
+        "clarity": 0.96,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Enhance complexity scoring",
+        "clarity": 0.93,
+        "complexity": 5,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Integrate dashboard improvements",
+        "clarity": 0.91,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      }
+    ],
+    "failedDecisions": [],
+    "successFactors": {
+      "highClarity": 7,
+      "hadPrecedent": 5,
+      "lowComplexity": 4
+    },
+    "failureFactors": {
+      "lowClarity": 0,
+      "noPrecedent": 0,
+      "highComplexity": 0
+    },
+    "patterns": {
+      "clarityCorrelation": 100,
+      "complexityCorrelation": 100,
+      "precedentCorrelation": 100
+    }
+  },
+  "riskLearnings": {
+    "totalRisks": 2,
+    "materialized": 0,
+    "mitigated": 2,
+    "ignored": 0,
+    "materializationRate": 0,
+    "riskPatterns": {
+      "byCategory": {
+        "framework_complexity": [
+          {
+            "category": "framework_complexity",
+            "description": "Integration complexity across phases",
+            "materialized": false,
+            "mitigated": true,
+            "earlySignals": [
+              "multi_phase_impact",
+              "backward_compatibility"
+            ]
+          }
+        ],
+        "testing_coverage": [
+          {
+            "category": "testing_coverage",
+            "description": "Comprehensive testing requirements",
+            "materialized": false,
+            "mitigated": true,
+            "earlySignals": [
+              "new_functionality",
+              "edge_cases"
+            ]
+          }
+        ]
+      },
+      "byDomain": {
+        "framework_development": [
+          {
+            "domain": "framework_development",
+            "description": "Integration complexity",
+            "materialized": false
+          }
+        ]
+      },
+      "predictors": []
+    },
+    "earlyWarningSignals": [
+      "multi_phase_impact",
+      "backward_compatibility",
+      "new_functionality",
+      "edge_cases"
+    ]
+  },
+  "architectureLearnings": {
+    "linesOfCode": 4200,
+    "files": 12,
+    "complexity": 8.2,
+    "patterns": {
+      "fileStructure": {
+        "totalFiles": 12,
+        "averageSize": 350,
+        "distribution": {
+          "core": 5,
+          "phases": 9,
+          "utils": 3
+        }
+      },
+      "moduleSizes": {
+        "modules": [
+          {
+            "name": "tool-selection-engine",
+            "size": 710
+          },
+          {
+            "name": "complexity-analyzer",
+            "size": 440
+          },
+          {
+            "name": "phase5-testing",
+            "size": 380
+          },
+          {
+            "name": "decision-tree",
+            "size": 620
+          }
+        ],
+        "averageSize": 537,
+        "largestModule": "tool-selection-engine"
+      },
+      "dependencyGraph": {
+        "dependencies": [
+          "phase1 -> tool-selection-engine",
+          "phase2 -> complexity-analyzer",
+          "phase5 -> testing-framework",
+          "all-phases -> magnus-core"
+        ],
+        "depth": 3
+      },
+      "goldenRatioPresence": true,
+      "pythagoreanHarmony": {
+        "found": true,
+        "ratios": [
+          {
+            "modules": [
+              "tool-selection-engine",
+              "complexity-analyzer"
+            ],
+            "ratio": 1.614,
+            "closeTo": "golden_ratio"
+          }
+        ]
+      }
+    }
+  },
+  "timeDistributionLearnings": {
+    "totalTime": 60,
+    "distribution": {
+      "understanding": 6,
+      "complexity": 8,
+      "architecture": 10,
+      "implementation": 20,
+      "testing": 8,
+      "optimization": 4,
+      "documentation": 3,
+      "security": 1,
+      "delivery": 0
+    },
+    "bottlenecks": []
+  },
+  "confidence": 100,
+  "applicability": {
+    "domains": [
+      "framework_development",
+      "tool_orchestration"
+    ],
+    "similarityThreshold": 0.7,
+    "applicableProjectTypes": [
+      "framework_enhancement",
+      "meta_development"
+    ]
+  },
+  "rawOutcome": {
+    "id": "magnus-13-v2.0",
+    "predicted": {
+      "complexity": 8.5,
+      "effort": 58,
+      "timeline": 60,
+      "clarity": 0.94
+    },
+    "actual": {
+      "complexity": 8.2,
+      "effort": 60,
+      "timeline": 60,
+      "clarity": 0.94
+    },
+    "decisions": [
+      {
+        "decision": "Formalize Phase 5 testing",
+        "clarity": 0.94,
+        "complexity": 5,
+        "precedent": false,
+        "outcome": "success"
+      },
+      {
+        "decision": "Add Tool Selection Engine",
+        "clarity": 0.96,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Enhance complexity scoring",
+        "clarity": 0.93,
+        "complexity": 5,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Integrate dashboard improvements",
+        "clarity": 0.91,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      }
+    ],
+    "risks": [
+      {
+        "category": "framework_complexity",
+        "domain": "framework_development",
+        "description": "Integration complexity across phases",
+        "materialized": false,
+        "mitigated": true,
+        "earlySignals": [
+          "multi_phase_impact",
+          "backward_compatibility"
+        ]
+      },
+      {
+        "category": "testing_coverage",
+        "description": "Comprehensive testing requirements",
+        "materialized": false,
+        "mitigated": true,
+        "earlySignals": [
+          "new_functionality",
+          "edge_cases"
+        ]
+      }
+    ],
+    "codeMetrics": {
+      "linesOfCode": 4200,
+      "files": 12,
+      "complexity": 8.2,
+      "modules": [
+        {
+          "name": "tool-selection-engine",
+          "size": 710
+        },
+        {
+          "name": "complexity-analyzer",
+          "size": 440
+        },
+        {
+          "name": "phase5-testing",
+          "size": 380
+        },
+        {
+          "name": "decision-tree",
+          "size": 620
+        }
+      ],
+      "averageModuleSize": 537,
+      "largestModule": "tool-selection-engine",
+      "dependencies": [
+        "phase1 -> tool-selection-engine",
+        "phase2 -> complexity-analyzer",
+        "phase5 -> testing-framework",
+        "all-phases -> magnus-core"
+      ],
+      "dependencyDepth": 3,
+      "goldenRatio": true,
+      "pythagoreanHarmony": true
+    },
+    "phases": {
+      "phase1": {
+        "duration": 6,
+        "predicted": 6
+      },
+      "phase2": {
+        "duration": 8,
+        "predicted": 8
+      },
+      "phase3": {
+        "duration": 10,
+        "predicted": 10
+      },
+      "phase4": {
+        "duration": 20,
+        "predicted": 20
+      },
+      "phase5": {
+        "duration": 8,
+        "predicted": 8
+      },
+      "phase6": {
+        "duration": 4,
+        "predicted": 4
+      },
+      "phase7": {
+        "duration": 3,
+        "predicted": 3
+      },
+      "phase8": {
+        "duration": 1,
+        "predicted": 1
+      },
+      "phase9": {
+        "duration": 0,
+        "predicted": 0
+      }
+    },
+    "domain": "framework_development",
+    "projectType": "framework_enhancement",
+    "quality": 98
+  }
+}

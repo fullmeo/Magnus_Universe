@@ -1,0 +1,87 @@
+{
+  "id": "session-1764183382170-f3e73cca",
+  "startTime": 1764183382171,
+  "request": "\n      Create REST API for product management with Express.js.\n      Include: GET products with pagination, POST create, PUT update, DELETE remove.\n    ",
+  "analysis": {
+    "complexity": {
+      "dimensions": {
+        "domain": {
+          "score": 1,
+          "level": "STANDARD",
+          "domains": [],
+          "expertise": {
+            "required": false,
+            "domains": [],
+            "recommendation": "Standard software engineering knowledge sufficient"
+          },
+          "warning": null
+        },
+        "technical": {
+          "score": 0,
+          "level": "LOW",
+          "aspects": [],
+          "estimate": "MEDIUM - Standard implementation practices"
+        },
+        "integration": {
+          "score": 0,
+          "level": "LOW",
+          "points": [],
+          "risk": "Manageable integration surface"
+        },
+        "scale": {
+          "score": 1,
+          "level": "SMALL",
+          "scales": {},
+          "warning": null
+        },
+        "novelty": {
+          "score": 0,
+          "level": "ESTABLISHED",
+          "aspects": [],
+          "risk": "Known problem space"
+        }
+      },
+      "overall": {
+        "score": 1,
+        "level": "STANDARD",
+        "summary": "Complexity dominated by domain (STANDARD)"
+      },
+      "bottleneck": {
+        "dimension": "domain",
+        "score": 1,
+        "level": "STANDARD"
+      },
+      "recommendation": {
+        "action": "GENERATE",
+        "reason": "Complexity is manageable",
+        "alternative": null
+      }
+    }
+  },
+  "architecture": {
+    "decisions": [],
+    "constraints": [],
+    "patterns": []
+  },
+  "artifacts": [],
+  "context": {
+    "requirements": {
+      "functional": [],
+      "nonFunctional": [],
+      "implicit": []
+    },
+    "assumptions": [],
+    "risks": []
+  },
+  "iterations": [],
+  "status": "COMPLETED",
+  "endTime": 1764183382310,
+  "duration": 139,
+  "outcome": {
+    "outcome": "SUCCESS",
+    "type": "Product API",
+    "filesGenerated": 3,
+    "endpoints": 4,
+    "tokensUsed": 5000
+  }
+}

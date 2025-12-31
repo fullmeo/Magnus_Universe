@@ -1,0 +1,84 @@
+{
+  "timestamp": "2025-12-25T19:24:24.051Z",
+  "emergingOpportunities": [],
+  "knowledgeGaps": [],
+  "highImpactAreas": [
+    {
+      "area": "Language Domain Bottleneck Library",
+      "impact": "Medium",
+      "currentEvidence": "Hebrew/Gematria projects have consistent issues",
+      "potentialBenefit": "Save 20% time on similar projects",
+      "estimatedProjects": "5+ future projects"
+    }
+  ],
+  "personalizedSuggestions": [
+    {
+      "area": "Sacred Geometry in Code",
+      "description": "Your background suggests golden ratio patterns might emerge in code structure",
+      "impact": "High - Could revolutionize architecture design",
+      "effort": "3-4 weeks research",
+      "precedent": "Similar patterns observed in past projects",
+      "uniqueness": "Combines your expertise: Music + Math + Code",
+      "intellectualProperty": "Potentially unique IP",
+      "priority": 1
+    },
+    {
+      "area": "Pythagorean Harmony in System Design",
+      "description": "Your musical expertise + framework knowledge",
+      "impact": "High - Could be unique intellectual property",
+      "effort": "4-6 weeks research",
+      "precedent": "You're already applying this intuitively",
+      "uniqueness": "40 years musical training + coding",
+      "intellectualProperty": "Very high potential",
+      "priority": 2
+    },
+    {
+      "area": "Language Domain Bottleneck Library",
+      "description": "Hebrew, Gematria, etc. apps have consistent bottlenecks",
+      "impact": "Medium - Saves 20% time on similar projects",
+      "effort": "2 weeks documentation",
+      "precedent": "Multiple projects had same issue",
+      "uniqueness": "Domain expertise",
+      "intellectualProperty": "Low, but high utility",
+      "priority": 3
+    }
+  ],
+  "recommended": [
+    {
+      "area": "Sacred Geometry in Code",
+      "description": "Your background suggests golden ratio patterns might emerge in code structure",
+      "impact": 8,
+      "effort": 3,
+      "precedent": "Similar patterns observed in past projects",
+      "uniqueness": "Combines your expertise: Music + Math + Code",
+      "intellectualProperty": "Potentially unique IP",
+      "priority": 1,
+      "type": "personalized",
+      "score": 2.6666666666666665
+    },
+    {
+      "area": "Language Domain Bottleneck Library",
+      "description": "Hebrew, Gematria, etc. apps have consistent bottlenecks",
+      "impact": 5,
+      "effort": 2,
+      "precedent": "Multiple projects had same issue",
+      "uniqueness": "Domain expertise",
+      "intellectualProperty": "Low, but high utility",
+      "priority": 3,
+      "type": "personalized",
+      "score": 2.5
+    },
+    {
+      "area": "Pythagorean Harmony in System Design",
+      "description": "Your musical expertise + framework knowledge",
+      "impact": 8,
+      "effort": 4,
+      "precedent": "You're already applying this intuitively",
+      "uniqueness": "40 years musical training + coding",
+      "intellectualProperty": "Very high potential",
+      "priority": 2,
+      "type": "personalized",
+      "score": 2
+    }
+  ]
+}

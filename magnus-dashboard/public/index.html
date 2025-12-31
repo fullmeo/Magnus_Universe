@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Magnus Dashboard - Real-time pattern visualization and monitoring">
+  <title>Magnus Dashboard 15.3</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/dashboard-styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+</head>
+<body>
+  <div id="root"></div>
+  
+  <!-- React & ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Dashboard App (inline) -->
+  <script>
+    const { useState, useEffect, useRef, StrictMode } = React;
+
+    /**
+     * Magnus 14 Project Dashboard Component
+     * Displays comprehensive project overview, health metrics, and analytics
+     */
+    function Magnus14Dashboard() {
+      const [dashboardData, setDashboardData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [activeSection, setActiveSection] = useState('overview');
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        fetchDashboardData();
+        const interval = setInterval(fetchDashboardData, 10000); // Refresh every 10 seconds
+        return () => clearInterval(interval);
+      }, []);
+
+      const fetchDashboardData = async () => {
+        try {
+          const response = await fetch('/api/dashboard/overview');
+          if (!response.ok) throw new Error('Failed to fetch dashboard data');
+          const result = await response.json();
+          setDashboardData(result.data);
+          setError(null);
+          setLoading(false);
+        } catch (err) {
+          console.error('Dashboard fetch error:', err);
+          setError(err.message);
+          setLoading(false);
+        }
+      };
+
+      if (loading) {
+        return React.createElement('div', { style: { padding: '20px', textAlign: 'center' } },
+          React.createElement('p', null, '⏳ Loading Magnus 14 Dashboard...')
+        );
+      }
+
+      if (error) {
+        return React.createElement('div', { style: { padding: '20px', color: '#ef4444' } },
+          React.createElement('p', null, '❌ Error: ' + error)
+        );
+      }
+
+      if (!dashboardData) {
+        return React.createElement('div', { style: { padding: '20px' } },
+          React.createElement('p', null, '📊 No projects analyzed yet')
+        );
+      }
+
+      const health = dashboardData.health || {};
+      const projects = dashboardData.projects || {};
+      const domains = dashboardData.domains || [];
+      const complexity = dashboardData.complexity || {};
+      const timeline = dashboardData.timeline || {};
+      const risks = dashboardData.risks || {};
+      const confidence = dashboardData.confidence || {};
+
+      // Health status color
+      const healthColor = health.systemStatus === 'Excellent' ? '#51CF66' :
+                         health.systemStatus === 'Good' ? '#74C0FC' :
+                         health.systemStatus === 'Fair' ? '#FFA94D' : '#FF6B6B';
+
+      return React.createElement('div', { style: { width: '100%', padding: '20px' } },
+        // Navigation tabs
+        React.createElement('div', { style: { display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #e5e7eb', paddingBottom: '10px' } },
+          ['overview', 'projects', 'analysis'].map(section =>
+            React.createElement('button', {
+              key: section,
+              onClick: () => setActiveSection(section),
+              style: {
+                padding: '10px 20px',
+                border: 'none',
+                background: activeSection === section ? '#3b82f6' : 'transparent',
+                color: activeSection === section ? '#fff' : '#666',
+                cursor: 'pointer',
+                borderRadius: '4px',
+                fontWeight: activeSection === section ? 'bold' : 'normal'
+              }
+            },
+            section === 'overview' ? '📊 Overview' :
+            section === 'projects' ? '📋 Projects' : '📈 Analysis'
+            )
+          )
+        ),
+
+        // Overview Section
+        activeSection === 'overview' && React.createElement('div', null,
+          // Health Summary
+          React.createElement('div', { style: { background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' } },
+            React.createElement('h3', null, '🏥 System Health'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '15px' } },
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, 'Total Projects'),
+                React.createElement('div', { style: { fontSize: '28px', fontWeight: 'bold', color: '#3b82f6' } }, health.totalProjects || 0)
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, 'Avg Clarity'),
+                React.createElement('div', { style: { fontSize: '28px', fontWeight: 'bold', color: '#74C0FC' } }, (health.avgClarity || 0) + '%')
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, 'Avg Complexity'),
+                React.createElement('div', { style: { fontSize: '28px', fontWeight: 'bold', color: '#FFA94D' } }, (health.avgComplexity || 0))
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, 'Avg Confidence'),
+                React.createElement('div', { style: { fontSize: '28px', fontWeight: 'bold', color: '#51CF66' } }, (health.avgConfidence || 0) + '%')
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: `2px solid ${healthColor}` } },
+                React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, 'System Status'),
+                React.createElement('div', { style: { fontSize: '16px', fontWeight: 'bold', color: healthColor } }, health.systemStatus || 'Unknown')
+              )
+            )
+          ),
+
+          // Projects by Phase
+          health.projectsByPhase && Object.keys(health.projectsByPhase).length > 0 && React.createElement('div', { style: { background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' } },
+            React.createElement('h3', null, '📍 Projects by Phase'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginTop: '15px' } },
+              Object.entries(health.projectsByPhase).map(([phase, count]) => {
+                const phaseColors = {
+                  'Clarification': '#FF6B6B',
+                  'Investigation': '#FFA94D',
+                  'Design': '#74C0FC',
+                  'Implementation': '#51CF66'
+                };
+                return React.createElement('div', { key: phase, style: { padding: '15px', background: '#fff', borderRadius: '6px', border: `2px solid ${phaseColors[phase] || '#999'}` } },
+                  React.createElement('div', { style: { fontSize: '12px', color: '#666', marginBottom: '5px' } }, phase),
+                  React.createElement('div', { style: { fontSize: '24px', fontWeight: 'bold', color: phaseColors[phase] } }, count)
+                );
+              })
+            )
+          )
+        ),
+
+        // Projects Section
+        activeSection === 'projects' && React.createElement('div', null,
+          React.createElement('h3', null, '📋 All Projects (' + projects.total + ')'),
+          projects.projects && projects.projects.length > 0 ?
+            React.createElement('div', { style: { marginTop: '15px' } },
+              projects.projects.map((project, idx) =>
+                React.createElement('div', { key: idx, style: { padding: '15px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '6px', marginBottom: '10px', borderLeft: `4px solid ${project.status.color}` } },
+                  React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'start' } },
+                    React.createElement('div', null,
+                      React.createElement('h4', { style: { margin: '0 0 5px 0' } }, project.status.icon + ' ' + project.name),
+                      React.createElement('div', { style: { fontSize: '12px', color: '#666' } },
+                        'Domain: ' + project.domain + ' | Components: ' + project.components + ' | Complexity: ' + project.complexity + '/10'
+                      )
+                    ),
+                    React.createElement('div', { style: { textAlign: 'right' } },
+                      React.createElement('div', { style: { fontSize: '12px', color: project.status.color, fontWeight: 'bold' } }, project.status.phase),
+                      React.createElement('div', { style: { fontSize: '18px', fontWeight: 'bold', color: '#3b82f6' } }, project.clarity + '%')
+                    )
+                  ),
+                  React.createElement('div', { style: { marginTop: '10px', background: '#f3f4f6', borderRadius: '4px', height: '8px', overflow: 'hidden' } },
+                    React.createElement('div', { style: { background: project.status.color, height: '100%', width: project.clarity + '%', transition: 'width 0.3s ease' } })
+                  ),
+                  React.createElement('div', { style: { marginTop: '8px', fontSize: '11px', color: '#999', display: 'flex', justifyContent: 'space-between' } },
+                    React.createElement('span', null, 'Timeline: ' + project.duration.toFixed(1) + ' months'),
+                    React.createElement('span', null, 'Confidence: ' + project.confidence + '%')
+                  )
+                )
+              )
+            ) :
+            React.createElement('p', null, '📭 No projects yet')
+        ),
+
+        // Analysis Section
+        activeSection === 'analysis' && React.createElement('div', null,
+          // Domain Distribution
+          domains.length > 0 && React.createElement('div', { style: { background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' } },
+            React.createElement('h3', null, '🌐 Domain Distribution'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px', marginTop: '15px' } },
+              domains.map((d, idx) =>
+                React.createElement('div', { key: idx, style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb', textAlign: 'center' } },
+                  React.createElement('div', { style: { fontSize: '14px', fontWeight: 'bold' } }, d.count),
+                  React.createElement('div', { style: { fontSize: '12px', color: '#666' } }, d.domain),
+                  React.createElement('div', { style: { fontSize: '11px', color: '#999' } }, d.percentage + '%')
+                )
+              )
+            )
+          ),
+
+          // Complexity Distribution
+          Object.keys(complexity).length > 0 && React.createElement('div', { style: { background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' } },
+            React.createElement('h3', null, '⚙️ Complexity Distribution'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px', marginTop: '15px' } },
+              Object.entries(complexity).map(([level, count]) =>
+                React.createElement('div', { key: level, style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                  React.createElement('div', { style: { fontSize: '12px', fontWeight: 'bold', marginBottom: '5px' } }, level),
+                  React.createElement('div', { style: { fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' } }, count)
+                )
+              )
+            )
+          ),
+
+          // Timeline Estimates
+          Object.keys(timeline).length > 0 && React.createElement('div', { style: { background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '20px' } },
+            React.createElement('h3', null, '⏱️ Timeline Estimates'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px', marginTop: '15px' } },
+              Object.entries(timeline).map(([range, count]) =>
+                React.createElement('div', { key: range, style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' } },
+                  React.createElement('div', { style: { fontSize: '12px', fontWeight: 'bold', marginBottom: '5px' } }, range),
+                  React.createElement('div', { style: { fontSize: '24px', fontWeight: 'bold', color: '#74C0FC' } }, count)
+                )
+              )
+            )
+          ),
+
+          // Risk Assessment
+          risks.highRisk && React.createElement('div', { style: { background: '#fff5f5', padding: '20px', borderRadius: '8px', border: '2px solid #FF6B6B' } },
+            React.createElement('h3', null, '⚠️ Risk Assessment'),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '15px' } },
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '2px solid #FF6B6B' } },
+                React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#FF6B6B' } }, '🔴 High Risk: ' + risks.highRisk.count),
+                risks.highRisk.projects.length > 0 && React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', fontSize: '12px' } },
+                  risks.highRisk.projects.slice(0, 3).map((p, i) =>
+                    React.createElement('li', { key: i }, p.name + ' (C:' + p.complexity + ' | Conf:' + p.confidence + '%)')
+                  )
+                )
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '2px solid #FFA94D' } },
+                React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#FFA94D' } }, '🟠 Medium Risk: ' + risks.mediumRisk.count),
+                risks.mediumRisk.projects.length > 0 && React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', fontSize: '12px' } },
+                  risks.mediumRisk.projects.slice(0, 3).map((p, i) =>
+                    React.createElement('li', { key: i }, p.name + ' (C:' + p.complexity + ' | Conf:' + p.confidence + '%)')
+                  )
+                )
+              ),
+              React.createElement('div', { style: { padding: '15px', background: '#fff', borderRadius: '6px', border: '2px solid #51CF66' } },
+                React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#51CF66' } }, '🟢 Low Risk: ' + risks.lowRisk.count),
+                risks.lowRisk.projects.length > 0 && React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', fontSize: '12px' } },
+                  risks.lowRisk.projects.slice(0, 3).map((p, i) =>
+                    React.createElement('li', { key: i }, p.name + ' (C:' + p.complexity + ' | Conf:' + p.confidence + '%)')
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // Refresh indicator
+        React.createElement('div', { style: { marginTop: '20px', fontSize: '12px', color: '#999', textAlign: 'center' } },
+          React.createElement('p', null, '🔄 Auto-refreshing every 10 seconds')
+        )
+      );
+    }
+
+    function MagnusDashboard() {
+      const [patterns, setPatterns] = useState([]);
+      const [syncStatus, setSyncStatus] = useState(null);
+      const [statistics, setStatistics] = useState(null);
+      const [connected, setConnected] = useState(false);
+      const [realTimeEvents, setRealTimeEvents] = useState([]);
+      const [view, setView] = useState('overview');
+      const wsRef = useRef(null);
+
+      useEffect(() => {
+        connectWebSocket();
+        fetchInitialData();
+        return () => {
+          if (wsRef.current) wsRef.current.close();
+        };
+      }, []);
+
+      const connectWebSocket = () => {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}`;
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+          console.log('WebSocket connected');
+          setConnected(true);
+          ws.send(JSON.stringify({
+            type: 'subscribe',
+            events: ['sync-completed', 'pattern-synced', 'pattern-detected', 'alert-raised']
+          }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const message = JSON.parse(event.data);
+            setRealTimeEvents(prev => [message, ...prev].slice(0, 50));
+            if (message.type === 'sync-completed') fetchPatterns();
+          } catch (e) {
+            console.log('Non-JSON message:', event.data);
+          }
+        };
+
+        ws.onclose = () => {
+          console.log('WebSocket disconnected');
+          setConnected(false);
+          setTimeout(connectWebSocket, 3000);
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        wsRef.current = ws;
+      };
+
+      const fetchInitialData = async () => {
+        try {
+          const res = await fetch('/api/health');
+          if (res.ok) {
+            const data = await res.json();
+            setStatistics(data);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      const fetchPatterns = async () => {
+        try {
+          const res = await fetch('/api/patterns');
+          if (res.ok) setPatterns(await res.json());
+        } catch (e) {
+          console.log('Patterns not available yet');
+        }
+      };
+
+      const renderMagnus14Dashboard = () => {
+        return React.createElement('div', { style: { width: '100%' } },
+          React.createElement(Magnus14Dashboard)
+        );
+      };
+
+      return React.createElement('div', { className: 'dashboard' },
+        React.createElement('div', { className: 'dashboard-header' },
+          React.createElement('div', { className: 'header-left' },
+            React.createElement('h1', null, '🧠 Magnus Dashboard v15.3'),
+            React.createElement('span', { className: 'status-badge', style: { color: connected ? '#4ade80' : '#ef4444' } },
+              connected ? '🟢 Connected' : '🔴 Disconnected'
+            )
+          )
+        ),
+        React.createElement('div', { className: 'nav-tabs' },
+          ['overview', 'patterns', 'sync', 'watcher', 'magnus14'].map(v =>
+            React.createElement('button',
+              {
+                key: v,
+                className: view === v ? 'tab active' : 'tab',
+                onClick: () => setView(v),
+                style: { borderBottom: view === v ? '2px solid #3b82f6' : 'none' }
+              },
+              v === 'overview' ? '📊 Overview' :
+              v === 'patterns' ? '⭐ Patterns' :
+              v === 'sync' ? '🌩️ Sync' :
+              v === 'watcher' ? '👁️ Watcher' : '🧠 Magnus 14'
+            )
+          )
+        ),
+        React.createElement('div', { className: 'dashboard-content' },
+          view === 'magnus14' ? renderMagnus14Dashboard() : React.createElement(
+            'div',
+            null,
+            React.createElement('h2', null,
+              view === 'overview' ? 'System Overview' :
+              view === 'patterns' ? 'Detected Patterns' :
+              view === 'sync' ? 'Cloud Sync Status' :
+              view === 'watcher' ? 'Real-time Events' : 'Magnus 14 - Project Analysis'
+            ),
+            React.createElement('p', null,
+              connected ? '✅ Dashboard is connected and ready!' : '⏳ Waiting for Magnus connection...'
+            ),
+            React.createElement('div', { style: { marginTop: '20px', padding: '10px', background: '#f3f4f6', borderRadius: '4px' } },
+              React.createElement('p', null,
+                'Patterns detected: ' + patterns.length + ' | '
+                + 'Events: ' + realTimeEvents.length + ' | '
+                + 'Status: ' + (connected ? 'Connected' : 'Disconnected')
+              )
+            ),
+            realTimeEvents.length > 0 && React.createElement('div', { style: { marginTop: '20px' } },
+              React.createElement('h3', null, 'Recent Events'),
+              React.createElement('ul', null,
+                realTimeEvents.slice(0, 10).map((event, idx) =>
+                  React.createElement('li', { key: idx },
+                    event.type + ' - ' + new Date(event.timestamp || Date.now()).toLocaleTimeString()
+                  )
+                )
+              )
+            )
+          )
+        ),
+        React.createElement('div', { className: 'dashboard-footer' },
+          React.createElement('p', null,
+            'Magnus Dashboard v15.3 | Server: ' + window.location.host
+          )
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(StrictMode, null, React.createElement(MagnusDashboard)));
+  </script>
+</body>
+</html>

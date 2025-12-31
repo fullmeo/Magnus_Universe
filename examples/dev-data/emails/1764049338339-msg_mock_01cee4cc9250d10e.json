@@ -1,0 +1,11 @@
+{
+  "id": "msg_mock_01cee4cc9250d10e",
+  "to": "user@example.com",
+  "from": "noreply@example.com",
+  "subject": "Welcome to Magnus Universe!",
+  "body": "<h1>Welcome!</h1><p>CloudZero is ready to use.</p>",
+  "html": true,
+  "timestamp": "2025-11-25T05:42:18.339Z",
+  "status": "delivered",
+  "metadata": {}
+}

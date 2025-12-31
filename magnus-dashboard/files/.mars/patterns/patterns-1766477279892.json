@@ -1,0 +1,199 @@
+{
+  "timestamp": "2025-12-23T08:07:59.890Z",
+  "projectCount": 2,
+  "complexityPatterns": [
+    {
+      "type": "domain_familiarity",
+      "insight": "Familiar domains have 20% higher accuracy",
+      "confidence": 0.8,
+      "domains": [
+        "hebrew_language",
+        "framework_development"
+      ]
+    },
+    {
+      "type": "novelty_impact",
+      "insight": "Novel projects add +2 complexity points",
+      "confidence": 0.75
+    }
+  ],
+  "decisionPatterns": [
+    {
+      "type": "decision_success_factors",
+      "factors": {
+        "clarity": {
+          "factor": "clarity",
+          "successRate": 100,
+          "impact": "high"
+        },
+        "precedent": {
+          "factor": "precedent",
+          "successRate": 100,
+          "impact": "high"
+        },
+        "complexity": {
+          "factor": "complexity",
+          "successRate": 100,
+          "impact": "high"
+        }
+      },
+      "insight": "High clarity + precedent + low complexity = 95%+ success rate",
+      "confidence": 0.9
+    }
+  ],
+  "riskPatterns": [],
+  "architecturePatterns": [],
+  "timePatterns": [
+    {
+      "type": "time_distribution",
+      "phase": "understanding",
+      "averageHours": "7.00",
+      "percentageOfTotal": "8.75",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "complexity",
+      "averageHours": "9.00",
+      "percentageOfTotal": "11.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "architecture",
+      "averageHours": "11.00",
+      "percentageOfTotal": "13.75",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "implementation",
+      "averageHours": "24.00",
+      "percentageOfTotal": "30.00",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "testing",
+      "averageHours": "9.00",
+      "percentageOfTotal": "11.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "optimization",
+      "averageHours": "5.00",
+      "percentageOfTotal": "6.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "documentation",
+      "averageHours": "3.50",
+      "percentageOfTotal": "4.38",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "security",
+      "averageHours": "1.50",
+      "percentageOfTotal": "1.88",
+      "confidence": 0.85
+    }
+  ],
+  "emergentPatterns": [],
+  "rankedByConfidence": [
+    {
+      "type": "decision_success_factors",
+      "factors": {
+        "clarity": {
+          "factor": "clarity",
+          "successRate": 100,
+          "impact": "high"
+        },
+        "precedent": {
+          "factor": "precedent",
+          "successRate": 100,
+          "impact": "high"
+        },
+        "complexity": {
+          "factor": "complexity",
+          "successRate": 100,
+          "impact": "high"
+        }
+      },
+      "insight": "High clarity + precedent + low complexity = 95%+ success rate",
+      "confidence": 0.9
+    },
+    {
+      "type": "time_distribution",
+      "phase": "understanding",
+      "averageHours": "7.00",
+      "percentageOfTotal": "8.75",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "complexity",
+      "averageHours": "9.00",
+      "percentageOfTotal": "11.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "architecture",
+      "averageHours": "11.00",
+      "percentageOfTotal": "13.75",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "implementation",
+      "averageHours": "24.00",
+      "percentageOfTotal": "30.00",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "testing",
+      "averageHours": "9.00",
+      "percentageOfTotal": "11.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "optimization",
+      "averageHours": "5.00",
+      "percentageOfTotal": "6.25",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "documentation",
+      "averageHours": "3.50",
+      "percentageOfTotal": "4.38",
+      "confidence": 0.85
+    },
+    {
+      "type": "time_distribution",
+      "phase": "security",
+      "averageHours": "1.50",
+      "percentageOfTotal": "1.88",
+      "confidence": 0.85
+    },
+    {
+      "type": "domain_familiarity",
+      "insight": "Familiar domains have 20% higher accuracy",
+      "confidence": 0.8,
+      "domains": [
+        "hebrew_language",
+        "framework_development"
+      ]
+    },
+    {
+      "type": "novelty_impact",
+      "insight": "Novel projects add +2 complexity points",
+      "confidence": 0.75
+    }
+  ]
+}
