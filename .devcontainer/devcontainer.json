@@ -1,0 +1,60 @@
+{
+  "name": "Magnus Universe - Codespaces",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "ms-vscode.vscode-js-profile-flame",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "workbench.colorTheme": "Default Dark+",
+        "editor.fontSize": 14,
+        "editor.tabSize": 2,
+        "editor.wordWrap": "on"
+      }
+    }
+  },
+
+  "forwardPorts": [],
+
+  "postCreateCommand": "npm install",
+
+  "postStartCommand": "echo '🌌 Magnus Universe Codespace Ready!' && echo '✨ Run: npm start' && echo '🔮 Run: npm test' && echo '🌀 Run: npm run harmonia'",
+
+  "remoteUser": "node",
+
+  "mounts": [
+    "source=${localWorkspaceFolder}/.git,target=/workspaces/Magnus_Universe/.git,type=bind,consistency=cached"
+  ],
+
+  "containerEnv": {
+    "MAGNUS_ENV": "codespaces",
+    "NODE_ENV": "development"
+  }
+}
