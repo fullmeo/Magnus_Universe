@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "test": "node magnus-13-2-test.js"
+    "test": "node --test tests/magnus-integration-final.test.js",
+    "test:unit": "node --test magnus-13-2-unit.test.js",
+    "test:integration": "node --test tests/magnus-integration-final.test.js",
+    "test:all": "npm run test:unit && npm run test:integration"
   }
 }
