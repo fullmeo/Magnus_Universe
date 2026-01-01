@@ -1,18 +1,31 @@
 # Magnus Universe Code Owners
-# These owners will be automatically requested for review
+# These owners will be automatically requested for review on pull requests
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Default owners for everything
+# Default owner for everything in the repository
 *       @fullmeo
 
-# Core framework
+# Core framework modules
 /src/   @fullmeo
 
 # Documentation
 /docs/  @fullmeo
 *.md    @fullmeo
 
-# Examples
+# Examples and demonstrations
 /examples/  @fullmeo
 
-# CI/CD
+# CI/CD and GitHub configuration
 /.github/   @fullmeo
+
+# Development environment
+/.devcontainer/  @fullmeo
+
+# Configuration files
+package.json    @fullmeo
+.gitignore      @fullmeo
+
+# Legal and community files
+LICENSE         @fullmeo
+CODE_OF_CONDUCT.md  @fullmeo
+CONTRIBUTING.md     @fullmeo

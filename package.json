@@ -1,0 +1,29 @@
+{
+  "name": "magnus-universe",
+  "version": "1.0.0",
+  "description": "Magnus: A consciousness-driven code generation framework grounded in Hermetic principles and Planck's Mirror theorem, that reveals rather than creates",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node examples/basic-usage.js",
+    "convergence": "node examples/convergence-validation.js",
+    "harmonia": "node examples/harmonia-cosmica-complete.js"
+  },
+  "keywords": [
+    "consciousness",
+    "hermetic",
+    "planck-mirror",
+    "code-generation",
+    "convergence",
+    "quantum",
+    "philosophy"
+  ],
+  "author": "Magnus Universe Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
