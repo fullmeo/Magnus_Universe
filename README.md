@@ -273,6 +273,25 @@ console.log('Security compliance:', audit.compliance.owaspTop10);
 node examples/security-safeguards-demo.js
 ```
 
+### Multi-Repository Audit Tools
+
+Magnus includes automated tools to scan **all your repositories** for the XSS vulnerability:
+
+```bash
+# Quick scan of all projects in a directory
+./scripts/audit-xss-react-router.sh --all ~/projects
+
+# Detailed report with export
+node scripts/audit-all-repos.js --local ~/projects --output audit-report.md
+
+# Scan single repository
+./scripts/audit-xss-react-router.sh /path/to/repo
+```
+
+**Quick Start:** See [QUICK_AUDIT_GUIDE.md](QUICK_AUDIT_GUIDE.md) for rapid scanning of all your repositories.
+
+**Comprehensive Guide:** See [docs/MULTI_REPO_AUDIT_GUIDE.md](docs/MULTI_REPO_AUDIT_GUIDE.md) for GitHub integration, CI/CD automation, and advanced usage.
+
 ### Security Features
 
 - ✅ **XSS Detection**: Identifies malicious script patterns
