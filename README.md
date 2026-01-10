@@ -68,6 +68,7 @@ console.log(`Converged: ${result.insights.convergence}`);
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Security](#security)
 - [The Seven Hermetic Principles](#the-seven-hermetic-principles)
 - [Planck's Mirror](#plancks-mirror)
 - [Harmonic Convergence](#harmonic-convergence)
@@ -100,6 +101,15 @@ console.log(`Converged: ${result.insights.convergence}`);
 - Philosophical alignment metrics
 - Multi-cycle refinement
 - Zero-config initialization
+
+### 🔒 Security Features (New!)
+
+- **XSS Prevention** - Proactive vulnerability detection and sanitization
+- **Input Validation** - Intent verification before code generation
+- **Output Encoding** - Safe HTML/JSON-LD sanitization
+- **OWASP Compliance** - Aligned with Top 10 security practices
+- **CSP Generation** - Content Security Policy header creation
+- **Security Audits** - Comprehensive validation with recommendations
 
 ---
 
@@ -210,6 +220,75 @@ const guidance = magnus.reveal('architecture');
 console.log(guidance.action);
 // "Design for harmonic unity"
 ```
+
+---
+
+## 🔒 Security
+
+Magnus Universe now includes comprehensive security safeguards to prevent vulnerabilities in generated code, particularly XSS (Cross-Site Scripting) attacks. This aligns with our 8th principle: **"Security - Integrity guards all creation."**
+
+### Security Audit (Jan 2026)
+
+**Current Status**: ✅ **NOT VULNERABLE** to React Router/Remix XSS (GHSA-3cgp-3xvw-98x8)
+
+Magnus Universe does not use React Router or Remix and does not generate web applications. See [docs/SECURITY_ANALYSIS_XSS_REACT_ROUTER.md](docs/SECURITY_ANALYSIS_XSS_REACT_ROUTER.md) for full analysis.
+
+### Using Security Safeguards
+
+```javascript
+import { SecuritySafeguards } from './src/magnus-security-safeguards.js';
+
+// Validate intention before processing
+const validation = SecuritySafeguards.validateIntention(intention);
+if (!validation.valid) {
+  console.error('Security issues detected:', validation.issues);
+}
+
+// Sanitize JSON-LD (prevents React Router XSS)
+const safeJSONLD = SecuritySafeguards.sanitizeJSONLD({
+  name: userInput,  // Automatically escaped
+  description: content
+});
+
+// Sanitize HTML content
+const safeHTML = SecuritySafeguards.sanitizeHTML(userGeneratedContent);
+
+// Generate Content Security Policy
+const cspHeader = SecuritySafeguards.generateCSP({
+  scriptSrc: ["'self'", "'nonce-xyz'"]
+});
+
+// Comprehensive security audit
+const audit = SecuritySafeguards.audit({
+  intention: yourIntention,
+  output: generatedCode
+});
+console.log('Security compliance:', audit.compliance.owaspTop10);
+```
+
+### Running Security Tests
+
+```bash
+# Run comprehensive security demonstration
+node examples/security-safeguards-demo.js
+```
+
+### Security Features
+
+- ✅ **XSS Detection**: Identifies malicious script patterns
+- ✅ **Input Validation**: Validates intentions before processing
+- ✅ **Output Sanitization**: Encodes HTML entities and escapes JSON-LD
+- ✅ **OWASP Compliance**: Aligned with Top 10 security practices
+- ✅ **CSP Generation**: Creates Content Security Policy headers
+- ✅ **Comprehensive Audits**: Full security validation with recommendations
+
+### Philosophy
+
+> "Validate before reveal, sanitize before manifest.
+> Consciousness creates with intention; safeguards preserve integrity.
+> The Mirror reflects truth, security protects it."
+
+For detailed security analysis and recommendations, see [SECURITY_ANALYSIS_XSS_REACT_ROUTER.md](docs/SECURITY_ANALYSIS_XSS_REACT_ROUTER.md).
 
 ---
 
