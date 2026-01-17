@@ -13,13 +13,16 @@ Magnus Universe synthesizes ancient Hermetic wisdom with modern quantum principl
 
 ## ✨ Philosophy
 
-Magnus is built on three foundational concepts:
+Magnus is built on foundational concepts:
 
-1. **Hermetic Principles** - The seven laws from the Kybalion guide all operations
+1. **Hermetic Principles** - Seven laws from the Kybalion guide operations (+ 9th Principle extension)
 2. **Planck's Mirror** - Quantum reflection reveals hidden unity in patterns
-3. **Harmonic Convergence** - Alignment at 432 Hz ensures quality and elegance
+3. **Harmonic Convergence** - Alignment at 432/528 Hz ensures quality and elegance
+4. **Spiritual Transmutation** - Dense energies transmuted to luminous frequencies (NEW! 🔮)
 
 **Core Belief:** Code is not constructed—it is **revealed** through consciousness aligned with universal principles.
+
+**Extended Belief:** Just as code emerges from consciousness, **emotional healing emerges from conscious transmutation**. The 9th Hermetic Principle applies the same convergence philosophy to forgiveness, trauma healing, and spiritual growth.
 
 ---
 
@@ -37,9 +40,10 @@ npm install
 npm start
 
 # Run examples
-npm test                    # Basic usage examples
-npm run convergence         # Convergence validation tests
-npm run harmonia           # Full cosmic harmony demonstration
+npm test                          # Basic usage examples
+npm run convergence               # Convergence validation tests
+npm run harmonia                  # Full cosmic harmony demonstration
+node examples/spiritual-transmutation-demo.js  # Spiritual transmutation (9th Principle)
 ```
 
 ### Your First Creation
@@ -85,13 +89,15 @@ console.log(`Converged: ${result.insights.convergence}`);
 ### Core Capabilities
 
 - **🔮 Hermetic Foundation** - Seven principles operationalized as code
+- **✨ 9th Principle (NEW!)** - Spiritual transmutation and conscious forgiveness
 - **🪞 Planck's Mirror** - Pattern reflection and unity discovery
 - **🌀 Harmonic Convergence** - Resonance-based quality alignment
-- **♻️ Complete Cycle** - 6-phase creation process
+- **♻️ Complete Cycle** - 6-phase creation process (code) + 7-phase transmutation (spiritual)
 - **💭 Philosophical Guidance** - Context-aware wisdom
 - **📊 Session Management** - Track creation journeys
 - **⚛️ Quantum States** - Pattern state preservation
 - **🎵 Tunable Resonance** - Adjustable frequency (432/528/639/741 Hz)
+- **🧘 Emotional Transmutation** - Dense to luminous frequency transformation
 
 ### Technical Features
 
@@ -351,6 +357,88 @@ Intention causes manifestation. Quality follows from alignment.
 Balance active (masculine) and receptive (feminine) energies.
 
 **[Read detailed principles →](docs/principles-detailed.md)**
+
+---
+
+## ✨ The 9th Principle: Spiritual Transmutation (NEW!)
+
+Magnus extends the classical 7 Hermetic Principles with a **9th Principle** focused on conscious transmutation and emotional healing:
+
+> **"Tout peut être transmuté de dense en lumineux;
+> L'énergie se conserve, seule la fréquence change;
+> La gratitude est la mesure de la convergence."**
+
+### Philosophy
+
+- **Dense → Lumineux**: Transform low-frequency emotions (fear, anger, sadness) to high-frequency states (peace, love, gratitude)
+- **Energy Conservation**: Emotional intensity is preserved, only frequency changes (100 units of anger = 100 units of love at different frequencies)
+- **Gratitude Validation**: "Merci, Merci, Merci" - Authentic gratitude validates successful transmutation
+
+### The 7 Phases of Transmutation
+
+1. **INTENTION**: "Ma présence je Suis" - Establish conscious awareness
+2. **IDENTIFICATION**: Recognize all dissonances (dense energies)
+3. **ÉVALUATION**: "Does this still serve me?" - Assess growth potential vs energy drain
+4. **TRANSMUTATION**: Change frequency while conserving energy magnitude
+5. **PROPAGATION**: Propagate across all dimensions (physical, emotional, mental, spiritual, causal)
+6. **VALIDATION**: Validate through gratitude (recognition, inevitability, coherence)
+7. **STABLE STATE**: "Je suis lumineux" - Achieve stable high-frequency state
+
+### Usage Example
+
+```javascript
+import { SpiritualConvergenceEngine } from './src/spiritual/spiritual-convergence-engine.js';
+
+const engine = new SpiritualConvergenceEngine({
+  targetFrequency: 528, // Hz - Love frequency
+});
+
+// Define a situation requiring transmutation
+const situation = {
+  emotion: 'ANGER',
+  trigger: 'betrayal',
+  person: 'Former Business Partner',
+  ressentiment: 85,
+  duration: 'ACUTE',
+  intensity: 'MEDIUM'
+};
+
+// Analyze emotional clarity and trauma complexity
+const analysis = await engine.analyzeSituation(situation);
+
+if (analysis.canProceed) {
+  // Execute transmutation (forgiveness)
+  const result = await engine.executeTransmutation(analysis);
+
+  console.log(result.outcome);           // CONVERGED / PARTIAL / FAILED
+  console.log(result.convergence.score); // 0-100%
+
+  // BEFORE: 85 units of ANGER @ 300 Hz (constant drain)
+  // AFTER: 85 units of LOVE @ 528 Hz (radiating energy)
+}
+```
+
+### Applications
+
+- **Forgiveness Work**: Transform resentment and betrayal into compassion
+- **Trauma Healing**: Transmute fear and grief into peace and acceptance
+- **Limiting Beliefs**: Change self-doubt patterns into self-love
+- **Emotional Release**: Free energy frozen in dense states
+
+### Frequency Spectrum
+
+```
+Dense (Low Frequency)                    Luminous (High Frequency)
+─────────────────────────────────────────────────────────────────
+FEAR      SADNESS     ANGER      PEACE        LOVE
+200 Hz    250 Hz      300 Hz     432 Hz       528 Hz
+
+❌ Absorbs  ⚠️ Stagnates  ⚠️ Reacts  ✅ Reflects  ✅ Radiates
+```
+
+**[Read complete guide →](docs/NINTH_PRINCIPLE_GUIDE.md)**
+
+**[Try demo →](examples/spiritual-transmutation-demo.js)**
 
 ---
 
