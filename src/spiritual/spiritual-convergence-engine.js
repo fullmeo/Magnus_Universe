@@ -55,7 +55,7 @@ export class SpiritualConvergenceEngine {
       return analysis;
     }
 
-    if (analysis.complexity > this.config.maxComplexityScore) {
+    if (analysis.complexity >= this.config.maxComplexityScore) {
       analysis.recommendation = 'PHASED_FORGIVENESS';
       analysis.canProceed = false;
       return analysis;

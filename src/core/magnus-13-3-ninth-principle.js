@@ -140,6 +140,13 @@ export class NinthPrinciple {
       return result;
 
     } catch (error) {
+      // Les violations de principe fondamental (conservation d'énergie)
+      // doivent être propagées comme erreurs fatales
+      if (error.name === 'EnergyConservationError') {
+        throw error; // Propager l'erreur fatale
+      }
+
+      // Autres erreurs: retourner résultat FAILED
       console.error('❌ Transmutation failed:', error.message);
       result.outcome = 'FAILED';
       result.error = error.message;
@@ -276,6 +283,17 @@ export class NinthPrinciple {
     const energyConserved = Math.abs(totalEnergyBefore - totalEnergyAfter) < 0.01;
 
     console.log(`   ${energyConserved ? '✓' : '⚠️'} Energy conservation: ${energyConserved}`);
+
+    // CRITICAL: Si conservation requise et violée, lancer erreur
+    if (this.config.conserveEnergy && !energyConserved) {
+      const error = new Error(
+        `NINTH PRINCIPLE VIOLATION: Energy conservation violated! ` +
+        `Before: ${totalEnergyBefore}, After: ${totalEnergyAfter}, ` +
+        `Difference: ${Math.abs(totalEnergyBefore - totalEnergyAfter).toFixed(2)}`
+      );
+      error.name = 'EnergyConservationError';
+      throw error;
+    }
 
     return {
       phase: 'TRANSMUTATION',
@@ -441,6 +459,48 @@ export class NinthPrinciple {
       iterations: 0,
       convergenceHistory: []
     };
+  }
+
+  /**
+   * Obtenir le nombre de phases
+   */
+  getPhaseCount() {
+    return this.phases.length;
+  }
+
+  /**
+   * Obtenir les invariants (description des phases)
+   */
+  getInvariants() {
+    const invariants = {};
+
+    this.phases.forEach((phaseName, index) => {
+      invariants[phaseName] = {
+        phase: index + 1,
+        name: phaseName,
+        invariant: this._getPhaseInvariant(phaseName)
+      };
+    });
+
+    return invariants;
+  }
+
+  /**
+   * Obtenir l'invariant d'une phase spécifique
+   * @private
+   */
+  _getPhaseInvariant(phaseName) {
+    const invariantDescriptions = {
+      INTENTION: "Consciousness must be established before transformation",
+      IDENTIFICATION: "All dissonances must be recognized before evaluation",
+      EVALUATION: "Growth potential vs energy drain determines transmutation",
+      TRANSMUTATION: "Energy magnitude must be conserved, only frequency changes",
+      PROPAGATION: "Transmutation must propagate across all dimensions",
+      VALIDATION: "Gratitude validates convergence through 4 criteria",
+      STABLE_STATE: "Final state must be stable at high frequency"
+    };
+
+    return invariantDescriptions[phaseName] || "Invariant not defined";
   }
 }
 
