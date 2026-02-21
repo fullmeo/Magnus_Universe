@@ -79,9 +79,10 @@ export class ConvergencePrinciple {
     console.log(`   Harmonic Score: ${(harmonicScore * 100).toFixed(2)}%`);
 
     // Store pattern (with deep copy to prevent reference issues)
+    // Use safeStringify to handle circular references
     this.convergenceState.harmonicPatterns.push({
       cycle: this.convergenceState.cycles,
-      patterns: JSON.parse(JSON.stringify(patterns)),
+      patterns: JSON.parse(this.safeStringify(patterns)),
       harmonic: harmonicScore,
       timestamp: Date.now()
     });
@@ -140,7 +141,7 @@ export class ConvergencePrinciple {
       // Store patterns with invariants, weighted by harmonic score
       if (invariantCount > 0) {
         this.unityMemory.invariants.push({
-          unity: JSON.parse(JSON.stringify(unity)),
+          unity: JSON.parse(this.safeStringify(unity)),
           weight: harmonicScore,
           cycle: this.convergenceState.cycles,
           timestamp: Date.now()
@@ -328,19 +329,26 @@ export class ConvergencePrinciple {
   /**
    * Count invariant properties in a unity result
    */
-  countInvariants(unity) {
-    if (unity === 'unified') return 0;
+  countInvariants(unity, seen = new WeakSet()) {
+    if (unity === 'unified' || unity === '[Circular]') return 0;
     if (unity?.invariant === true) return 1;
 
     let count = 0;
     if (typeof unity === 'object' && unity !== null) {
-      for (const value of Object.values(unity)) {
-        count += this.countInvariants(value);
+      // Detect circular references
+      if (seen.has(unity)) {
+        return 0;
       }
-    }
-    if (Array.isArray(unity)) {
-      for (const item of unity) {
-        count += this.countInvariants(item.unity || item);
+      seen.add(unity);
+
+      if (Array.isArray(unity)) {
+        for (const item of unity) {
+          count += this.countInvariants(item.unity || item, seen);
+        }
+      } else {
+        for (const value of Object.values(unity)) {
+          count += this.countInvariants(value, seen);
+        }
       }
     }
     return count;
@@ -424,7 +432,7 @@ export class ConvergencePrinciple {
       if (invariantCount > 0) {
         // Mirror operations that reveal invariants are valuable learning
         this.unityMemory.invariants.push({
-          unity: JSON.parse(JSON.stringify(mirrored.unity)),
+          unity: JSON.parse(this.safeStringify(mirrored.unity)),
           weight: 0.7, // Mirror-discovered invariants start with good weight
           source: 'planckMirror',
           stateId,
@@ -446,15 +454,23 @@ export class ConvergencePrinciple {
   /**
    * Reflect pattern (creates complementary pattern)
    */
-  reflect(pattern) {
+  reflect(pattern, seen = new WeakSet()) {
     // Handle null/undefined
     if (pattern === null || pattern === undefined) {
       return pattern;
     }
 
+    // Detect circular references
+    if (typeof pattern === 'object') {
+      if (seen.has(pattern)) {
+        return '[Circular]';
+      }
+      seen.add(pattern);
+    }
+
     // Handle arrays - preserve array type and reflect recursively
     if (Array.isArray(pattern)) {
-      return pattern.map(item => this.reflect(item));
+      return pattern.map(item => this.reflect(item, seen));
     }
 
     // Handle objects - reflect recursively
@@ -463,7 +479,7 @@ export class ConvergencePrinciple {
       for (const [key, value] of Object.entries(pattern)) {
         // Recursively reflect nested objects/arrays
         if (typeof value === 'object' && value !== null) {
-          reflected[key] = this.reflect(value);
+          reflected[key] = this.reflect(value, seen);
         } else {
           reflected[key] = this.invertValue(value);
         }
@@ -497,17 +513,25 @@ export class ConvergencePrinciple {
   /**
    * Find unity between pattern and its reflection
    */
-  findUnity(pattern) {
+  findUnity(pattern, seen = new WeakSet()) {
     // Handle null/undefined
     if (pattern === null || pattern === undefined) {
       return 'unified';
+    }
+
+    // Detect circular references
+    if (typeof pattern === 'object') {
+      if (seen.has(pattern)) {
+        return '[Circular]';
+      }
+      seen.add(pattern);
     }
 
     // Unity is the invariant essence that persists through reflection
     if (Array.isArray(pattern)) {
       return pattern.map((item, index) => ({
         index,
-        unity: this.findUnity(item)
+        unity: this.findUnity(item, seen)
       }));
     }
 
@@ -520,7 +544,7 @@ export class ConvergencePrinciple {
         } else if (typeof value === 'string' && value === [...value].reverse().join('')) {
           unity[key] = { invariant: true, value }; // Palindrome
         } else if (typeof value === 'object' && value !== null) {
-          unity[key] = this.findUnity(value); // Recurse
+          unity[key] = this.findUnity(value, seen); // Recurse
         } else {
           unity[key] = 'unified';
         }
