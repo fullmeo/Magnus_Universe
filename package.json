@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node examples/basic-usage.js",
+    "test": "node tests/convergence-principle.test.js",
+    "test:examples": "node examples/basic-usage.js",
     "convergence": "node examples/convergence-validation.js",
     "harmonia": "node examples/harmonia-cosmica-complete.js"
   },
