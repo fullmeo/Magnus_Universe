@@ -1,0 +1,148 @@
+{
+  "verdict": "NON_CONVERGED",
+  "scores": {
+    "recognition": 21.0,
+    "inevitability": 75.625,
+    "coherence": 84.39999999999999
+  },
+  "details": {
+    "recognition": {
+      "name": "recognition",
+      "score": 21.0,
+      "components": {
+        "completeness": 0.0,
+        "purity": 0.0,
+        "semantic_alignment": 70.0
+      },
+      "evidence": {
+        "completeness": {
+          "total_constraints": 2,
+          "traced_constraints": 0,
+          "traces": [
+            {
+              "constraint": "constraint 1",
+              "found": false
+            },
+            {
+              "constraint": "constraint 2",
+              "found": false
+            }
+          ],
+          "completeness_percentage": 0.0
+        },
+        "purity": {
+          "error": "no_functions_or_classes"
+        },
+        "semantic_alignment": {
+          "llm_cot": {
+            "model": "claude-sonnet-4-20250514",
+            "temperature": 0,
+            "reasoning": "1. What does the intent require? The intent specifies a 'Simple Calculator' with 5 explicit MUST requirements: add two numbers, subtract two numbers, multiply two numbers, divide two numbers, and return results. The emphasis on 'simple' suggests straightforward implementation.\n\n2. What does the code actually implement? The code implements all required operations (add, subtract, multiply, divide) and returns results, but uses an extremely over-engineered architecture with: 10+ classes, abstract base classes, strategy pattern, factory pattern, composite pattern, decorators, enums, validators, and API wrappers. This creates massive complexity for basic arithmetic operations.\n\n3. Are all requirements met? Yes, all functional requirements are technically satisfied. The CalculatorAPI class provides add(), subtract(), multiply(), and divide() methods that return results as required.\n\n4. Is there extra/unwanted functionality? Extensive unwanted complexity including: abstract validation hierarchies, strategy pattern for simple operations, factory classes, logging decorators, composite validators, and API response formatting. The code has ~150 lines when ~20 would suffice for the simple requirements.\n\n5. Overall semantic alignment: While functionally correct, the implementation completely violates the 'simple' intent through massive over-engineering. The semantic mismatch between 'simple calculator' and this enterprise-level architecture significantly reduces alignment despite meeting technical requirements.",
+            "score": 70.0
+          },
+          "method": "temperature_zero_cot"
+        }
+      }
+    },
+    "inevitability": {
+      "name": "inevitability",
+      "score": 75.625,
+      "components": {
+        "constraint_saturation": 100,
+        "alternative_delta": 46.0,
+        "minimalism": 78.1
+      },
+      "evidence": {
+        "constraint_saturation": {
+          "hard_constraints": {
+            "total": 0,
+            "satisfied": 0,
+            "score": 100
+          },
+          "soft_constraints": {
+            "total": 0,
+            "satisfied": 0,
+            "score": 100
+          },
+          "overall_saturation": 100
+        },
+        "alternative_delta": {
+          "original_score": 21.0,
+          "alternative_1_score": 0.0,
+          "alternative_2_score": 0.0,
+          "best_alternative_score": 0.0,
+          "delta": 21.0,
+          "delta_strength": "strong",
+          "alternatives_hash": [
+            "6c06c8542eac9b8300ab1893a0af961017103711a19a13004493a1ca241bad1c",
+            "c41df649c1d3256484b111f95db7a9f1b06eb7616433a2874bb9d4965249a2d6"
+          ]
+        },
+        "minimalism": {
+          "cyclomatic_complexity": 4.2,
+          "complexity_score": 79.0,
+          "max_nesting_depth": 3,
+          "nesting_score": 70,
+          "abstraction_score": 85,
+          "minimalism_score": 78.1
+        }
+      }
+    },
+    "coherence": {
+      "name": "coherence",
+      "score": 84.39999999999999,
+      "components": {
+        "naming": 89.0,
+        "layer_consistency": 81.0,
+        "error_unity": 94.0,
+        "conceptual_unity": 77.0
+      },
+      "evidence": {
+        "naming": {
+          "naming_score": 89.0,
+          "method": "ast_analysis"
+        },
+        "layer_consistency": {
+          "layer_score": 81.0,
+          "method": "semantic_analysis"
+        },
+        "error_unity": {
+          "error_score": 94.0,
+          "method": "pattern_matching"
+        },
+        "conceptual_unity": {
+          "conceptual_score": 77.0,
+          "method": "llm_judge"
+        }
+      }
+    }
+  },
+  "evidence": {
+    "intent_extraction": {
+      "explicit_constraints": [
+        "constraint 1",
+        "constraint 2"
+      ],
+      "implicit_constraints": [],
+      "requirements": {},
+      "raw_content": "# Simple Calculator\n\n## Explicit Requirements (MUST)\n- must add two numbers\n- must subtract two numbers\n- must multiply two numbers\n- must divide two numbers\n- must return results\n",
+      "parsing_confidence": 85.0
+    },
+    "code_metrics": {
+      "total_lines": 203,
+      "function_count": 5,
+      "class_count": 2,
+      "cyclomatic_complexity": 4.2,
+      "max_nesting_depth": 3,
+      "naming_consistency_score": 89.0,
+      "layer_separation_score": 81.0,
+      "error_handling_uniformity": 94.0
+    }
+  },
+  "reproducibility": {
+    "model": "claude-sonnet-4-20250514",
+    "seed": 42,
+    "timestamp": "2026-02-09T10:05:48.374040"
+  },
+  "timestamp": "2026-02-09T10:05:48.374040"
+}

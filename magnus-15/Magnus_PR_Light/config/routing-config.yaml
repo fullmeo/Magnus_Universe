@@ -1,0 +1,99 @@
+# Routing Configuration
+# Uses standard YAML structure with pragmatic terminology
+
+# Quality weights for routing optimization
+quality_weights:
+  quality_score: 0.45      # Weight for code quality pattern matching
+  cost_weight: 0.35        # Weight for cost efficiency
+  latency_weight: 0.20     # Weight for latency optimization
+
+# Pattern detection thresholds
+detection_thresholds:
+  max_nested_conditionals: 3
+  max_file_length: 500
+  max_imports: 10
+  min_function_name_length: 15
+
+# Pattern severity mappings
+pattern_severity:
+  CYCLE_DETECTION: high
+  VALIDATION_GAP: high
+  ARCHITECTURE_DRIFT: medium
+  COUPLING_COMPLEXITY: medium
+  CONTINUOUS_IMPROVEMENT: medium
+  CODE_CONSISTENCY: medium
+  COGNITIVE_COMPLEXITY: medium
+  BUSINESS_LOGIC_PRIORITY: low
+  SELF_DOCUMENTING: low
+  EVIDENCE_BASED: low
+
+# Pattern weights for quality scoring
+pattern_weights:
+  CYCLE_DETECTION: 0.15
+  VALIDATION_GAP: 0.15
+  ARCHITECTURE_DRIFT: 0.10
+  COUPLING_COMPLEXITY: 0.10
+  CONTINUOUS_IMPROVEMENT: 0.10
+  CODE_CONSISTENCY: 0.10
+  COGNITIVE_COMPLEXITY: 0.10
+  BUSINESS_LOGIC_PRIORITY: 0.05
+  SELF_DOCUMENTING: 0.05
+  EVIDENCE_BASED: 0.05
+
+# Review cycle configuration
+review_config:
+  max_iterations: 5
+  quality_threshold: 0.85
+  auto_apply_suggestions: false
+  include_examples: true
+
+# Model profiles with cost and latency data
+model_profiles:
+  gpt-4o-mini:
+    cost_per_1k_tokens: 0.01
+    avg_latency_ms: 200
+    capabilities:
+      - code-generation
+      - refactoring
+      - documentation
+    strengths:
+      - speed
+      - cost-efficiency
+    best_for:
+      - simple-tasks
+      - straightforward-code
+
+  gpt-4.1:
+    cost_per_1k_tokens: 0.10
+    avg_latency_ms: 350
+    capabilities:
+      - complex-reasoning
+      - architecture
+      - testing
+    strengths:
+      - reasoning
+      - context-handling
+    best_for:
+      - moderate-complexity
+      - architectural-decisions
+
+  claude-sonnet-4-20250514:
+    cost_per_1k_tokens: 0.15
+    avg_latency_ms: 400
+    capabilities:
+      - complex-analysis
+      - code-review
+      - refactoring
+    strengths:
+      - analysis
+      - quality-improvements
+    best_for:
+      - high-complexity
+      - refactoring
+
+# Feature flags
+features:
+  fallback_enabled: true
+  cost_optimization: true
+  latency_optimization: true
+  pattern_based_routing: true

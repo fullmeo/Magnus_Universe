@@ -1,0 +1,270 @@
+# ============================================================================
+# Session Rollback Configuration - Magnus 15 PR #2
+# ============================================================================
+# Configuration for the Session Rollback Protocol with checkpoint management
+# and failure recovery strategies.
+#
+# Version: 2.0.0
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Checkpoint Management Configuration
+# ----------------------------------------------------------------------------
+checkpoint:
+  # Maximum number of checkpoints to retain per session
+  maxCheckpoints: 10
+
+  # Retention period for checkpoints (in milliseconds)
+  # Default: 1 hour (3600000ms)
+  retentionMs: 3600000
+
+  # Enable compression for large state snapshots
+  enableCompression: true
+
+  # Minimum size before compression is applied (in bytes)
+  compressionThresholdBytes: 10240  # 10KB
+
+  # Auto-checkpoint triggers
+  autoCheckpoint:
+    # Create checkpoint when patterns are detected
+    onPatternDetection: true
+
+    # Create checkpoint on scoring decisions
+    onScoringDecision: true
+
+    # Create checkpoint on therapeutic phase changes
+    onTherapeuticPhase: true
+
+    # Minimum interval between auto-checkpoints (ms)
+    minIntervalMs: 5000
+
+    # Pattern thresholds for triggering checkpoints
+    patternThresholds:
+      # Checkpoint when anti-patterns exceed this count
+      antiPatternTrigger: 1
+      # Checkpoint when positive patterns exceed this count
+      positivePatternTrigger: 3
+
+# ----------------------------------------------------------------------------
+# Rollback Configuration
+# ----------------------------------------------------------------------------
+rollback:
+  # Default rollback options
+  defaults:
+    # Preserve audit log during rollback
+    preserveAuditLog: true
+
+    # Notify observers of rollback events
+    notifyObservers: true
+
+    # Validate state integrity after rollback
+    validateStateAfterRollback: true
+
+    # Maximum retry attempts for rollback
+    maxRetryAttempts: 3
+
+  # Safety settings
+  safety:
+    # Create pre-rollback checkpoint before any rollback
+    createPreRollbackCheckpoint: true
+
+    # Never delete session start checkpoints
+    preserveSessionStartCheckpoint: true
+
+    # Require confirmation for rollback to old checkpoints
+    confirmOldCheckpointRollback: true
+
+    # Age threshold for "old" checkpoint warning (ms)
+    oldCheckpointThresholdMs: 1800000  # 30 minutes
+
+# ----------------------------------------------------------------------------
+# Recovery Strategy Configuration
+# ----------------------------------------------------------------------------
+recovery:
+  # Primary recovery strategy
+  # Options: IMMEDIATE, DECOMPOSE, PROGRESSIVE
+  strategy: DECOMPOSE
+
+  # Retry configuration
+  retry:
+    # Maximum retry attempts
+    maxAttempts: 3
+
+    # Initial delay between retries (ms)
+    initialDelayMs: 1000
+
+    # Backoff multiplier for exponential backoff
+    backoffMultiplier: 2
+
+    # Maximum delay between retries (ms)
+    maxDelayMs: 30000
+
+  # Decomposition settings (for DECOMPOSE strategy)
+  decomposition:
+    # Enable operation decomposition
+    enabled: true
+
+    # Component recovery priorities (lower = higher priority)
+    priorities:
+      sessionState: 1
+      patternEngine: 2
+      scoringEngine: 3
+      therapeuticLoop: 4
+      cache: 5
+
+  # Progressive recovery settings
+  progressive:
+    # Maximum checkpoints to try during progressive recovery
+    maxCheckpointsToTry: 5
+
+    # Validate state after each recovery attempt
+    validateAfterEachAttempt: true
+
+# ----------------------------------------------------------------------------
+# Audit Logging Configuration
+# ----------------------------------------------------------------------------
+audit:
+  # Enable audit logging
+  enabled: true
+
+  # Log level for audit entries
+  # Options: DEBUG, INFO, WARN, ERROR
+  level: INFO
+
+  # Events to log
+  events:
+    checkpointCreated: true
+    rollbackInitiated: true
+    rollbackCompleted: true
+    recoveryAttempted: true
+    stateRestored: true
+    validationFailed: true
+
+  # Retention for audit logs (ms)
+  retentionMs: 86400000  # 24 hours
+
+  # Maximum audit entries to retain
+  maxEntries: 1000
+
+# ----------------------------------------------------------------------------
+# Failure Type Handling
+# ----------------------------------------------------------------------------
+failureHandling:
+  # Custom handling per failure type
+  types:
+    PATTERN_DETECTION_ERROR:
+      strategy: DECOMPOSE
+      preferredCheckpointTypes:
+        - PATTERN_MILESTONE
+        - SESSION_START
+
+    SCORING_CALCULATION_ERROR:
+      strategy: IMMEDIATE
+      preferredCheckpointTypes:
+        - SCORING_DECISION
+        - PATTERN_MILESTONE
+
+    THERAPEUTIC_LOOP_ERROR:
+      strategy: PROGRESSIVE
+      preferredCheckpointTypes:
+        - THERAPEUTIC_PHASE
+        - SCORING_DECISION
+
+    STATE_CORRUPTION:
+      strategy: IMMEDIATE
+      preferredCheckpointTypes:
+        - SESSION_START
+        - RECOVERY_POINT
+
+    TIMEOUT:
+      strategy: DECOMPOSE
+      preferredCheckpointTypes:
+        - AUTO_PERIODIC
+        - USER_REQUESTED
+
+    EXTERNAL_SERVICE_ERROR:
+      strategy: PROGRESSIVE
+      preferredCheckpointTypes:
+        - AUTO_PERIODIC
+        - PATTERN_MILESTONE
+
+# ----------------------------------------------------------------------------
+# Integration with PR #1 Components
+# ----------------------------------------------------------------------------
+integration:
+  # Magnus Pattern Engine integration
+  patternEngine:
+    # Trigger checkpoint on critical pattern detection
+    checkpointOnCriticalPatterns:
+      - CHAOS_INTERNE
+      - SPIRALE_CLARIFICATION
+
+    # Pattern detection timeout before triggering recovery (ms)
+    detectionTimeoutMs: 30000
+
+  # Convergence Scorer integration
+  convergenceScorer:
+    # Checkpoint on significant score changes
+    checkpointOnScoreChange: true
+
+    # Minimum score delta to trigger checkpoint
+    scoreChangeDelta: 0.15
+
+    # Checkpoint when convergence drops below threshold
+    lowConvergenceThreshold: 0.3
+
+  # Therapeutic Loop integration
+  therapeuticLoop:
+    # Checkpoint at each therapeutic phase
+    checkpointAllPhases: true
+
+    # Maximum therapeutic iterations before forced checkpoint
+    maxIterationsBeforeCheckpoint: 5
+
+    # Recovery behavior for loop failures
+    onLoopFailure: ROLLBACK_TO_PREVIOUS_PHASE
+
+# ----------------------------------------------------------------------------
+# Performance Tuning
+# ----------------------------------------------------------------------------
+performance:
+  # Enable async checkpoint creation
+  asyncCheckpoints: true
+
+  # Checkpoint creation timeout (ms)
+  checkpointTimeoutMs: 5000
+
+  # State snapshot batch size for large states
+  snapshotBatchSize: 100
+
+  # Memory limit for checkpoint storage (bytes)
+  maxMemoryBytes: 104857600  # 100MB
+
+  # Enable checkpoint disk spillover when memory limit reached
+  enableDiskSpillover: false
+  diskSpilloverPath: /tmp/magnus-checkpoints
+
+# ----------------------------------------------------------------------------
+# Feature Flags
+# ----------------------------------------------------------------------------
+featureFlags:
+  # Enable session rollback engine
+  enableRollbackEngine: true
+
+  # Enable automatic recovery
+  enableAutoRecovery: true
+
+  # Enable decomposed recovery
+  enableDecomposedRecovery: true
+
+  # Enable progressive recovery
+  enableProgressiveRecovery: true
+
+  # Enable audit logging
+  enableAuditLogging: true
+
+  # Enable performance metrics
+  enableMetrics: true
+
+  # Enable recovery recommendations
+  enableRecommendations: true

@@ -1,0 +1,186 @@
+{
+  "verdict": "CONVERGED",
+  "scores": {
+    "recognition": 95.5,
+    "inevitability": 81.775,
+    "coherence": 84.39999999999999
+  },
+  "details": {
+    "recognition": {
+      "name": "recognition",
+      "score": 95.5,
+      "components": {
+        "completeness": 100.0,
+        "purity": 100.0,
+        "semantic_alignment": 85.0
+      },
+      "evidence": {
+        "completeness": {
+          "total_constraints": 5,
+          "traced_constraints": 5,
+          "traces": [
+            {
+              "constraint": "must add two numbers",
+              "found": true
+            },
+            {
+              "constraint": "must subtract two numbers",
+              "found": true
+            },
+            {
+              "constraint": "must multiply two numbers",
+              "found": true
+            },
+            {
+              "constraint": "must divide two numbers",
+              "found": true
+            },
+            {
+              "constraint": "must return results",
+              "found": true
+            }
+          ],
+          "completeness_percentage": 100.0
+        },
+        "purity": {
+          "total_units": 4,
+          "traced_units": 4,
+          "purity_percentage": 100.0,
+          "unit_traces": {
+            "add": {
+              "type": "function",
+              "traced": true
+            },
+            "subtract": {
+              "type": "function",
+              "traced": true
+            },
+            "multiply": {
+              "type": "function",
+              "traced": true
+            },
+            "divide": {
+              "type": "function",
+              "traced": true
+            }
+          }
+        },
+        "semantic_alignment": {
+          "llm_cot": {
+            "model": "claude-sonnet-4-20250514",
+            "temperature": 0,
+            "reasoning": "[STUB - No API key configured]",
+            "score": 85.0
+          },
+          "method": "temperature_zero_cot"
+        }
+      }
+    },
+    "inevitability": {
+      "name": "inevitability",
+      "score": 81.775,
+      "components": {
+        "constraint_saturation": 100,
+        "alternative_delta": 50.5,
+        "minimalism": 96.4
+      },
+      "evidence": {
+        "constraint_saturation": {
+          "hard_constraints": {
+            "total": 5,
+            "satisfied": 5,
+            "score": 100.0
+          },
+          "soft_constraints": {
+            "total": 0,
+            "satisfied": 0,
+            "score": 100
+          },
+          "overall_saturation": 100
+        },
+        "alternative_delta": {
+          "original_score": 95.5,
+          "alternative_1_score": 70.0,
+          "alternative_2_score": 70.0,
+          "best_alternative_score": 70.0,
+          "delta": 25.5,
+          "delta_strength": "strong",
+          "alternatives_hash": [
+            "05d95d212179fe5426084d225d2116dfff3e4fb5d9c2ebdb482cbf4416c8c017",
+            "c96a223e84e8334451a6be290dcc856d9d74815163539ae04e4f1da33e291b48"
+          ]
+        },
+        "minimalism": {
+          "cyclomatic_complexity": 3.0,
+          "complexity_score": 95.5,
+          "max_nesting_depth": 1,
+          "nesting_score": 96,
+          "num_abstractions": 4,
+          "abstraction_score": 98.0,
+          "minimalism_score": 96.4
+        }
+      }
+    },
+    "coherence": {
+      "name": "coherence",
+      "score": 84.39999999999999,
+      "components": {
+        "naming": 89.0,
+        "layer_consistency": 81.0,
+        "error_unity": 94.0,
+        "conceptual_unity": 77.0
+      },
+      "evidence": {
+        "naming": {
+          "naming_score": 89.0,
+          "method": "ast_analysis"
+        },
+        "layer_consistency": {
+          "layer_score": 81.0,
+          "method": "semantic_analysis"
+        },
+        "error_unity": {
+          "error_score": 94.0,
+          "method": "pattern_matching"
+        },
+        "conceptual_unity": {
+          "conceptual_score": 77.0,
+          "method": "llm_judge"
+        }
+      }
+    }
+  },
+  "evidence": {
+    "intent_extraction": {
+      "explicit_constraints": [
+        "must add two numbers",
+        "must subtract two numbers",
+        "must multiply two numbers",
+        "must divide two numbers",
+        "must return results"
+      ],
+      "implicit_constraints": [],
+      "requirements": {
+        "Explicit Requirements (MUST)": []
+      },
+      "raw_content": "# Simple Calculator\n\n## Explicit Requirements (MUST)\n- must add two numbers\n- must subtract two numbers\n- must multiply two numbers\n- must divide two numbers\n- must return results\n",
+      "parsing_confidence": 95.0
+    },
+    "code_metrics": {
+      "total_lines": 30,
+      "function_count": 4,
+      "class_count": 0,
+      "cyclomatic_complexity": 3.0,
+      "max_nesting_depth": 1,
+      "naming_consistency_score": 100.0,
+      "layer_separation_score": 85.0,
+      "error_handling_uniformity": 90.0
+    }
+  },
+  "reproducibility": {
+    "model": "claude-sonnet-4-20250514",
+    "seed": 42,
+    "timestamp": "2026-02-09T10:27:28.356684"
+  },
+  "timestamp": "2026-02-09T10:27:28.356719"
+}

@@ -1,0 +1,17 @@
+Rename-Item : Impossible de renommer l'‚l‚ment situ‚ … l'emplacement ®C:/Users/diase/OneDrive/Bureau/Magnus_13_universe
+/magnus-15/validation_test/example_converged/example_complex/server_backup.js¯, car il n'existe pas.
+Au caractŠre Ligne:1 : 1
++ Rename-Item 'C:/Users/diase/OneDrive/Bureau/Magnus_13_universe/magnus ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation : (:) [Rename-Item], PSInvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperation,Microsoft.PowerShell.Commands.RenameItemCommand
+ 
+Rename-Item : Impossible de renommer l'‚l‚ment situ‚ … l'emplacement ®
+C:/Users/diase/OneDrive/Bureau/Magnus_13_universe/magnus-15/validation_test/example_converged/example_complex/server.js
+¯, car il n'existe pas.
+Au caractŠre Ligne:1 : 156
++ ... erver.js' ; Rename-Item 'C:/Users/diase/OneDrive/Bureau/Magnus_13_uni ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation : (:) [Rename-Item], PSInvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperation,Microsoft.PowerShell.Commands.RenameItemCommand
+ 

@@ -1,0 +1,10 @@
+{
+  "name": "magnus-example-4",
+  "version": "1.0.0",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

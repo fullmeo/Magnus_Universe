@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BWV 1006 — Preludio — Canon Inverso — Laboratoire Musical V3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap');
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a25;
+  --gold:#c9a84c;--gold-dim:#8a7233;
+  --orig:#5b8def;--orig-dim:#3a5a9a;
+  --inv:#e85577;--inv-dim:#9a3a50;
+  --conv:#4ade80;--conv-dim:#22c55e;
+  --text:#d4d0c8;--text-dim:#7a7770;
+  --panel:rgba(18,18,26,0.95);--border:rgba(201,168,76,0.15)
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Cormorant Garamond',serif;overflow:hidden;height:100vh}
+.app{display:grid;grid-template-rows:auto 1fr 60px auto 28px auto 24px;height:100vh}
+
+/* Header */
+.hdr{background:linear-gradient(180deg,var(--bg2),transparent);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);z-index:10}
+.hdr h1{font-size:16px;font-weight:600;color:var(--gold);letter-spacing:1px}
+.hdr .sub{font-size:12px;color:var(--text-dim);font-style:italic;margin-left:10px}
+.modes{display:flex;gap:6px}
+.mbtn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:4px 12px;font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;transition:all .3s;border-radius:3px}
+.mbtn.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
+.mbtn:hover{border-color:var(--gold-dim);color:var(--text)}
+
+/* Piano Roll */
+.roll-wrap{position:relative;overflow:hidden;display:flex}
+.pkeys{width:44px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);position:relative;z-index:5;overflow:hidden}
+.pk{position:absolute;width:100%;border-bottom:1px solid rgba(255,255,255,.03);display:flex;align-items:center;justify-content:flex-end;padding-right:3px;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--text-dim)}
+.pk.bk{background:rgba(0,0,0,.35)}.pk.pv{background:rgba(201,168,76,.15);color:var(--gold);font-weight:500}
+.rarea{flex:1;position:relative;overflow:hidden}
+#rc{position:absolute;top:0;left:0}
+.ph{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.7);z-index:6;pointer-events:none;box-shadow:0 0 8px rgba(255,255,255,.3)}
+
+/* NEW: Convergence Waveform Panel */
+.wfpanel{background:var(--bg2);border-top:1px solid var(--border);position:relative;overflow:hidden}
+.wfpanel canvas{width:100%;height:100%}
+.wflabel{position:absolute;top:4px;left:8px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);z-index:5}
+.wflegend{position:absolute;top:4px;right:8px;display:flex;gap:12px;font-family:'JetBrains Mono',monospace;font-size:8px;z-index:5}
+.wflegend span{display:flex;align-items:center;gap:3px}
+.wflegend .dot{width:6px;height:6px;border-radius:50%}
+
+/* Measure Bar */
+.mbar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;cursor:pointer;overflow:hidden}
+.mbar canvas{width:100%;height:100%}
+
+/* Controls */
+.ctrl{background:var(--bg2);border-top:1px solid var(--border);padding:8px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+.tport{display:flex;align-items:center;gap:8px}
+.tbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.tbtn:hover{border-color:var(--gold);color:var(--gold)}
+.tbtn.pb{width:42px;height:42px;border-color:var(--gold-dim)}
+.tbtn.pb.on{border-color:var(--gold);background:rgba(201,168,76,.15);color:var(--gold)}
+.tbtn.lb.on{color:var(--gold);border-color:var(--gold);background:rgba(201,168,76,.15)}
+.mix{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap}
+.mch{display:flex;align-items:center;gap:6px}
+.ml{font-size:10px;font-family:'JetBrains Mono',monospace;min-width:35px;text-align:right}
+.ml.o{color:var(--orig)}.ml.i{color:var(--inv)}.ml.c{color:var(--conv)}
+input[type=range]{-webkit-appearance:none;height:3px;background:var(--bg);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);cursor:pointer}
+.smb{display:flex;gap:2px}
+.sb{width:18px;height:16px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:7px;cursor:pointer;border-radius:2px}
+.sb.as{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.sb.am{background:var(--inv);color:#fff;border-color:var(--inv)}
+
+/* Analysis Panel */
+.apanel{background:var(--bg3);border-top:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+.astats{display:flex;gap:16px}
+.astat{display:flex;align-items:center;gap:4px}
+.astat .vl{color:var(--gold);font-weight:500}
+.astat .vl.green{color:var(--conv)}
+.astat .vl.blue{color:var(--orig)}
+.astat .vl.red{color:var(--inv)}
+
+/* Info Display */
+.info{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim)}
+.iv{color:var(--gold);font-weight:500}
+
+/* Status Bar */
+.sbar{background:var(--bg3);border-top:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim)}
+.idsp{position:absolute;top:6px;right:8px;background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;z-index:8;pointer-events:none;opacity:0;transition:opacity .2s}
+.idsp.vis{opacity:1}
+.io{color:var(--orig)}.ii{color:var(--inv)}.ia{color:var(--gold);margin:0 3px}
+
+/* A-B Loop Markers */
+.abloop{position:absolute;top:0;height:100%;display:flex;align-items:center;font-size:8px;color:var(--gold);font-family:'JetBrains Mono',monospace;pointer-events:none}
+.abloop .mrk{position:absolute;width:2px;height:100%;background:var(--orig)}
+.abloop .mrk.end{background:var(--inv)}
+
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+ <div style="display:flex;align-items:baseline">
+  <h1>BWV 1006 — PRELUDIO</h1>
+  <span class="sub">Canon Inverso · Laboratoire Musical V3 · Convergence Waveform</span>
+ </div>
+ <div class="modes">
+  <button class="mbtn active" data-m="original">Original</button>
+  <button class="mbtn" data-m="inverso">Inverso</button>
+  <button class="mbtn" data-m="convergence">Convergence</button>
+  <button class="mbtn" data-m="guide">Guide</button>
+  <button class="mbtn" data-m="spectrogram">Spectrogram</button>
+ </div>
+</div>
+
+<div class="roll-wrap">
+ <div class="pkeys" id="pk"></div>
+ <div class="rarea" id="ra">
+  <canvas id="rc"></canvas>
+  <div class="ph" id="ph" style="left:-10px"></div>
+  <div class="idsp" id="idsp"></div>
+ </div>
+</div>
+
+<!-- NEW: Convergence Waveform Panel -->
+<div class="wfpanel" id="wfp"><canvas id="wfc"></canvas>
+ <div class="wflabel">CONVERGENCE WAVEFORM</div>
+ <div class="wflegend">
+  <span><div class="dot" style="background:var(--conv)"></div>Miroir parfait</span>
+  <span><div class="dot" style="background:#fbbf24"></div>Convergence partielle</span>
+  <span><div class="dot" style="background:var(--inv)"></div>Divergence</span>
+ </div>
+</div>
+
+<div class="mbar" id="mb"><canvas id="mc"></canvas></div>
+
+<div class="ctrl">
+ <div class="tport">
+  <button class="tbtn" id="bStart" title="Retour">&#9198;</button>
+  <button class="tbtn pb" id="bPlay" title="Espace">&#9654;</button>
+  <button class="tbtn" id="bStop" title="Stop">&#9209;</button>
+  <button class="tbtn lb" id="bLoop" title="Loop (L)">&#128257;</button>
+ </div>
+ <div class="mix">
+  <div class="mch">
+   <span class="ml o">ORIG</span>
+   <input type="range" id="vO" min="0" max="100" value="80" style="width:70px">
+   <input type="range" id="pO" min="-100" max="100" value="-50" style="width:40px" title="Pan">
+   <div class="smb"><button class="sb" id="sO">S</button><button class="sb" id="mO">M</button></div>
+  </div>
+  <div class="mch">
+   <span class="ml i">INV</span>
+   <input type="range" id="vI" min="0" max="100" value="80" style="width:70px">
+   <input type="range" id="pI" min="-100" max="100" value="50" style="width:40px" title="Pan">
+   <div class="smb"><button class="sb" id="sI">S</button><button class="sb" id="mI">M</button></div>
+  </div>
+  <div class="mch">
+   <span class="ml" style="color:var(--text-dim)">BPM</span>
+   <input type="range" id="bpm" min="40" max="160" value="80" style="width:55px">
+   <span class="iv" id="bpmV">80</span>
+  </div>
+ </div>
+ <div class="info">
+  <span>M.<span class="iv" id="iM">0</span></span>
+  <span>&#9833;<span class="iv" id="iB">1</span></span>
+  <span>Note <span class="iv" id="iN">&mdash;</span></span>
+  <span>&Delta;<span class="iv" id="iD">&mdash;</span></span>
+  <span>Conv <span class="iv" id="iC">&mdash;</span></span>
+ </div>
+</div>
+
+<!-- NEW: Analysis Panel -->
+<div class="apanel">
+ <div class="astats">
+  <div class="astat">Convergence moyenne: <span class="vl green" id="aAvg">—</span></div>
+  <div class="astat">Points de miroir: <span class="vl" id="aMir">212</span></div>
+  <div class="astat">Écart moyen: <span class="vl" id="aEcart">—</span></div>
+  <div class="astat">Tension: <span class="vl red" id="aTens">—</span></div>
+ </div>
+ <div class="astats">
+  <div class="astat">Pivot: <span class="vl">E5 (MIDI 76)</span></div>
+  <div class="astat">Notes: <span class="vl">1635</span></div>
+ </div>
+</div>
+
+<div class="sbar">
+ <span>J.S. Bach · Partita III · E major · 3/4 · 138 mesures · 1635 notes · 212 points de convergence · Espace=Play L=Loop ←→=Mesure 12345=Modes</span>
+ <span>Source: Bach Violin Dataset · Pivot: E5 (MIDI 76) · V3 Convergence Engine</span>
+</div>
+</div>
+
+<script>
+// ============================================
+// BWV 1006 - Canon Inverso - Laboratoire V3
+// With Convergence Waveform & Analysis Engine
+// ============================================
+
+const R=`12,88,6;18,87,6;24,88,12;36,83,12;48,80,12;60,83,12;72,76,6;78,78,6;84,76,6;90,75,6;96,76,12;108,71,12;120,68,12;132,71,12;144,64,6;150,71,6;156,66,6;162,71,6;168,68,6;174,71,6;180,69,6;186,71,6;192,68,6;198,71,6;204,66,6;210,71,6;216,64,6;222,76,6;228,75,6;234,73,6;240,71,6;246,76,6;252,75,6;258,73,6;264,71,6;270,69,6;276,68,6;282,66,6;288,64,6;294,71,6;300,66,6;306,71,6;312,68,6;318,71,6;324,69,6;330,71,6;336,68,6;342,71,6;348,66,6;354,71,6;360,64,6;366,76,6;372,75,6;378,73,6;384,71,6;390,76,6;396,75,6;402,73,6;408,71,6;414,69,6;420,68,6;426,66,6;432,64,6;438,66,6;444,68,6;450,69,6;456,71,6;462,73,6;468,75,6;474,76,6;480,78,6;486,80,6;492,81,6;498,78,6;504,80,6;510,83,6;516,76,6;522,78,6;528,80,6;534,81,6;540,83,6;546,85,6;552,87,6;558,88,6;564,85,6;570,87,6;576,88,6;582,83,6;588,81,6;594,83,6;600,80,6;606,83,6;612,81,6;618,83,6;624,80,6;630,83,6;636,78,6;642,83,6;648,76,6;654,88,6;660,87,6;666,85,6;672,83,6;678,76,6;684,85,6;690,76,6;696,83,6;702,76,6;708,81,6;714,76,6;720,80,6;726,83,6;732,78,6;738,83,6;744,80,6;750,83,6;756,81,6;762,83,6;768,80,6;774,83,6;780,78,6;786,83,6;792,76,6;798,88,6;804,87,6;810,85,6;816,83,6;822,76,6;828,85,6;834,76,6;840,83,6;846,76,6;852,81,6;858,76,6;864,80,6;870,76,6;876,76,6;882,76,6;888,75,6;894,76,6;900,76,6;906,76,6;912,78,6;918,76,6;924,75,6;930,76,6;936,76,6;942,76,6;948,80,6;954,76,6;960,78,6;966,76,6;972,80,6;978,76,6;984,81,6;990,76,6;996,78,6;1002,76,6;1008,80,6;1014,76,6;1020,76,6;1026,76,6;1032,75,6;1038,76,6;1044,76,6;1050,76,6;1056,78,6;1062,76,6;1068,75,6;1074,76,6;1080,76,6;1086,76,6;1092,80,6;1098,76,6;1104,78,6;1110,76,6;1116,80,6;1122,76,6;1128,81,6;1134,76,6;1140,78,6;1146,76,6;1152,80,6;1158,76,6;1164,80,6;1170,76,6;1176,80,6;1182,76,6;1188,80,6;1194,76,6;1200,80,6;1206,76,6;1212,80,6;1218,76,6;1224,80,6;1230,76,6;1236,80,6;1242,75,6;1248,80,6;1254,76,6;1260,80,6;1266,75,6;1272,80,6;1278,76,6;1284,80,6;1290,75,6;1296,80,6;1302,76,6;1308,80,6;1314,74,6;1320,80,6;1326,76,6;1332,80,6;1338,74,6;1344,80,6;1350,76,6;1356,80,6;1362,74,6;1368,81,6;1374,76,6;1380,81,6;1386,73,6;1392,81,6;1398,76,6;1404,81,6;1410,73,6;1416,81,6;1422,76,6;1428,81,6;1434,73,6;1440,81,6;1446,76,6;1452,81,6;1458,71,6;1464,81,6;1470,76,6;1476,81,6;1482,71,6;1488,81,6;1494,76,6;1500,81,6;1506,71,6;1512,80,6;1518,76,6;1524,80,6;1530,71,6;1536,80,6;1542,76,6;1548,80,6;1554,71,6;1560,80,6;1566,76,6;1572,80,6;1578,71,6;1584,80,6;1590,76,6;1596,80,6;1602,69,6;1608,80,6;1614,76,6;1620,80,6;1626,69,6;1632,80,6;1638,76,6;1644,80,6;1650,69,6;1656,78,6;1662,76,6;1668,78,6;1674,69,6;1680,78,6;1686,76,6;1692,78,6;1698,69,6;1704,78,6;1710,76,6;1716,78,6;1722,69,6;1728,78,6;1734,76,6;1740,78,6;1746,68,6;1752,78,6;1758,76,6;1764,78,6;1770,68,6;1776,78,6;1782,76,6;1788,78,6;1794,68,6;1800,76,6;1806,76,6;1812,76,6;1818,68,6;1824,76,6;1830,76,6;1836,76,6;1842,68,6;1848,76,6;1854,76,6;1860,76,6;1866,68,6;1872,76,6;1878,76,6;1884,76,6;1890,66,6;1896,76,6;1902,76,6;1908,76,6;1914,66,6;1920,76,6;1926,76,6;1932,76,6;1938,66,6;1944,75,6;1950,76,6;1956,75,6;1962,66,6;1968,75,6;1974,76,6;1980,75,6;1986,66,6;1992,75,6;1998,76,6;2004,75,6;2010,66,6;2016,64,6;2022,66,6;2028,64,6;2034,66,6;2040,68,6;2046,71,6;2052,64,6;2058,66,6;2064,68,6;2070,71,6;2076,64,6;2082,66,6;2088,68,6;2094,69,6;2100,68,6;2106,69,6;2112,71,6;2118,76,6;2124,68,6;2130,69,6;2136,71,6;2142,76,6;2148,68,6;2154,69,6;2160,71,6;2166,73,6;2172,71,6;2178,73,6;2184,74,6;2190,80,6;2196,71,6;2202,73,6;2208,74,6;2214,80,6;2220,71,6;2226,73,6;2232,74,6;2238,83,6;2244,80,6;2250,76,6;2256,74,6;2262,71,6;2268,68,6;2274,64,6;2280,62,6;2286,61,6;2292,62,6;2298,59,6;2304,61,6;2310,63,6;2316,61,6;2322,63,6;2328,65,6;2334,68,6;2340,61,6;2346,63,6;2352,65,6;2358,68,6;2364,61,6;2370,63,6;2376,65,6;2382,66,6;2388,65,6;2394,66,6;2400,68,6;2406,73,6;2412,65,6;2418,66,6;2424,68,6;2430,73,6;2436,65,6;2442,66,6;2448,68,6;2454,69,6;2460,68,6;2466,69,6;2472,71,6;2478,77,6;2484,68,6;2490,69,6;2496,71,6;2502,77,6;2508,68,6;2514,69,6;2520,71,6;2526,80,6;2532,77,6;2538,73,6;2544,83,6;2550,80,6;2556,81,6;2562,78,6;2568,77,6;2574,80,6;2580,73,6;2586,71,6;2592,69,6;2598,73,6;2604,69,6;2610,66,6;2616,78,6;2622,75,6;2628,76,6;2634,73,6;2640,72,6;2646,75,6;2652,68,6;2658,66,6;2664,64,6;2670,68,6;2676,64,6;2682,61,6;2688,64,6;2694,68,6;2700,73,6;2706,68,6;2712,76,6;2718,73,6;2724,80,6;2730,73,6;2736,72,6;2742,75,6;2748,72,6;2754,68,6;2760,80,6;2766,79,6;2772,80,6;2778,79,6;2784,80,6;2790,75,6;2796,76,6;2802,73,6;2808,72,6;2814,75,6;2820,72,6;2826,68,6;2832,78,6;2838,77,6;2844,78,6;2850,77,6;2856,78,6;2862,75,6;2868,76,6;2874,73,6;2880,72,6;2886,75,6;2892,72,6;2898,68,6;2904,69,6;2910,68,6;2916,69,6;2922,68,6;2928,69,6;2934,63,6;2940,64,6;2946,61,6;2952,60,6;2958,66,6;2964,61,6;2970,66,6;2976,63,6;2982,66,6;2988,61,6;2994,66,6;3000,60,6;3006,66,6;3012,63,6;3018,66,6;3024,56,6;3030,66,6;3036,75,6;3042,66,6;3048,72,6;3054,66,6;3060,75,6;3066,66,6;3072,72,6;3078,66,6;3084,75,6;3090,66,6;3096,56,6;3102,64,6;3108,73,6;3114,64,6;3120,76,6;3126,64,6;3132,73,6;3138,64,6;3144,76,6;3150,64,6;3156,73,6;3162,64,6;3168,56,6;3174,66,6;3180,75,6;3186,66,6;3192,72,6;3198,66,6;3204,75,6;3210,66,6;3216,72,6;3222,66,6;3228,75,6;3234,66,6;3240,56,6;3246,64,6;3252,73,6;3258,64,6;3264,76,6;3270,64,6;3276,73,6;3282,64,6;3288,76,6;3294,64,6;3300,73,6;3306,64,6;3312,56,6;3318,67,6;3324,73,6;3330,67,6;3336,76,6;3342,67,6;3348,73,6;3354,67,6;3360,76,6;3366,67,6;3372,73,6;3378,67,6;3384,56,6;3390,67,6;3396,73,6;3402,67,6;3408,76,6;3414,67,6;3420,73,6;3426,67,6;3432,76,6;3438,67,6;3444,73,6;3450,67,6;3456,56,6;3462,68,6;3468,73,6;3474,68,6;3480,75,6;3486,68,6;3492,73,6;3498,68,6;3504,75,6;3510,68,6;3516,73,6;3522,68,6;3528,56,6;3534,66,6;3540,72,6;3546,66,6;3552,75,6;3558,66,6;3564,72,6;3570,66,6;3576,75,6;3582,66,6;3588,72,6;3594,66,6;3600,61,6;3606,73,6;3612,71,6;3618,69,6;3624,68,6;3630,73,6;3636,68,6;3642,66,6;3648,64,6;3654,68,6;3660,64,6;3666,63,6;3672,61,6;3678,73,6;3684,68,6;3690,66,6;3696,64,6;3702,68,6;3708,64,6;3714,63,6;3720,61,6;3726,64,6;3732,61,6;3738,59,6;3744,58,6;3750,66,6;3756,73,6;3762,66,6;3768,76,6;3774,66,6;3780,73,6;3786,66,6;3792,76,6;3798,66,6;3804,73,6;3810,66,6;3816,58,6;3822,66,6;3828,76,6;3834,66,6;3840,73,6;3846,66,6;3852,76,6;3858,66,6;3864,73,6;3870,66,6;3876,76,6;3882,66,6;3888,59,6;3894,83,6;3900,82,6;3906,80,6;3912,78,6;3918,83,6;3924,78,6;3930,76,6;3936,75,6;3942,78,6;3948,75,6;3954,73,6;3960,71,6;3966,83,6;3972,78,6;3978,76,6;3984,75,6;3990,78,6;3996,75,6;4002,73,6;4008,71,6;4014,75,6;4020,71,6;4026,69,6;4032,68,6;4038,74,6;4044,76,6;4050,74,6;4056,80,6;4062,74,6;4068,83,6;4074,74,6;4080,80,6;4086,74,6;4092,76,6;4098,74,6;4104,68,6;4110,74,6;4116,76,6;4122,74,6;4128,68,6;4134,74,6;4140,66,6;4146,74,6;4152,68,6;4158,74,6;4164,64,6;4170,74,6;4176,73,6;4182,76,6;4188,81,6;4194,80,6;4200,81,6;4206,76,6;4212,74,6;4218,76,6;4224,73,6;4230,76,6;4236,71,6;4242,76,6;4248,69,6;4254,81,6;4260,80,6;4266,78,6;4272,76,6;4278,69,6;4284,78,6;4290,69,6;4296,76,6;4302,69,6;4308,74,6;4314,69,6;4320,73,6;4326,76,6;4332,71,6;4338,76,6;4344,73,6;4350,76,6;4356,74,6;4362,76,6;4368,73,6;4374,76,6;4380,71,6;4386,76,6;4392,69,6;4398,81,6;4404,80,6;4410,78,6;4416,76,6;4422,69,6;4428,78,6;4434,69,6;4440,76,6;4446,69,6;4452,74,6;4458,69,6;4464,73,6;4470,69,6;4476,69,6;4482,69,6;4488,68,6;4494,69,6;4500,69,6;4506,69,6;4512,71,6;4518,69,6;4524,68,6;4530,69,6;4536,69,6;4542,69,6;4548,73,6;4554,69,6;4560,71,6;4566,69,6;4572,73,6;4578,69,6;4584,74,6;4590,69,6;4596,71,6;4602,69,6;4608,73,6;4614,69,6;4620,69,6;4626,69,6;4632,68,6;4638,69,6;4644,69,6;4650,69,6;4656,71,6;4662,69,6;4668,68,6;4674,69,6;4680,69,6;4686,69,6;4692,73,6;4698,69,6;4704,71,6;4710,69,6;4716,73,6;4722,69,6;4728,74,6;4734,69,6;4740,71,6;4746,69,6;4752,73,6;4758,69,6;4764,73,6;4770,69,6;4776,73,6;4782,69,6;4788,73,6;4794,69,6;4800,73,6;4806,69,6;4812,73,6;4818,69,6;4824,73,6;4830,69,6;4836,73,6;4842,68,6;4848,73,6;4854,69,6;4860,73,6;4866,68,6;4872,73,6;4878,69,6;4884,73,6;4890,68,6;4896,73,6;4902,69,6;4908,73,6;4914,67,6;4920,73,6;4926,69,6;4932,73,6;4938,67,6;4944,73,6;4950,69,6;4956,73,6;4962,67,6;4968,74,6;4974,69,6;4980,74,6;4986,66,6;4992,74,6;4998,69,6;5004,74,6;5010,66,6;5016,74,6;5022,69,6;5028,74,6;5034,66,6;5040,74,6;5046,69,6;5052,74,6;5058,64,6;5064,74,6;5070,69,6;5076,74,6;5082,64,6;5088,74,6;5094,69,6;5100,74,6;5106,64,6;5112,73,6;5118,69,6;5124,73,6;5130,64,6;5136,73,6;5142,69,6;5148,73,6;5154,64,6;5160,73,6;5166,69,6;5172,73,6;5178,64,6;5184,73,6;5190,69,6;5196,73,6;5202,62,6;5208,73,6;5214,69,6;5220,73,6;5226,62,6;5232,73,6;5238,69,6;5244,73,6;5250,62,6;5256,71,6;5262,69,6;5268,71,6;5274,62,6;5280,71,6;5286,69,6;5292,71,6;5298,62,6;5304,71,6;5310,69,6;5316,71,6;5322,62,6;5328,71,6;5334,69,6;5340,71,6;5346,61,6;5352,71,6;5358,69,6;5364,71,6;5370,61,6;5376,71,6;5382,69,6;5388,71,6;5394,61,6;5400,69,6;5406,69,6;5412,69,6;5418,61,6;5424,69,6;5430,69,6;5436,69,6;5442,61,6;5448,69,6;5454,69,6;5460,69,6;5466,61,6;5472,69,6;5478,69,6;5484,69,6;5490,59,6;5496,69,6;5502,69,6;5508,69,6;5514,59,6;5520,69,6;5526,69,6;5532,69,6;5538,59,6;5544,68,6;5550,69,6;5556,68,6;5562,59,6;5568,68,6;5574,69,6;5580,68,6;5586,59,6;5592,68,6;5598,69,6;5604,68,6;5610,59,6;5616,57,6;5622,59,6;5628,57,6;5634,59,6;5640,61,6;5646,64,6;5652,57,6;5658,59,6;5664,61,6;5670,64,6;5676,57,6;5682,59,6;5688,61,6;5694,62,6;5700,61,6;5706,62,6;5712,64,6;5718,69,6;5724,61,6;5730,62,6;5736,64,6;5742,69,6;5748,61,6;5754,62,6;5760,64,6;5766,66,6;5772,64,6;5778,66,6;5784,67,6;5790,73,6;5796,64,6;5802,66,6;5808,67,6;5814,73,6;5820,64,6;5826,66,6;5832,67,6;5838,76,6;5844,73,6;5850,74,6;5856,76,6;5862,73,6;5868,70,6;5874,71,6;5880,73,6;5886,70,6;5892,66,6;5898,64,6;5904,62,6;5910,61,6;5916,59,6;5922,61,6;5928,62,6;5934,66,6;5940,59,6;5946,61,6;5952,62,6;5958,66,6;5964,59,6;5970,61,6;5976,62,6;5982,64,6;5988,62,6;5994,64,6;6000,66,6;6006,71,6;6012,62,6;6018,64,6;6024,66,6;6030,71,6;6036,62,6;6042,64,6;6048,66,6;6054,68,6;6060,66,6;6066,68,6;6072,69,6;6078,75,6;6084,66,6;6090,68,6;6096,69,6;6102,75,6;6108,66,6;6114,68,6;6120,69,6;6126,78,6;6132,75,6;6138,76,6;6144,78,6;6150,75,6;6156,72,6;6162,73,6;6168,75,6;6174,72,6;6180,68,6;6186,66,6;6192,65,6;6198,83,6;6204,80,6;6210,81,6;6216,83,6;6222,80,6;6228,77,6;6234,78,6;6240,80,6;6246,77,6;6252,73,6;6258,71,6;6264,69,6;6270,85,6;6276,81,6;6282,83,6;6288,85,6;6294,81,6;6300,78,6;6306,80,6;6312,81,6;6318,78,6;6324,74,6;6330,73,6;6336,71,6;6342,86,6;6348,83,6;6354,85,6;6360,86,6;6366,83,6;6372,80,6;6378,81,6;6384,83,6;6390,80,6;6396,77,6;6402,80,6;6408,73,6;6414,75,6;6420,73,6;6426,75,6;6432,77,6;6438,80,6;6444,73,6;6450,75,6;6456,77,6;6462,80,6;6468,73,6;6474,75,6;6480,77,6;6486,78,6;6492,77,6;6498,78,6;6504,80,6;6510,83,6;6516,77,6;6522,78,6;6528,80,6;6534,83,6;6540,77,6;6546,78,6;6552,80,6;6558,81,6;6564,80,6;6570,81,6;6576,83,6;6582,86,6;6588,80,6;6594,81,6;6600,83,6;6606,86,6;6612,80,6;6618,81,6;6624,83,6;6630,86,6;6636,83,6;6642,80,6;6648,77,6;6654,83,6;6660,80,6;6666,77,6;6672,73,6;6678,83,6;6684,81,6;6690,80,6;6696,78,6;6702,80,6;6708,81,6;6714,78,6;6720,71,6;6726,81,6;6732,80,6;6738,78,6;6744,73,6;6750,80,6;6756,78,6;6762,77,6;6768,74,6;6774,76,6;6780,78,6;6786,74,6;6792,68,6;6798,78,6;6804,76,6;6810,74,6;6816,70,6;6822,76,6;6828,74,6;6834,73,6;6840,71,6;6846,73,6;6852,74,6;6858,71,6;6864,65,6;6870,74,6;6876,73,6;6882,71,6;6888,66,6;6894,73,6;6900,71,6;6906,69,6;6912,68,6;6918,69,6;6924,71,6;6930,69,6;6936,68,6;6942,71,6;6948,69,6;6954,71,6;6960,68,6;6966,71,6;6972,66,6;6978,71,6;6984,65,6;6990,66,6;6996,68,6;7002,69,6;7008,71,6;7014,65,6;7020,74,6;7026,65,6;7032,73,6;7038,65,6;7044,71,6;7050,65,6;7056,66,6;7062,69,6;7068,66,6;7074,61,6;7080,57,6;7086,61,6;7092,66,6;7098,61,6;7104,69,6;7110,61,6;7116,66,6;7122,61,6;7128,65,6;7134,68,6;7140,65,6;7146,61,6;7152,65,6;7158,68,6;7164,73,6;7170,68,6;7176,77,6;7182,73,6;7188,80,6;7194,71,6;7200,69,6;7206,73,6;7212,69,6;7218,66,6;7224,69,6;7230,73,6;7236,78,6;7242,73,6;7248,81,6;7254,78,6;7260,85,6;7266,78,6;7272,77,6;7278,80,6;7284,77,6;7290,73,6;7296,85,6;7302,84,6;7308,85,6;7314,84,6;7320,85,6;7326,80,6;7332,81,6;7338,78,6;7344,77,6;7350,80,6;7356,77,6;7362,73,6;7368,83,6;7374,82,6;7380,83,6;7386,82,6;7392,83,6;7398,80,6;7404,81,6;7410,78,6;7416,77,6;7422,80,6;7428,77,6;7434,73,6;7440,74,6;7446,73,6;7452,74,6;7458,73,6;7464,74,6;7470,68,6;7476,69,6;7482,66,6;7488,65,6;7494,68,6;7500,73,6;7506,83,6;7512,83,6;7518,80,6;7524,81,6;7530,78,6;7536,77,6;7542,80,6;7548,73,6;7554,71,6;7560,69,6;7566,73,6;7572,78,6;7578,85,6;7584,85,6;7590,81,6;7596,83,6;7602,80,6;7608,78,6;7614,81,6;7620,74,6;7626,73,6;7632,71,6;7638,74,6;7644,67,6;7650,66,6;7656,65,6;7662,68,6;7668,61,6;7674,59,6;7680,57,6;7686,61,6;7692,66,6;7698,68,6;7704,69,6;7710,66,6;7716,71,6;7722,66,6;7728,73,6;7734,66,6;7740,74,6;7746,66,6;7752,61,6;7758,66,6;7764,68,6;7770,65,6;7776,66,6;7782,69,6;7788,68,6;7794,69,6;7800,69,6;7806,69,6;7812,68,6;7818,69,6;7824,66,6;7830,69,6;7836,64,6;7842,69,6;7848,63,6;7854,69,6;7860,64,6;7866,69,6;7872,66,6;7878,69,6;7884,68,6;7890,69,6;7896,69,6;7902,69,6;7908,66,6;7914,69,6;7920,68,6;7926,69,6;7932,68,6;7938,66,6;7944,64,6;7950,76,6;7956,75,6;7962,76,6;7968,73,6;7974,76,6;7980,71,6;7986,76,6;7992,70,6;7998,76,6;8004,71,6;8010,76,6;8016,73,6;8022,76,6;8028,75,6;8034,76,6;8040,76,6;8046,76,6;8052,73,6;8058,76,6;8064,75,6;8070,76,6;8076,75,6;8082,73,6;8088,71,6;8094,73,6;8100,75,6;8106,76,6;8112,78,6;8118,80,6;8124,81,6;8130,78,6;8136,83,6;8142,71,6;8148,69,6;8154,71,6;8160,68,6;8166,71,6;8172,66,6;8178,71,6;8184,64,6;8190,71,6;8196,62,6;8202,71,6;8208,61,6;8214,64,6;8220,66,6;8226,68,6;8232,69,6;8238,71,6;8244,73,6;8250,74,6;8256,76,6;8262,78,6;8268,80,6;8274,76,6;8280,81,6;8286,69,6;8292,68,6;8298,69,6;8304,66,6;8310,69,6;8316,64,6;8322,69,6;8328,63,6;8334,69,6;8340,61,6;8346,69,6;8352,59,6;8358,63,6;8364,64,6;8370,66,6;8376,68,6;8382,69,6;8388,71,6;8394,73,6;8400,75,6;8406,76,6;8412,78,6;8418,75,6;8424,80,6;8430,64,6;8436,62,6;8442,64,6;8448,61,6;8454,64,6;8460,59,6;8466,64,6;8472,57,6;8478,64,6;8484,56,6;8490,64,6;8496,57,6;8502,64,6;8508,73,6;8514,71,6;8520,73,6;8526,76,6;8532,81,6;8538,80,6;8544,81,6;8550,78,6;8556,73,6;8562,76,6;8568,59,6;8574,66,6;8580,75,6;8586,73,6;8592,75,6;8598,78,6;8604,81,6;8610,80,6;8616,81,6;8622,78,6;8628,75,6;8634,78,6;8640,59,6;8646,68,6;8652,71,6;8658,69,6;8664,71,6;8670,76,6;8676,80,6;8682,78,6;8688,80,6;8694,76,6;8700,71,6;8706,76,6;8712,59,6;8718,70,6;8724,73,6;8730,71,6;8736,73,6;8742,76,6;8748,82,6;8754,80,6;8760,82,6;8766,76,6;8772,73,6;8778,76,6;8784,75,6;8790,83,6;8796,82,6;8802,80,6;8808,78,6;8814,83,6;8820,78,6;8826,76,6;8832,75,6;8838,78,6;8844,75,6;8850,73,6;8856,71,6;8862,83,6;8868,81,6;8874,80,6;8880,78,6;8886,81,6;8892,78,6;8898,76,6;8904,75,6;8910,78,6;8916,75,6;8922,73,6;8928,71,6;8934,81,6;8940,80,6;8946,78,6;8952,76,6;8958,80,6;8964,76,6;8970,75,6;8976,73,6;8982,76,6;8988,73,6;8994,71,6;9000,69,6;9006,80,6;9012,78,6;9018,76,6;9024,75,6;9030,78,6;9036,75,6;9042,73,6;9048,71,6;9054,75,6;9060,71,6;9066,69,6;9072,68,6;9078,76,6;9084,73,6;9090,71,6;9096,69,6;9102,73,6;9108,69,6;9114,68,6;9120,66,6;9126,69,6;9132,66,6;9138,64,6;9144,63,6;9150,66,6;9156,69,6;9162,73,6;9168,71,6;9174,75,6;9180,78,6;9186,81,6;9192,81,6;9198,80,6;9204,81,6;9210,78,6;9216,80,6;9222,76,6;9228,80,6;9234,83,6;9240,88,6;9246,83,6;9252,80,6;9258,76,6;9264,71,6;9270,78,6;9276,88,6;9282,87,6;9288,88,6;9294,83,6;9300,80,6;9306,76,6;9312,74,6;9318,76,6;9324,73,6;9330,76,6;9336,74,6;9342,76,6;9348,71,6;9354,76,6;9360,73,6;9366,76,6;9372,81,6;9378,76,6;9384,73,6;9390,76,6;9396,71,6;9402,76,6;9408,73,6;9414,76,6;9420,69,6;9426,76,6;9432,71,6;9438,76,6;9444,80,6;9450,76,6;9456,71,6;9462,76,6;9468,69,6;9474,76,6;9480,71,6;9486,76,6;9492,68,6;9498,76,6;9504,69,6;9510,76,6;9516,78,6;9522,76,6;9528,75,6;9534,76,6;9540,76,6;9546,76,6;9552,78,6;9558,76,6;9564,80,6;9570,76,6;9576,59,36;9576,66,36;9576,75,36;9576,81,36;9612,83,12;9624,64,24;9624,71,24;9624,80,24;9648,57,6;9654,81,6;9660,80,6;9666,81,3;9669,78,3;9672,78,36;9672,71,48;9708,76,12;9720,76,6;9726,88,6;9732,87,6;9738,85,6;9744,83,6;9750,88,6;9756,81,6;9762,88,6;9768,80,6;9774,88,6;9780,78,6;9786,88,6;9792,76,6;9798,76,6;9804,75,6;9810,73,6;9816,71,6;9822,76,6;9828,69,6;9834,76,6;9840,68,6;9846,76,6;9852,66,6;9858,76,6;9864,64,6;9870,68,6;9876,71,6;9882,75,6;9888,76,6;9894,80,6;9900,83,6;9906,87,6;9912,88,12`;
+
+// Constants
+const PV=76,TPM=72,TPB=24,T16=6;
+const NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const mn=m=>NM[m%12]+((m/12|0)-1);
+
+// Parse notes and compute inversion
+const N=R.split(';').map(s=>{
+  const[o,p,d]=s.split(',').map(Number);
+  const iv=2*PV-p;
+  const interval=p-PV;
+  const invInterval=iv-PV;
+  return{o,p,d,iv,interval,invInterval,m:Math.floor(o/TPM)};
+});
+
+const TT=N[N.length-1].o+N[N.length-1].d;
+const NME=Math.ceil(TT/TPM);
+const MNP=44,MXP=108,PR=MXP-MNP;
+
+// ============================================
+// CONVERGENCE INTENSITY ALGORITHM (V3)
+// ============================================
+
+/**
+ * Calculate convergence intensity for a note
+ * C(t) = S(t) * P(t)
+ * where S(t) = 1 - |Δ|/Δmax (interval deviation score)
+ * and P(t) = 1 - |pitch - pivot|/24 (distance from pivot)
+ */
+function calcConvergenceIntensity(note) {
+  const deltaMax = 12; // one octave
+  const intervalDev = Math.abs(note.interval - note.invInterval);
+  const S = 1 - Math.min(intervalDev / deltaMax, 1);
+  const P = 1 - Math.min(Math.abs(note.p - PV) / 24, 1);
+  return Math.max(0, S * P);
+}
+
+// Pre-calculate convergence data
+const convergenceData = N.map(n => ({
+  ...n,
+  convergence: calcConvergenceIntensity(n),
+  isMirror: n.p === PV
+}));
+
+// Calculate convergence waveform (averaged per measure)
+const waveformByMeasure = [];
+for (let m = 0; m < NME; m++) {
+  const notes = convergenceData.filter(n => n.m === m);
+  if (notes.length > 0) {
+    const avgConv = notes.reduce((s, n) => s + n.convergence, 0) / notes.length;
+    const mirrorCount = notes.filter(n => n.isMirror).length;
+    waveformByMeasure.push({
+      measure: m,
+      avgConvergence: avgConv,
+      mirrorPoints: mirrorCount,
+      noteCount: notes.length,
+      tension: 1 - avgConv
+    });
+  }
+}
+
+// Global stats
+const globalStats = {
+  avgConvergence: waveformByMeasure.reduce((s, w) => s + w.avgConvergence, 0) / waveformByMeasure.length,
+  totalMirrors: convergenceData.filter(n => n.isMirror).length,
+  avgIntervalDev: convergenceData.reduce((s, n) => s + Math.abs(n.interval), 0) / convergenceData.length
+};
+
+// State
+const S={
+  mode:'original',playing:false,tick:0,tempo:80,loop:false,ls:0,le:TT,
+  vO:.8,vI:.8,pO:-.5,pI:.5,mO:false,mI:false,sO:false,sI:false,
+  sx:0,ppt:0,nH:0,cW:0,cH:0,ctx:null,ahead:0,lt:0,af:null,
+  abLoop:null // {start: measure, end: measure}
+};
+
+// ============================================
+// AUDIO ENGINE
+// ============================================
+function initA(){
+  if(S.ctx)return;
+  S.ctx=new(window.AudioContext||window.webkitAudioContext)();
+  S.mg=S.ctx.createGain();S.mg.gain.value=.45;S.mg.connect(S.ctx.destination);
+  S.oG=S.ctx.createGain();S.oP=S.ctx.createStereoPanner();S.oG.connect(S.oP);S.oP.connect(S.mg);
+  S.iG=S.ctx.createGain();S.iP=S.ctx.createStereoPanner();S.iG.connect(S.iP);S.iP.connect(S.mg);
+  updMix();
+}
+
+function updMix(){
+  if(!S.ctx)return;
+  const t=S.ctx.currentTime;
+  const eO=S.mO?0:(S.sI&&!S.sO?0:S.vO);
+  const eI=S.mI?0:(S.sO&&!S.sI?0:S.vI);
+  S.oG.gain.setTargetAtTime(eO,t,.02);
+  S.iG.gain.setTargetAtTime(eI,t,.02);
+  S.oP.pan.setTargetAtTime(S.pO,t,.02);
+  S.iP.pan.setTargetAtTime(S.pI,t,.02);
+}
+
+function m2f(m){return 440*Math.pow(2,(m-69)/12)}
+
+function pN(midi,st,dur,dest){
+  if(!S.ctx)return;
+  const o=S.ctx.createOscillator(),e=S.ctx.createGain(),f=S.ctx.createBiquadFilter();
+  o.type='sawtooth';o.frequency.value=m2f(midi);
+  f.type='lowpass';f.frequency.value=1800+(midi-60)*35;f.Q.value=1.2;
+  e.gain.setValueAtTime(0,st);
+  e.gain.linearRampToValueAtTime(.12,st+.008);
+  e.gain.exponentialRampToValueAtTime(.001,st+dur);
+  o.connect(f);f.connect(e);e.connect(dest);
+  o.start(st);o.stop(st+dur+.05);
+}
+
+function schedNotes(from,to){
+  if(!S.ctx)return;
+  const now=S.ctx.currentTime,tps=(S.tempo*TPB)/60;
+  const shO=S.mode!=='inverso',shI=S.mode!=='original';
+  for(const n of N){
+    if(n.o>=from&&n.o<to){
+      const t=now+Math.max(0,(n.o-S.tick)/tps),dur=n.d/tps;
+      if(shO)pN(n.p,t,dur,S.oG);
+      if(shI)pN(n.iv,t,dur,S.iG);
+    }
+  }
+}
+
+// ============================================
+// CANVAS RENDERING
+// ============================================
+const cv=document.getElementById('rc'),cx=cv.getContext('2d');
+const mcv=document.getElementById('mc'),mx=mcv.getContext('2d');
+const wfcv=document.getElementById('wfc'),wfx=wfcv.getContext('2d');
+
+function resize(){
+  const r=document.getElementById('ra').getBoundingClientRect();
+  const dp=window.devicePixelRatio||1;
+  cv.width=r.width*dp;cv.height=r.height*dp;
+  cv.style.width=r.width+'px';cv.style.height=r.height+'px';
+  cx.scale(dp,dp);
+  
+  const mr=document.getElementById('mb').getBoundingClientRect();
+  mcv.width=mr.width*dp;mcv.height=mr.height*dp;
+  mcv.style.width=mr.width+'px';mcv.style.height=mr.height+'px';
+  mx.scale(dp,dp);
+  
+  const wfr=document.getElementById('wfp').getBoundingClientRect();
+  wfcv.width=wfr.width*dp;wfcv.height=wfr.height*dp;
+  wfcv.style.width=wfr.width+'px';wfcv.style.height=wfr.height+'px';
+  wfx.scale(dp,dp);
+  
+  S.cW=r.width;S.cH=r.height;
+  S.ppt=S.cW/(TPM*16);
+  S.nH=Math.max(3,S.cH/PR);
+  buildKeys();
+  drawWaveform();
+  drawMB();
+  drawRoll();
+}
+
+function buildKeys(){
+  const el=document.getElementById('pk');el.innerHTML='';
+  for(let p=MXP;p>=MNP;p--){
+    const y=(MXP-p)*S.nH,nm=mn(p),bk=[1,3,6,8,10].includes(p%12),pv=p===PV;
+    const d=document.createElement('div');
+    d.className='pk'+(bk?' bk':'')+(pv?' pv':'');
+    d.style.top=y+'px';d.style.height=S.nH+'px';
+    if(p%12===0||pv)d.textContent=nm;
+    el.appendChild(d);
+  }
+}
+
+// ============================================
+// CONVERGENCE WAVEFORM (NEW V3)
+// ============================================
+function drawWaveform(){
+  const r=document.getElementById('wfp').getBoundingClientRect();
+  const w=r.width,h=r.height;
+  wfx.clearRect(0,0,w,h);
+  
+  const pp=w/NME;
+  
+  // Background gradient
+  const bg=wfx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'rgba(18,18,26,0.95)');
+  bg.addColorStop(1,'rgba(10,10,15,0.95)');
+  wfx.fillStyle=bg;
+  wfx.fillRect(0,0,w,h);
+  
+  // Draw waveform curve
+  wfx.beginPath();
+  wfx.moveTo(0,h);
+  
+  for(let i=0;i<waveformByMeasure.length;i++){
+    const wd=waveformByMeasure[i];
+    const x=i*pp+pp/2;
+    const y=h*(1-wd.avgConvergence);
+    if(i===0)wfx.moveTo(x,y);
+    else wfx.lineTo(x,y);
+  }
+  
+  // Fill under curve
+  const lastX=waveformByMeasure.length*pp;
+  wfx.lineTo(lastX,h);
+  wfx.lineTo(0,h);
+  wfx.closePath();
+  
+  const grad=wfx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(74,222,128,0.4)');
+  grad.addColorStop(0.5,'rgba(251,191,36,0.2)');
+  grad.addColorStop(1,'rgba(232,85,119,0.1)');
+  wfx.fillStyle=grad;
+  wfx.fill();
+  
+  // Draw line on top
+  wfx.beginPath();
+  for(let i=0;i<waveformByMeasure.length;i++){
+    const wd=waveformByMeasure[i];
+    const x=i*pp+pp/2;
+    const y=h*(1-wd.avgConvergence);
+    if(i===0)wfx.moveTo(x,y);
+    else wfx.lineTo(x,y);
+  }
+  wfx.strokeStyle='rgba(201,168,76,0.8)';
+  wfx.lineWidth=1.5;
+  wfx.stroke();
+  
+  // Mirror points (convergence points)
+  for(const n of convergenceData){
+    if(n.isMirror){
+      const x=n.o/TT*w;
+      wfx.fillStyle='rgba(74,222,128,0.6)';
+      wfx.fillRect(x,0,1,h);
+    }
+  }
+  
+  // Playhead
+  const px=S.tick/TT*w;
+  wfx.strokeStyle='rgba(255,255,255,0.9)';
+  wfx.lineWidth=2;
+  wfx.beginPath();
+  wfx.moveTo(px,0);
+  wfx.lineTo(px,h);
+  wfx.stroke();
+  
+  // Current convergence value
+  const currentM=Math.floor(S.tick/TPM);
+  if(currentM>=0&&currentM<waveformByMeasure.length){
+    const cw=waveformByMeasure[currentM];
+    wfx.fillStyle='rgba(201,168,76,0.9)';
+    wfx.font='10px "JetBrains Mono"';
+    wfx.fillText(`Conv: ${(cw.avgConvergence*100).toFixed(0)}%`,px+5,12);
+  }
+  
+  // A-B Loop markers
+  if(S.abLoop){
+    const x1=S.abLoop.start*pp;
+    const x2=S.abLoop.end*pp;
+    wfx.fillStyle='rgba(91,141,239,0.15)';
+    wfx.fillRect(x1,0,x2-x1,h);
+    wfx.strokeStyle='rgba(91,141,239,0.8)';
+    wfx.lineWidth=2;
+    wfx.beginPath();
+    wfx.moveTo(x1,0);
+    wfx.lineTo(x1,h);
+    wfx.moveTo(x2,0);
+    wfx.lineTo(x2,h);
+    wfx.stroke();
+  }
+}
+
+// ============================================
+// SPECTROGRAM MODE (NEW V3)
+// ============================================
+function drawSpectrogram(){
+  const w=S.cW,h=S.cH;
+  cx.clearRect(0,0,w,h);
+  
+  // Draw heatmap by pitch and time
+  const pitchBands=24; // 2 octaves around pivot
+  const bandH=h/pitchBands;
+  
+  for(const n of convergenceData){
+    const nx=n.o*S.ppt-S.sx;
+    const nw=Math.max(2,n.d*S.ppt-1);
+    if(nx+nw<-5||nx>w+5)continue;
+    
+    // Calculate pitch band (relative to pivot)
+    const relPitch=Math.round((n.p-PV+12)/24*pitchBands);
+    const y=Math.max(0,Math.min(h-bandH,relPitch*bandH));
+    
+    // Color based on convergence
+    const conv=n.convergence;
+    const r=Math.round(232*(1-conv)+74*conv);
+    const g=Math.round(85*(1-conv)+222*conv);
+    const b=Math.round(119*(1-conv)+128*conv);
+    
+    cx.fillStyle=`rgba(${r},${g},${b},${0.3+conv*0.5})`;
+    cx.fillRect(nx,y,nw,bandH);
+  }
+  
+  // Pivot line
+  const pivotY=h/2;
+  cx.strokeStyle='rgba(201,168,76,0.5)';
+  cx.lineWidth=1;
+  cx.setLineDash([4,4]);
+  cx.beginPath();
+  cx.moveTo(0,pivotY);
+  cx.lineTo(w,pivotY);
+  cx.stroke();
+  cx.setLineDash([]);
+}
+
+function drawRoll(){
+  if(S.mode==='spectrogram'){
+    drawSpectrogram();
+    return;
+  }
+  
+  const w=S.cW,h=S.cH;
+  cx.clearRect(0,0,w,h);
+  
+  // Grid
+  for(let p=MNP;p<=MXP;p++){
+    const y=(MXP-p)*S.nH;
+    if([1,3,6,8,10].includes(p%12)){
+      cx.fillStyle='rgba(0,0,0,.12)';
+      cx.fillRect(0,y,w,S.nH);
+    }
+    if(p===PV){
+      cx.fillStyle='rgba(201,168,76,.06)';
+      cx.fillRect(0,y,w,S.nH);
+      cx.strokeStyle='rgba(201,168,76,.25)';
+      cx.lineWidth=1;
+      cx.setLineDash([4,4]);
+      cx.beginPath();
+      cx.moveTo(0,y+S.nH/2);
+      cx.lineTo(w,y+S.nH/2);
+      cx.stroke();
+      cx.setLineDash([]);
+    }
+  }
+  
+  // Measure lines
+  const st=S.sx/S.ppt,et=st+w/S.ppt;
+  for(let m=Math.floor(st/TPM);m<=Math.ceil(et/TPM);m++){
+    const x=m*TPM*S.ppt-S.sx;
+    if(x<-1||x>w+1)continue;
+    cx.strokeStyle=m%4===0?'rgba(201,168,76,.12)':'rgba(255,255,255,.03)';
+    cx.lineWidth=m%4===0?1:.5;
+    cx.beginPath();
+    cx.moveTo(x,0);
+    cx.lineTo(x,h);
+    cx.stroke();
+    if(m%4===0&&m>0){
+      cx.fillStyle='rgba(201,168,76,.25)';
+      cx.font='8px "JetBrains Mono"';
+      cx.fillText(m+'',x+2,10);
+    }
+  }
+  
+  // Loop highlight
+  if(S.loop){
+    const l1=S.ls*S.ppt-S.sx,l2=S.le*S.ppt-S.sx;
+    cx.fillStyle='rgba(201,168,76,.03)';
+    cx.fillRect(l1,0,l2-l1,h);
+  }
+  
+  // Notes
+  const shO=S.mode!=='inverso',shI=S.mode!=='original';
+  for(const n of convergenceData){
+    const nx=n.o*S.ppt-S.sx,nw=Math.max(2,n.d*S.ppt-1);
+    if(nx+nw<-5||nx>w+5)continue;
+    
+    const act=n.o<=S.tick&&n.o+n.d>S.tick;
+    const conv=n.isMirror;
+    
+    if(shO){
+      const oy=(MXP-n.p)*S.nH;
+      const a=act?1:.65;
+      if(conv&&S.mode==='convergence'){
+        cx.fillStyle=`rgba(74,222,128,${a})`;
+        if(act){
+          cx.shadowColor='rgba(74,222,128,.5)';
+          cx.shadowBlur=6;
+        }
+      }else{
+        cx.fillStyle=`rgba(91,141,239,${a})`;
+        if(act){
+          cx.shadowColor='rgba(91,141,239,.4)';
+          cx.shadowBlur=5;
+        }
+      }
+      cx.fillRect(nx,oy,nw,Math.max(2,S.nH-1));
+      cx.shadowBlur=0;
+    }
+    
+    if(shI&&!(conv&&S.mode==='convergence')){
+      const iy=(MXP-n.iv)*S.nH;
+      const a=act?1:.55;
+      cx.fillStyle=`rgba(232,85,119,${a})`;
+      if(act){
+        cx.shadowColor='rgba(232,85,119,.4)';
+        cx.shadowBlur=5;
+      }
+      cx.fillRect(nx,iy,nw,Math.max(2,S.nH-1));
+      cx.shadowBlur=0;
+    }
+    
+    // Mirror line
+    if(S.mode==='convergence'&&!conv&&act){
+      const oy=(MXP-n.p)*S.nH+S.nH/2;
+      const iy=(MXP-n.iv)*S.nH+S.nH/2;
+      cx.strokeStyle='rgba(201,168,76,.15)';
+      cx.lineWidth=.5;
+      cx.setLineDash([2,2]);
+      cx.beginPath();
+      cx.moveTo(nx+nw/2,oy);
+      cx.lineTo(nx+nw/2,iy);
+      cx.stroke();
+      cx.setLineDash([]);
+    }
+  }
+  
+  // Guide annotations
+  if(S.mode==='guide'){
+    const ann=[
+      [12,'Anacrusis E6'],[72,'M.1: Pivot E5'],[432,'M.6: Gamme E4→E6'],
+      [864,'M.12: Bariolage'],[2016,'M.28: Mod → IV'],[2952,'M.41: Chromatique ↓'],
+      [3888,'M.54: Seq. ↓ 3ces'],[5616,'M.78: Nadir+montée'],[6192,'M.86: Seq. 3ces ↑'],
+      [7488,'M.104: Prép. cadence'],[8784,'M.122: Escalier ↓'],[9576,'M.133: E maj CONVERGENCE']
+    ];
+    cx.font='9px "JetBrains Mono"';
+    for(const[tk,txt]of ann){
+      const x=tk*S.ppt-S.sx;
+      if(x<-150||x>w+5)continue;
+      const tw=cx.measureText(txt).width+8;
+      cx.fillStyle='rgba(10,10,15,.88)';
+      cx.fillRect(x+3,14,tw,14);
+      cx.strokeStyle='rgba(201,168,76,.4)';
+      cx.lineWidth=1;
+      cx.strokeRect(x+3,14,tw,14);
+      cx.fillStyle='#c9a84c';
+      cx.fillText(txt,x+7,25);
+      cx.strokeStyle='rgba(201,168,76,.3)';
+      cx.setLineDash([3,3]);
+      cx.beginPath();
+      cx.moveTo(x,0);
+      cx.lineTo(x,h);
+      cx.stroke();
+      cx.setLineDash([]);
+    }
+  }
+}
+
+function drawMB(){
+  const r=document.getElementById('mb').getBoundingClientRect();
+  const w=r.width,h=r.height;
+  mx.clearRect(0,0,w,h);
+  const pp=w/TT;
+  
+  // Heatmap
+  for(let m=0;m<NME;m++){
+    const ns=N.filter(n=>n.m===m);
+    if(!ns.length)continue;
+    const avg=ns.reduce((s,n)=>s+n.p,0)/ns.length;
+    const t=(avg-MNP)/PR;
+    mx.fillStyle=`rgba(${91+141*(1-t)|0},${141-56*(1-t)|0},${239-120*(1-t)|0},.25)`;
+    mx.fillRect(m*TPM*pp,0,TPM*pp-.5,h);
+  }
+  
+  // Convergence dots
+  for(const n of N){
+    if(n.p===PV){
+      mx.fillStyle='rgba(74,222,128,.5)';
+      mx.fillRect(n.o*pp,0,1,h);
+    }
+  }
+  
+  // Playhead
+  mx.fillStyle='rgba(255,255,255,.7)';
+  mx.fillRect(S.tick*pp-1,0,2,h);
+  
+  // Viewport
+  const v1=S.sx/S.ppt*pp,v2=(S.sx/S.ppt+S.cW/S.ppt)*pp;
+  mx.strokeStyle='rgba(201,168,76,.4)';
+  mx.lineWidth=1;
+  mx.strokeRect(v1,0,v2-v1,h);
+  
+  // Loop
+  if(S.loop){
+    mx.fillStyle='rgba(201,168,76,.08)';
+    mx.fillRect(S.ls*pp,0,(S.le-S.ls)*pp,h);
+    mx.fillStyle='rgba(91,141,239,.7)';
+    mx.fillRect(S.ls*pp,0,2,h);
+    mx.fillStyle='rgba(232,85,119,.7)';
+    mx.fillRect(S.le*pp-2,0,2,h);
+  }
+}
+
+// ============================================
+// PLAYBACK
+// ============================================
+function startP(){
+  initA();
+  if(S.ctx.state==='suspended')S.ctx.resume();
+  S.playing=true;
+  S.lt=performance.now();
+  S.ahead=0;
+  document.getElementById('bPlay').classList.add('on');
+  document.getElementById('bPlay').innerHTML='&#9208;';
+  requestAnimationFrame(()=>frame());
+}
+
+function stopP(){
+  S.playing=false;
+  document.getElementById('bPlay').classList.remove('on');
+  document.getElementById('bPlay').innerHTML='&#9654;';
+  if(S.af)cancelAnimationFrame(S.af);
+}
+
+function frame(){
+  if(!S.playing)return;
+  const now=performance.now(),dt=(now-S.lt)/1000;
+  S.lt=now;
+  const tps=(S.tempo*TPB)/60;
+  S.tick+=dt*tps;
+  
+  if(S.loop){
+    if(S.tick>=S.le){
+      S.tick=S.ls;
+      S.ahead=0;
+    }
+  }else if(S.tick>=TT){
+    S.tick=0;
+    stopP();
+    return;
+  }
+  
+  // Schedule
+  const la=tps*.1;
+  if(S.tick+la>S.ahead){
+    schedNotes(Math.max(S.ahead,S.tick),S.tick+la);
+    S.ahead=S.tick+la;
+  }
+  
+  // Auto-scroll
+  const px=S.tick*S.ppt-S.sx;
+  if(px>S.cW*.75)S.sx=S.tick*S.ppt-S.cW*.25;
+  else if(px<S.cW*.1&&S.sx>0)S.sx=Math.max(0,S.tick*S.ppt-S.cW*.25);
+  
+  // Render
+  const el=document.getElementById('ph');
+  el.style.left=(S.tick*S.ppt-S.sx+44)+'px';
+  drawRoll();
+  drawMB();
+  drawWaveform();
+  updInfo();
+  updStats();
+  
+  S.af=requestAnimationFrame(()=>frame());
+}
+
+function updInfo(){
+  const m=Math.floor(S.tick/TPM),b=Math.floor((S.tick%TPM)/TPB)+1;
+  document.getElementById('iM').textContent=m;
+  document.getElementById('iB').textContent=b;
+  
+  const cn=convergenceData.find(n=>n.o<=S.tick&&n.o+n.d>S.tick);
+  if(cn){
+    document.getElementById('iN').textContent=mn(cn.p);
+    const iv=cn.interval,sg=iv>0?'+':iv<0?'':'±';
+    document.getElementById('iD').textContent=sg+iv;
+    document.getElementById('iC').textContent=(cn.convergence*100).toFixed(0)+'%';
+    
+    if(S.mode==='convergence'||S.mode==='guide'){
+      const d=document.getElementById('idsp');
+      d.innerHTML='<span class="io">'+mn(cn.p)+'</span><span class="ia">↕</span><span class="ii">'+mn(cn.iv)+'</span> <span style="color:var(--gold)">'+sg+Math.abs(iv)+'</span>';
+      d.classList.add('vis');
+    }else{
+      document.getElementById('idsp').classList.remove('vis');
+    }
+  }
+}
+
+function updStats(){
+  const m=Math.floor(S.tick/TPM);
+  if(m>=0&&m<waveformByMeasure.length){
+    const wd=waveformByMeasure[m];
+    document.getElementById('aAvg').textContent=(wd.avgConvergence*100).toFixed(0)+'%';
+    document.getElementById('aEcart').textContent=globalStats.avgIntervalDev.toFixed(1);
+    document.getElementById('aTens').textContent=(wd.tension*100).toFixed(0)+'%';
+  }
+}
+
+// ============================================
+// EVENTS
+// ============================================
+document.getElementById('bPlay').onclick=()=>{if(S.playing)stopP();else startP()};
+document.getElementById('bStop').onclick=()=>{stopP();S.tick=S.loop?S.ls:0;S.sx=Math.max(0,S.tick*S.ppt-50);drawRoll();drawMB();drawWaveform();updInfo();updStats()};
+document.getElementById('bStart').onclick=()=>{S.tick=S.loop?S.ls:0;S.sx=0;S.ahead=0;drawRoll();drawMB();drawWaveform();updInfo();updStats()};
+
+document.getElementById('bLoop').onclick=()=>{
+  S.loop=!S.loop;
+  document.getElementById('bLoop').classList.toggle('on',S.loop);
+  if(S.loop&&S.ls===0&&S.le===TT){
+    const cm=Math.floor(S.tick/TPM);
+    S.ls=cm*TPM;
+    S.le=Math.min((cm+8)*TPM,TT);
+  }
+  drawMB();
+  drawWaveform();
+};
+
+document.querySelectorAll('.mbtn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.mbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  S.mode=b.dataset.m;
+  drawRoll();
+});
+
+document.getElementById('bpm').oninput=e=>{S.tempo=+e.target.value;document.getElementById('bpmV').textContent=S.tempo};
+document.getElementById('vO').oninput=e=>{S.vO=e.target.value/100;updMix()};
+document.getElementById('vI').oninput=e=>{S.vI=e.target.value/100;updMix()};
+document.getElementById('pO').oninput=e=>{S.pO=e.target.value/100;updMix()};
+document.getElementById('pI').oninput=e=>{S.pI=e.target.value/100;updMix()};
+document.getElementById('sO').onclick=e=>{S.sO=!S.sO;e.target.classList.toggle('as',S.sO);updMix()};
+document.getElementById('mO').onclick=e=>{S.mO=!S.mO;e.target.classList.toggle('am',S.mO);updMix()};
+document.getElementById('sI').onclick=e=>{S.sI=!S.sI;e.target.classList.toggle('as',S.sI);updMix()};
+document.getElementById('mI').onclick=e=>{S.mI=!S.mI;e.target.classList.toggle('am',S.mI);updMix()};
+
+document.getElementById('mb').onclick=e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  S.tick=(e.clientX-r.left)/r.width*TT;
+  S.sx=Math.max(0,S.tick*S.ppt-S.cW*.25);
+  S.ahead=0;
+  drawRoll();drawMB();drawWaveform();updInfo();updStats();
+};
+
+// Waveform click for navigation
+document.getElementById('wfp').onclick=e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  const x=e.clientX-r.left;
+  const m=Math.floor(x/r.width*NME);
+  S.tick=m*TPM;
+  S.sx=Math.max(0,S.tick*S.ppt-S.cW*.25);
+  S.ahead=0;
+  drawRoll();drawMB();drawWaveform();updInfo();updStats();
+};
+
+document.getElementById('ra').onclick=e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  S.tick=(e.clientX-r.left+S.sx)/S.ppt;
+  S.ahead=0;
+  if(!S.playing){drawRoll();drawMB();drawWaveform();updInfo();updStats()}
+};
+
+document.getElementById('ra').addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(e.ctrlKey||e.metaKey){
+    const z=e.deltaY>0?.9:1.1,mx=e.offsetX,tm=(mx+S.sx)/S.ppt;
+    S.ppt=Math.max(.03,Math.min(6,S.ppt*z));
+    S.sx=Math.max(0,tm*S.ppt-mx);
+  }else S.sx=Math.max(0,S.sx+e.deltaY*2);
+  drawRoll();drawMB();drawWaveform();
+},{passive:false});
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();if(S.playing)stopP();else startP()}
+  if(e.code==='KeyL')document.getElementById('bLoop').click();
+  if(e.code==='KeyR'){S.tick=0;S.sx=0;S.ahead=0;drawRoll();drawMB();drawWaveform();updInfo();updStats()}
+  if(e.code==='ArrowRight'){S.tick=Math.min(TT,S.tick+TPM);S.sx=Math.max(0,S.tick*S.ppt-S.cW*.3);S.ahead=0;drawRoll();drawMB();drawWaveform();updInfo();updStats()}
+  if(e.code==='ArrowLeft'){S.tick=Math.max(0,S.tick-TPM);S.sx=Math.max(0,S.tick*S.ppt-S.cW*.3);S.ahead=0;drawRoll();drawMB();drawWaveform();updInfo();updStats()}
+  if(e.key==='1')document.querySelector('[data-m=original]').click();
+  if(e.key==='2')document.querySelector('[data-m=inverso]').click();
+  if(e.key==='3')document.querySelector('[data-m=convergence]').click();
+  if(e.key==='4')document.querySelector('[data-m=guide]').click();
+  if(e.key==='5')document.querySelector('[data-m=spectrogram]').click();
+});
+
+window.addEventListener('resize',resize);
+
+// Initialize
+resize();
+drawRoll();
+drawMB();
+drawWaveform();
+updStats();
+
+// Set initial stats display
+document.getElementById('aAvg').textContent=(globalStats.avgConvergence*100).toFixed(0)+'%';
+document.getElementById('aMir').textContent=globalStats.totalMirrors;
+document.getElementById('aEcart').textContent=globalStats.avgIntervalDev.toFixed(1);
+</script>
+</body>
+</html>
