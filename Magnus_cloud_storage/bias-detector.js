@@ -273,9 +273,12 @@ Result: FALSE POSITIVE - Should NOT be optimized`
     let totalSimilarity = 0;
     let comparisons = 0;
 
-    // Compare each pair of occurrences
-    for (let i = 0; i < pattern.occurrences.length; i++) {
-      for (let j = i + 1; j < pattern.occurrences.length; j++) {
+    // Compare each pair of occurrences (limit to prevent O(n²) performance issues)
+    const maxComparisons = Math.min(50, pattern.occurrences.length * (pattern.occurrences.length - 1) / 2);
+    let comparisonCount = 0;
+
+    for (let i = 0; i < pattern.occurrences.length && comparisonCount < maxComparisons; i++) {
+      for (let j = i + 1; j < pattern.occurrences.length && comparisonCount < maxComparisons; j++) {
         const occ1 = pattern.occurrences[i];
         const occ2 = pattern.occurrences[j];
 
@@ -287,6 +290,7 @@ Result: FALSE POSITIVE - Should NOT be optimized`
         const avgSimilarity = (nameSimilarity + purposeSimilarity + contextSimilarity) / 3;
         totalSimilarity += avgSimilarity;
         comparisons++;
+        comparisonCount++;
       }
     }
 

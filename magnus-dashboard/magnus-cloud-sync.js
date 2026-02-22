@@ -242,14 +242,41 @@ class MagnusCloudSync extends EventEmitter {
   async shutdown() {
     this.stopAutoSync();
 
-    // Sync any remaining items in queue
+    // Sync any remaining items in queue asynchronously (limit concurrent operations)
+    const maxConcurrent = 3;
+    const syncPromises = [];
+
+    // Process queue in batches to avoid blocking
     while (this.syncQueue.length > 0) {
-      const item = this.syncQueue.shift();
-      try {
-        await this.syncToCloud(item.data, item.options);
-      } catch (error) {
-        console.error('Failed to sync queued item:', error.message);
+      // Take up to maxConcurrent items from queue
+      const batch = [];
+      while (batch.length < maxConcurrent && this.syncQueue.length > 0) {
+        batch.push(this.syncQueue.shift());
       }
+
+      // Process batch asynchronously
+      const batchPromises = batch.map(item =>
+        this.syncToCloud(item.data, item.options).catch(error => {
+          console.error('Failed to sync queued item:', error.message);
+        })
+      );
+
+      syncPromises.push(...batchPromises);
+
+      // If we have too many concurrent promises, wait for some to complete
+      if (syncPromises.length >= maxConcurrent * 2) {
+        await Promise.allSettled(syncPromises.splice(0, maxConcurrent));
+      }
+    }
+
+    // Wait for all remaining promises to complete
+    if (syncPromises.length > 0) {
+      await Promise.allSettled(syncPromises);
+    }
+
+    // If there are still items in queue, log warning but don't block shutdown
+    if (this.syncQueue.length > 0) {
+      console.warn(`⚠️  ${this.syncQueue.length} items remain in sync queue during shutdown`);
     }
 
     this.initialized = false;

@@ -54,7 +54,12 @@ class MagnusInfinity extends EventEmitter {
       improvementsMade: 0,
       averageConfidence: 0,
       learningCycles: 0,
-      successRate: 0
+      successRate: 0,
+      cycleTimings: [],
+      successfulActions: 0,
+      failedActions: 0,
+      totalPatterns: 0,
+      highConfidencePatterns: 0
     };
 
     // Kill switch
@@ -157,8 +162,10 @@ class MagnusInfinity extends EventEmitter {
    * The ∞ Loop - Continuous self-improvement
    */
   async infinityLoop() {
+    console.log('🔄 Starting infinity loop...');
     while (this.running && !this.killSwitch.triggered) {
       try {
+        console.log(`🔄 Loop iteration: running=${this.running}, killSwitch=${this.killSwitch.triggered}`);
         this.cycleCount++;
         this.metrics.learningCycles++;
 
@@ -177,10 +184,12 @@ class MagnusInfinity extends EventEmitter {
         cycle.phases.push({ name: 'observe', result: observations });
 
         // PHASE 2: Learn
+        console.log(`🔄 Phase 2: Learning from ${observations.patterns?.detected || 0} patterns`);
         const learnings = await this.learn(observations);
         cycle.phases.push({ name: 'learn', result: learnings });
 
         // PHASE 3: Decide
+        console.log(`🔄 Phase 3: Deciding on ${learnings.newPatterns?.length || 0} learnings`);
         const decisions = await this.decide(learnings);
         cycle.phases.push({ name: 'decide', result: decisions });
 
@@ -206,7 +215,22 @@ class MagnusInfinity extends EventEmitter {
         // PHASE 7: Improve
         await this.improve(cycle);
 
-        console.log(`✅ Cycle ${this.cycleCount} - Complete`);
+        // Track cycle timing
+        const cycleTime = Date.now() - cycle.timestamp;
+        this.metrics.cycleTimings.push(cycleTime);
+
+        // Keep only last 100 cycle timings
+        if (this.metrics.cycleTimings.length > 100) {
+          this.metrics.cycleTimings.shift();
+        }
+
+        // Update pattern metrics
+        if (cycle.phases[0]?.result?.patterns) {
+          this.metrics.totalPatterns += cycle.phases[0].result.detected || 0;
+          this.metrics.highConfidencePatterns += cycle.phases[0].result.highConfidenceCount || cycle.phases[0].result.highConfidence?.length || 0;
+        }
+
+        console.log(`✅ Cycle ${this.cycleCount} - Complete (${cycleTime}ms)`);
         this.emit('cycle-complete', cycle);
 
         // Adaptive delay
@@ -247,9 +271,10 @@ class MagnusInfinity extends EventEmitter {
    */
   async learn(observations) {
     console.log('  🧠 Learning...');
-    
+
     const learnings = await this.learningEngine.process(observations);
-    
+    console.log(`     Learnings generated: ${learnings.newPatterns?.length || 0} patterns`);
+
     return learnings;
   }
 
@@ -258,10 +283,18 @@ class MagnusInfinity extends EventEmitter {
    */
   async decide(learnings) {
     console.log('  🤔 Deciding...');
-    
-    const decisions = await this.decisionEngine.makeDecisions(learnings);
-    
-    return decisions;
+    console.log('     >>> DEBUG: Inside decide method <<<');
+    console.log(`     Learnings received: ${learnings.newPatterns?.length || 0} patterns`);
+    console.log(`     Decision engine exists: ${!!this.decisionEngine}`);
+
+    try {
+      const decisions = await this.decisionEngine.makeDecisions(learnings);
+      console.log(`     Decisions made: ${decisions.approved?.length || 0} approved`);
+      return decisions;
+    } catch (error) {
+      console.error('     ERROR in decision engine:', error.message);
+      return { approved: [], rejected: [], pending: [] };
+    }
   }
 
   /**
@@ -332,34 +365,205 @@ class MagnusInfinity extends EventEmitter {
    * Observe patterns
    */
   async observePatterns() {
-    // Placeholder - would integrate with Magnus 14
-    return {
-      detected: 0,
-      highConfidence: 0,
-      needsImprovement: []
-    };
+    // Integrate with Magnus 14 scanner if available
+    if (!this.magnus14) {
+      return {
+        detected: 0,
+        highConfidence: 0,
+        needsImprovement: []
+      };
+    }
+
+    try {
+      // Scan current directory
+      const scanResults = await this.magnus14.scan('.');
+
+      const patterns = scanResults.patterns || [];
+      const highConfidence = patterns.filter(p => (p.confidence || 0) > 0.8);
+      const needsImprovement = patterns.filter(p => (p.confidence || 0) < 0.7);
+
+      return {
+        detected: patterns.length,
+        highConfidence: highConfidence,  // Return array, not length
+        highConfidenceCount: highConfidence.length,
+        needsImprovement: needsImprovement.map(p => ({
+          name: p.type || 'unknown',
+          file: p.file,
+          severity: p.severity,
+          confidence: p.confidence,
+          suggestion: p.suggestion
+        })),
+        friction: scanResults.friction || [],
+        abandonment: scanResults.abandonment || []
+      };
+    } catch (error) {
+      console.warn('⚠️  Pattern observation failed:', error.message);
+      return {
+        detected: 0,
+        highConfidence: 0,
+        needsImprovement: [],
+        error: error.message
+      };
+    }
   }
 
   /**
    * Observe performance
    */
   async observePerformance() {
+    const status = this.getStatus();
+
+    // Calculate success rate
+    const totalActions = this.metrics.successfulActions + this.metrics.failedActions;
+    const successRate = totalActions > 0 ?
+      (this.metrics.successfulActions / totalActions) : 0;
+
+    // Calculate average confidence
+    const avgConfidence = this.metrics.averageConfidence || 0.5;
+
+    // Calculate improvement rate
+    const improvementRate = this.cycleCount > 0 ?
+      this.metrics.improvementsMade / this.cycleCount : 0;
+
+    // Calculate average cycle time
+    const avgCycleTime = this.calculateAverageCycleTime();
+
+    // Calculate memory usage
+    const memUsage = process.memoryUsage();
+    const memoryUsageMB = memUsage.heapUsed / 1024 / 1024;
+
+    // Calculate decision autonomy rate
+    const autonomyRate = this.metrics.totalDecisions > 0 ?
+      this.metrics.autonomousDecisions / this.metrics.totalDecisions : 0;
+
     return {
-      successRate: this.metrics.successRate,
-      averageConfidence: this.metrics.averageConfidence,
-      improvementRate: this.calculateImprovementRate()
+      successRate,
+      averageConfidence: avgConfidence,
+      improvementRate,
+      cycleTime: avgCycleTime,
+      memoryUsage: memoryUsageMB,
+      autonomyRate,
+      totalCycles: this.cycleCount,
+      patternsDetected: this.metrics.totalPatterns,
+      highConfidencePatterns: this.metrics.highConfidencePatterns
     };
   }
 
   /**
-   * Observe feedback
+   * Calculate average cycle time
+   */
+  calculateAverageCycleTime() {
+    if (this.metrics.cycleTimings.length === 0) return 0;
+
+    const sum = this.metrics.cycleTimings.reduce((a, b) => a + b, 0);
+    return sum / this.metrics.cycleTimings.length;
+  }
+
+  /**
+   * Observe feedback - Multi-modal feedback from various sources
    */
   async observeFeedback() {
-    // Placeholder - would collect user feedback
+    const feedback = {
+      timestamp: Date.now(),
+      userFeedback: await this.getUserFeedback(),
+      systemMetrics: await this.getSystemMetrics(),
+      errorPatterns: await this.analyzeErrors(),
+      performanceTrends: await this.analyzeTrends()
+    };
+
+    return feedback;
+  }
+
+  /**
+   * Get user feedback (placeholder for future user input)
+   */
+  async getUserFeedback() {
     return {
       positive: 0,
       negative: 0,
       suggestions: []
+    };
+  }
+
+  /**
+   * Get system metrics feedback
+   */
+  async getSystemMetrics() {
+    const memUsage = process.memoryUsage();
+
+    return {
+      memory: {
+        heapUsed: memUsage.heapUsed / 1024 / 1024,
+        heapTotal: memUsage.heapTotal / 1024 / 1024,
+        external: memUsage.external / 1024 / 1024
+      },
+      uptime: process.uptime(),
+      cyclesCompleted: this.cycleCount,
+      averageConfidence: this.metrics.averageConfidence
+    };
+  }
+
+  /**
+   * Analyze error patterns
+   */
+  async analyzeErrors() {
+    // Track error patterns over time
+    const errorPatterns = [];
+
+    if (this.metrics.failedActions > 0) {
+      errorPatterns.push({
+        type: 'action-failures',
+        count: this.metrics.failedActions,
+        severity: this.metrics.failedActions > 10 ? 'high' : 'low'
+      });
+    }
+
+    if (this.metrics.safeguardBlocks > 0) {
+      errorPatterns.push({
+        type: 'safeguard-blocks',
+        count: this.metrics.safeguardBlocks,
+        severity: this.metrics.safeguardBlocks > 5 ? 'high' : 'low'
+      });
+    }
+
+    return errorPatterns;
+  }
+
+  /**
+   * Analyze performance trends
+   */
+  async analyzeTrends() {
+    if (!this.learningEngine || !this.learningEngine.performanceHistory) {
+      return { trend: 'stable', direction: 0 };
+    }
+
+    const history = this.learningEngine.performanceHistory;
+    if (history.length < 2) {
+      return { trend: 'insufficient-data', direction: 0 };
+    }
+
+    // Compare recent performance to earlier performance
+    const recent = history.slice(-10);
+    const earlier = history.slice(-20, -10);
+
+    if (earlier.length === 0) {
+      return { trend: 'insufficient-data', direction: 0 };
+    }
+
+    const recentAvg = recent.reduce((sum, h) =>
+      sum + (h.performance?.successRate || 0), 0) / recent.length;
+    const earlierAvg = earlier.reduce((sum, h) =>
+      sum + (h.performance?.successRate || 0), 0) / earlier.length;
+
+    const direction = recentAvg - earlierAvg;
+    const trend = direction > 0.05 ? 'improving' :
+                  direction < -0.05 ? 'declining' : 'stable';
+
+    return {
+      trend,
+      direction,
+      recentAverage: recentAvg,
+      earlierAverage: earlierAvg
     };
   }
 
@@ -378,12 +582,33 @@ class MagnusInfinity extends EventEmitter {
    * Execute a decision
    */
   async executeDecision(decision) {
-    return {
-      decision,
-      executed: true,
-      timestamp: Date.now(),
-      success: true
-    };
+    try {
+      // Placeholder for actual execution logic
+      // This would integrate with actual improvement actions
+
+      const result = {
+        decision,
+        executed: true,
+        timestamp: Date.now(),
+        success: true
+      };
+
+      // Track success
+      this.metrics.successfulActions++;
+
+      return result;
+    } catch (error) {
+      // Track failure
+      this.metrics.failedActions++;
+
+      return {
+        decision,
+        executed: false,
+        timestamp: Date.now(),
+        success: false,
+        error: error.message
+      };
+    }
   }
 
   /**
@@ -485,6 +710,8 @@ class ContinuousLearningEngine extends EventEmitter {
     this.learningRate = config.learningRate || 0.1;
     this.knowledgeBase = new Map();
     this.successHistory = [];
+    this.patternMemory = new Map(); // Store learned patterns
+    this.performanceHistory = [];
   }
 
   async process(observations) {
@@ -495,7 +722,16 @@ class ContinuousLearningEngine extends EventEmitter {
       confidence: 0
     };
 
-    // Process patterns
+    // Learn from high-confidence patterns
+    // highConfidence might be a number, not an array
+    const highConfPatterns = Array.isArray(observations.patterns?.highConfidence)
+      ? observations.patterns.highConfidence
+      : [];
+    for (const pattern of highConfPatterns) {
+      await this.rememberPattern(pattern);
+    }
+
+    // Process patterns that need improvement
     for (const pattern of observations.patterns?.needsImprovement || []) {
       const learned = await this.learnPattern(pattern);
       if (learned) {
@@ -504,29 +740,189 @@ class ContinuousLearningEngine extends EventEmitter {
       }
     }
 
+    // Analyze improvement opportunities
+    const opportunities = await this.analyzeOpportunities(observations);
+    learnings.newPatterns.push(...opportunities.newPatterns);
+    learnings.updatedKnowledge.push(...opportunities.updates);
+
     // Update confidence based on performance
-    learnings.confidence = this.calculateConfidence(observations.performance);
+    learnings.confidence = this.calculateAdaptiveConfidence(observations);
+
+    // Store performance
+    this.performanceHistory.push({
+      timestamp: Date.now(),
+      performance: observations.performance,
+      patternCount: observations.patterns?.detected || 0
+    });
+
+    // Keep only last 1000 performance records
+    if (this.performanceHistory.length > 1000) {
+      this.performanceHistory.shift();
+    }
 
     return learnings;
   }
 
+  async rememberPattern(pattern) {
+    const key = pattern.name || pattern.type;
+    if (!this.patternMemory.has(key)) {
+      this.patternMemory.set(key, {
+        pattern,
+        seenCount: 1,
+        firstSeen: Date.now(),
+        lastSeen: Date.now(),
+        confidence: pattern.confidence || 0.8,
+        // NEW: Track modality (Tier 1 Phase 1A)
+        modality: pattern.modality || 'unknown',
+        modalityBreakdown: {
+          web: pattern.modality === 'web' ? 1 : 0,
+          mobile: pattern.modality === 'mobile' ? 1 : 0,
+          data: pattern.modality === 'data' ? 1 : 0,
+          unknown: !pattern.modality || pattern.modality === 'unknown' ? 1 : 0
+        }
+      });
+    } else {
+      const memory = this.patternMemory.get(key);
+      memory.seenCount++;
+      memory.lastSeen = Date.now();
+      memory.confidence = Math.max(memory.confidence, pattern.confidence || 0.8);
+
+      // NEW: Update modality tracking
+      if (pattern.modality) {
+        memory.modality = pattern.modality; // Update to latest detected modality
+        if (pattern.modality === 'web') memory.modalityBreakdown.web++;
+        else if (pattern.modality === 'mobile') memory.modalityBreakdown.mobile++;
+        else if (pattern.modality === 'data') memory.modalityBreakdown.data++;
+        else memory.modalityBreakdown.unknown++;
+      }
+    }
+  }
+
   async learnPattern(pattern) {
-    // Learn from pattern
+    // Check if we've seen this pattern before
+    const key = pattern.name || 'unknown';
+    const memory = this.patternMemory.get(key);
+    const seenCount = memory?.seenCount || 0;
+
     return {
       pattern: pattern.name,
       learned: true,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      file: pattern.file,
+      severity: pattern.severity,
+      suggestion: pattern.suggestion,
+      previouslySeen: seenCount,
+      seenCount: seenCount, // Add this for decision engine consistency
+      confidence: pattern.confidence || 0.5,
+      // NEW: Include modality tracking (Tier 1 Phase 1A)
+      modality: pattern.modality || memory?.modality || 'unknown',
+      modalityBreakdown: memory?.modalityBreakdown || {
+        web: 0,
+        mobile: 0,
+        data: 0,
+        unknown: 1
+      }
     };
+  }
+
+  async analyzeOpportunities(observations) {
+    const opportunities = {
+      newPatterns: [],
+      updates: []
+    };
+
+    // Look for patterns that appear frequently
+    // Modified logic: Allow low-confidence patterns if seen very frequently
+    for (const [key, memory] of this.patternMemory.entries()) {
+      const meetsHighConfidence = memory.seenCount > 3 && memory.confidence > 0.7;
+      const meetsFrequentLowConfidence = memory.seenCount > 10 && memory.confidence >= 0.6;
+
+      if (meetsHighConfidence || meetsFrequentLowConfidence) {
+        console.log(`🎯 OPPORTUNITY DETECTED: ${key} (seen: ${memory.seenCount}, confidence: ${memory.confidence}, modality: ${memory.modality || 'unknown'}, criteria: ${meetsHighConfidence ? 'high-confidence' : 'frequent-low-confidence'})`);
+        opportunities.newPatterns.push({
+          pattern: key,
+          learned: true,
+          type: 'frequent-pattern',
+          seenCount: memory.seenCount,
+          previouslySeen: memory.seenCount, // Add this field for decision engine
+          confidence: memory.confidence,
+          criteria: meetsHighConfidence ? 'high-confidence' : 'frequent-low-confidence',
+          // NEW: Include modality (Tier 1 Phase 1A)
+          modality: memory.modality || 'unknown',
+          modalityBreakdown: memory.modalityBreakdown || {
+            web: 0,
+            mobile: 0,
+            data: 0,
+            unknown: 1
+          }
+        });
+      }
+    }
+
+    console.log(`📊 analyzeOpportunities: Found ${opportunities.newPatterns.length} opportunities`);
+    return opportunities;
   }
 
   calculateConfidence(performance) {
     return performance?.successRate || 0.5;
   }
 
+  calculateAdaptiveConfidence(observations) {
+    const perf = observations.performance || {};
+    const base = perf.successRate || 0.5;
+    const improvement = perf.improvementRate || 0;
+    const autonomy = perf.autonomyRate || 0;
+
+    // Weighted confidence
+    return (base * 0.5) + (improvement * 0.3) + (autonomy * 0.2);
+  }
+
   async update(improvement) {
     // Update knowledge base
     this.successHistory.push(improvement);
+
+    // Update learning rate based on recent performance
+    if (this.successHistory.length > 10) {
+      const recent = this.successHistory.slice(-10);
+      const successRate = recent.filter(i => i.success).length / recent.length;
+
+      if (successRate > 0.8) {
+        this.learningRate = Math.min(0.15, this.learningRate * 1.1);
+      } else if (successRate < 0.5) {
+        this.learningRate = Math.max(0.05, this.learningRate * 0.9);
+      }
+    }
+
     this.emit('updated', improvement);
+  }
+
+  getPatternMemory() {
+    return Array.from(this.patternMemory.entries()).map(([key, value]) => ({
+      pattern: key,
+      ...value
+    }));
+  }
+
+  /**
+   * Calculate adaptive learning rate based on recent performance
+   */
+  calculateAdaptiveLearningRate() {
+    if (this.successHistory.length < 5) return this.learningRate;
+
+    const recent = this.successHistory.slice(-10);
+    const recentSuccessRate = recent.filter(i => i.success).length / recent.length;
+
+    if (recentSuccessRate > 0.9) {
+      return Math.min(0.15, this.learningRate * 1.2); // Increase learning
+    } else if (recentSuccessRate < 0.7) {
+      return Math.max(0.05, this.learningRate * 0.8); // Decrease learning
+    }
+
+    return this.learningRate; // Keep current rate
+  }
+
+  getCurrentLearningRate() {
+    return this.learningRate;
   }
 }
 
@@ -539,9 +935,11 @@ class AutonomousDecisionEngine extends EventEmitter {
     super();
     this.confidenceThreshold = config.confidenceThreshold || 0.7;
     this.autonomyLevel = config.autonomyLevel || 'supervised';
+    this.decisionHistory = [];
   }
 
   async makeDecisions(learnings) {
+    console.log(`🚨 DECISION ENGINE CALLED with ${learnings.newPatterns?.length || 0} patterns`);
     const decisions = {
       timestamp: Date.now(),
       approved: [],
@@ -549,33 +947,181 @@ class AutonomousDecisionEngine extends EventEmitter {
       pending: []
     };
 
+    console.log(`🔍 DECISION ENGINE: Processing ${learnings.newPatterns?.length || 0} patterns`);
+    console.log(`   Confidence threshold: ${this.confidenceThreshold}, Autonomy: ${this.autonomyLevel}`);
+
     // Make decisions based on learnings
     for (const pattern of learnings.newPatterns || []) {
+      console.log(`   Evaluating pattern: ${pattern.pattern} (confidence: ${pattern.confidence}, previouslySeen: ${pattern.previouslySeen})`);
+
       const decision = await this.evaluatePattern(pattern);
-      
-      if (decision.confidence >= this.confidenceThreshold) {
+      console.log(`   Decision confidence: ${decision.confidence}`);
+
+      // Predict outcome before deciding
+      const prediction = await this.predictDecisionOutcome(decision);
+      decision.prediction = prediction;
+
+      // Apply prediction to confidence
+      const adjustedConfidence = decision.confidence * prediction.predictedSuccess;
+      console.log(`   Adjusted confidence: ${adjustedConfidence} (prediction: ${prediction.predictedSuccess})`);
+
+      // SEMI-AUTONOMOUS MODE: Auto-approve if we have enough confidence OR seen enough times
+      const canAutoApprove = this.autonomyLevel === 'semi-autonomous' &&
+                             (pattern.seenCount >= 10 || adjustedConfidence >= this.confidenceThreshold);
+
+      if (canAutoApprove || (this.autonomyLevel === 'autonomous' && adjustedConfidence >= this.confidenceThreshold)) {
+        console.log(`   ✅ APPROVED: ${pattern.pattern} (auto-approved, seenCount: ${pattern.seenCount}, adjustedConf: ${adjustedConfidence.toFixed(2)})`);
         decisions.approved.push(decision);
-      } else if (this.autonomyLevel === 'supervised') {
+
+        // Store APPROVED decision in history for future learning
+        this.decisionHistory.push({
+          decision,
+          timestamp: Date.now(),
+          approved: true
+        });
+      } else if (this.autonomyLevel === 'supervised' || this.autonomyLevel === 'semi-autonomous') {
+        console.log(`   ⏳ PENDING: ${pattern.pattern} (needs approval)`);
         decision.requiresApproval = true;
         decisions.pending.push(decision);
+
+        // DON'T store PENDING decisions in history - they haven't been decided yet!
+        // This prevents poisoning the prediction with undecided items
       } else {
+        console.log(`   ❌ REJECTED: ${pattern.pattern}`);
         decisions.rejected.push(decision);
+
+        // Store REJECTED decision in history
+        this.decisionHistory.push({
+          decision,
+          timestamp: Date.now(),
+          approved: false
+        });
+      }
+
+      // Keep only last 1000 decisions
+      if (this.decisionHistory.length > 1000) {
+        this.decisionHistory.shift();
       }
     }
 
+    console.log(`📊 DECISION RESULT: ${decisions.approved.length} approved, ${decisions.rejected.length} rejected, ${decisions.pending.length} pending`);
     this.emit('decision', decisions);
     return decisions;
   }
 
   async evaluatePattern(pattern) {
+    // Base confidence from pattern
+    let confidence = pattern.confidence || 0.8;
+
+    // Boost confidence if we've seen this pattern multiple times
+    if (pattern.previouslySeen > 0) {
+      confidence = Math.min(0.95, confidence + (pattern.previouslySeen * 0.02));
+    }
+
     return {
       type: 'pattern-improvement',
       pattern: pattern.pattern,
-      confidence: 0.8,
+      confidence,
       autonomous: this.autonomyLevel === 'autonomous',
       requiresApproval: this.autonomyLevel === 'supervised',
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      file: pattern.file,
+      severity: pattern.severity,
+      // NEW: Include modality tracking (Tier 1 Phase 1A)
+      modality: pattern.modality || 'unknown',
+      modalityBreakdown: pattern.modalityBreakdown || {
+        web: 0,
+        mobile: 0,
+        data: 0,
+        unknown: 1
+      }
     };
+  }
+
+  /**
+   * Predict the outcome of a decision based on historical data
+   */
+  async predictDecisionOutcome(decision) {
+    // Find similar decisions in history
+    const similarDecisions = await this.findSimilarDecisions(decision);
+
+    if (similarDecisions.length === 0) {
+      return {
+        predictedSuccess: 0.7, // Conservative default
+        confidence: 0.5,
+        riskLevel: 'medium',
+        similarCount: 0
+      };
+    }
+
+    // Calculate prediction based on similar decisions
+    return this.calculatePrediction(similarDecisions);
+  }
+
+  /**
+   * Find similar decisions in history
+   */
+  async findSimilarDecisions(decision) {
+    const similar = [];
+
+    for (const historical of this.decisionHistory) {
+      // Check if patterns are similar
+      if (historical.decision.pattern === decision.pattern ||
+          historical.decision.type === decision.type) {
+        similar.push(historical);
+      }
+    }
+
+    return similar;
+  }
+
+  /**
+   * Calculate prediction from similar decisions
+   */
+  calculatePrediction(similarDecisions) {
+    const successCount = similarDecisions.filter(d => d.approved).length;
+    const totalCount = similarDecisions.length;
+
+    const predictedSuccess = totalCount > 0 ? successCount / totalCount : 0.7;
+
+    // Calculate confidence based on sample size
+    const confidence = Math.min(0.95, 0.5 + (totalCount * 0.05));
+
+    // Assess risk level
+    let riskLevel = 'low';
+    if (predictedSuccess < 0.5) {
+      riskLevel = 'high';
+    } else if (predictedSuccess < 0.7) {
+      riskLevel = 'medium';
+    }
+
+    return {
+      predictedSuccess,
+      confidence,
+      riskLevel,
+      similarCount: totalCount
+    };
+  }
+
+  /**
+   * Assess risk of a decision
+   */
+  assessRisk(decision) {
+    let risk = 0;
+
+    // Higher risk for lower confidence
+    if (decision.confidence < 0.6) risk += 0.3;
+    else if (decision.confidence < 0.8) risk += 0.1;
+
+    // Higher risk for critical severity
+    if (decision.severity === 'critical') risk += 0.3;
+    else if (decision.severity === 'high') risk += 0.2;
+    else if (decision.severity === 'warning') risk += 0.1;
+
+    // Lower risk if we've seen this before
+    if (decision.previouslySeen > 5) risk -= 0.2;
+
+    return Math.max(0, Math.min(1, risk));
   }
 }
 

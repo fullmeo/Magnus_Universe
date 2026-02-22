@@ -46,7 +46,10 @@ class SpiralClarificationEngine {
     let spiralCount = 0;
     const maxSpiralDepth = 10;
 
-    while (currentClarity < 85 && spiralCount < maxSpiralDepth) {
+    const startTime = Date.now();
+    const maxDuration = 5000; // 5 seconds timeout
+
+    while (currentClarity < 85 && spiralCount < maxSpiralDepth && (Date.now() - startTime) < maxDuration) {
       spiralCount++;
 
       // Each spiral adds 10-15% clarity (varies by complexity)
@@ -65,6 +68,10 @@ class SpiralClarificationEngine {
       if (spiralCount >= 3 && currentClarity < 75) {
         spirals[spirals.length - 1].note = 'Significant complexity detected - extended clarification needed';
       }
+    }
+
+    if ((Date.now() - startTime) >= maxDuration) {
+      console.log(`\n⚠️  Timeout reached. Stopping spiral progression.\n`);
     }
 
     return spirals;

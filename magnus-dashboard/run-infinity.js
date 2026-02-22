@@ -16,7 +16,7 @@ async function main() {
     // Get configuration from environment or use defaults
     const config = {
       userId: process.env.USER || 'infinity-user',
-      autonomyLevel: process.env.AUTONOMY_LEVEL || 'supervised',
+      autonomyLevel: process.env.AUTONOMY_LEVEL || 'semi-autonomous', // Changed from 'supervised'
       enableScanner: true,
       enableCloudSync: !!process.env.CLOUDZERO_ENDPOINT,
       enableDashboard: process.env.ENABLE_DASHBOARD !== 'false',
@@ -24,7 +24,7 @@ async function main() {
       dashboardPort: parseInt(process.env.DASHBOARD_PORT || 3000),
       apiPort: parseInt(process.env.API_PORT || 4000),
       learningRate: parseFloat(process.env.LEARNING_RATE || 0.1),
-      confidenceThreshold: parseFloat(process.env.CONFIDENCE_THRESHOLD || 0.7),
+      confidenceThreshold: parseFloat(process.env.CONFIDENCE_THRESHOLD || 0.6), // Lowered from 0.7
       enableSelfImprovement: true,
       enableSafeguards: true,
       explainabilityLevel: process.env.EXPLAINABILITY_LEVEL || 'detailed'

@@ -440,7 +440,10 @@ class PatternDetector {
     const groups = [];
     const processed = new Set();
 
-    for (let i = 0; i < snippets.length; i++) {
+    const maxComparisons = Math.min(1000, snippets.length * (snippets.length - 1) / 2); // Limit to prevent O(n²) performance issues
+    let comparisonCount = 0;
+
+    for (let i = 0; i < snippets.length && comparisonCount < maxComparisons; i++) {
       if (processed.has(i)) continue;
 
       const snippet = snippets[i];
@@ -453,8 +456,11 @@ class PatternDetector {
         projects: new Set([snippet.project])
       };
 
-      // Find similar snippets
-      for (let j = i + 1; j < snippets.length; j++) {
+      // Find similar snippets (limit comparisons per snippet)
+      const maxComparisonsPerSnippet = Math.min(50, snippets.length - i - 1);
+      let snippetComparisons = 0;
+
+      for (let j = i + 1; j < snippets.length && snippetComparisons < maxComparisonsPerSnippet && comparisonCount < maxComparisons; j++) {
         if (processed.has(j)) continue;
         
         const other = snippets[j];
@@ -474,6 +480,9 @@ class PatternDetector {
           group.projects.add(other.project);
           processed.add(j);
         }
+
+        snippetComparisons++;
+        comparisonCount++;
       }
 
       processed.add(i);

@@ -18,13 +18,36 @@ async function loadScanner() {
   if (MagnusScanner) return MagnusScanner;
 
   try {
-    const scannerPath = resolve(__dirname, '../../magnus-scanner-14/src/scanner/magnus-scanner.js');
-    const module = await import(scannerPath);
-    MagnusScanner = module.default || module.MagnusScanner || module;
+    // Try simple real scanner first (works immediately)
+    // Use file:// protocol with normalized path for Windows
+    const simpleScannerPath = 'file:///' + resolve(__dirname, './magnus-14-simple.js').replace(/\\/g, '/');
+    const simpleModule = await import(simpleScannerPath);
+    MagnusScanner = simpleModule.default;
+    console.log('✅ Using Magnus 14 Simple Scanner - real pattern detection enabled');
     return MagnusScanner;
-  } catch (error) {
-    console.warn('⚠️  Magnus Scanner 14 not found, using mock implementation');
-    return MockMagnusScanner;
+  } catch (simpleError) {
+    console.error('Simple scanner load failed:', simpleError.message);
+    try {
+      // Try advanced real scanner
+      const realScannerPath = 'file:///' + resolve(__dirname, './magnus-14-real.js').replace(/\\/g, '/');
+      const realModule = await import(realScannerPath);
+      MagnusScanner = realModule.default;
+      console.log('✅ Using Magnus 14 Real Scanner with advanced pattern detection');
+      return MagnusScanner;
+    } catch (realError) {
+      console.error('Real scanner load failed:', realError.message);
+      try {
+        // Fallback to magnus-scanner-14 if it exists
+        const scannerPath = 'file:///' + resolve(__dirname, '../../magnus-scanner-14/src/scanner/magnus-scanner.js').replace(/\\/g, '/');
+        const module = await import(scannerPath);
+        MagnusScanner = module.default || module.MagnusScanner || module;
+        console.log('✅ Using Magnus Scanner 14 from scanner directory');
+        return MagnusScanner;
+      } catch (error) {
+        console.warn('⚠️  All scanners failed, using mock implementation');
+        return MockMagnusScanner;
+      }
+    }
   }
 }
 

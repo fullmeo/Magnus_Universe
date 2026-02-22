@@ -7,6 +7,8 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
+import { safeStringify } from './utils-safe.js';
+import { scheduleWrite } from './utils-io.js';
 
 export class UnderstandingEngine {
   constructor(options = {}) {
@@ -28,8 +30,8 @@ export class UnderstandingEngine {
 
   async _saveCache() {
     try {
-      await fs.mkdir(path.dirname(this.cacheFile), { recursive: true });
-      await fs.writeFile(this.cacheFile, JSON.stringify(this._cache || {}, null, 2), 'utf8');
+      const payload = JSON.stringify(this._cache || {}, null, 2);
+      scheduleWrite(this.cacheFile, payload, { debounce: 200, maxConcurrent: 4 });
     } catch (e) {
       // ignore persistence errors
     }
@@ -112,8 +114,8 @@ export class ComplexityEngine {
 
   async _saveCache() {
     try {
-      await fs.mkdir(path.dirname(this.cacheFile), { recursive: true });
-      await fs.writeFile(this.cacheFile, JSON.stringify(this._cache || {}, null, 2), 'utf8');
+      const payload = JSON.stringify(this._cache || {}, null, 2);
+      scheduleWrite(this.cacheFile, payload, { debounce: 200, maxConcurrent: 4 });
     } catch (e) {
       // ignore
     }
@@ -139,7 +141,7 @@ export class ComplexityEngine {
     let score = Math.min(10, Math.max(1, Math.round(raw)));
 
     // Schedule cache update in background (non-blocking)
-    const key = JSON.stringify(result);
+    const key = safeStringify(result);
     this._loadCache().then(cache => {
       cache[key] = { score, detail: result, ts: Date.now() };
       this._cache = cache;

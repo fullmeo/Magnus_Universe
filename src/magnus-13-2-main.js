@@ -90,16 +90,23 @@ export class Magnus {
     // Continue cycles until convergence if needed
     let iterations = 1;
     const maxIterations = 5;
+    const startTime = Date.now();
+    const maxDuration = 30000; // 30 seconds timeout
 
     while (
       cycleResult.manifestation.harmonic < this.config.convergenceThreshold &&
-      iterations < maxIterations
+      iterations < maxIterations &&
+      (Date.now() - startTime) < maxDuration
     ) {
       console.log(`\n🔄 Harmonic below threshold, initiating refinement cycle...\n`);
       const refinedIntention = this.refineIntention(intention, cycleResult);
       const refinedCycle = this.cycle.executeCycle(refinedIntention);
       session.cycles.push(refinedCycle);
       iterations++;
+    }
+
+    if ((Date.now() - startTime) >= maxDuration) {
+      console.log(`\n⚠️  Timeout reached. Stopping refinement cycles.\n`);
     }
 
     session.endTime = Date.now();

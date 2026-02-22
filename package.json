@@ -1,29 +1,66 @@
 {
-  "name": "magnus-universe",
+  "name": "magnus-infinity",
   "version": "1.0.0",
-  "description": "Magnus: A consciousness-driven code generation framework grounded in Hermetic principles and Planck's Mirror theorem, that reveals rather than creates",
-  "main": "src/index.js",
+  "description": "Magnus Infinity - Multi-Modal Code Generator with Magnus 13.2 Integration",
   "type": "module",
+  "main": "magnus-dashboard/modality-detector.js",
+  "bin": {
+    "magnus": "./magnus-dashboard/cli.js"
+  },
   "scripts": {
-    "start": "node src/index.js",
-    "test": "node examples/basic-usage.js",
-    "convergence": "node examples/convergence-validation.js",
-    "harmonia": "node examples/harmonia-cosmica-complete.js"
+    "test": "node magnus-dashboard/modality-detector-load-test.js",
+    "test:templates": "node magnus-dashboard/generators/template-compilation-test.js",
+    "test:e2e": "node magnus-dashboard/infinity-13-integration.js",
+    "detect": "node magnus-dashboard/cli.js detect",
+    "generate": "node magnus-dashboard/cli.js generate",
+    "build": "echo 'No build step required for pure JavaScript'",
+    "lint": "eslint magnus-dashboard --ext .js",
+    "docs:api": "node -e \"console.log('API documentation available at docs/API.md')\""
   },
   "keywords": [
-    "consciousness",
-    "hermetic",
-    "planck-mirror",
+    "magnus",
+    "infinity",
+    "multi-modal",
     "code-generation",
-    "convergence",
-    "quantum",
-    "philosophy"
+    "modality-detection",
+    "ai",
+    "developer-tools"
   ],
-  "author": "Magnus Universe Contributors",
+  "author": "Magnus AI",
   "license": "MIT",
-  "engines": {
-    "node": ">=16.0.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magnus-ai/magnus-infinity"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "bugs": {
+    "url": "https://github.com/magnus-ai/magnus-infinity/issues"
+  },
+  "homepage": "https://github.com/magnus-ai/magnus-infinity",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "inquirer": "^9.0.0",
+    "chalk": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./magnus-dashboard/modality-detector.js"
+    },
+    "./generators": {
+      "import": "./magnus-dashboard/generators/multi-modal-generator.js"
+    },
+    "./cli": {
+      "import": "./magnus-dashboard/cli.js"
+    }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/magnus-ai"
+  }
 }
