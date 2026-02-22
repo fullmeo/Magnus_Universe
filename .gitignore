@@ -135,3 +135,19 @@ screenshots/
 .magnus-cache/
 quantum-states/
 convergence-logs/
+.magnus-advanced-learning/
+dev-data/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Test outputs
+test-output/
+test-results/
+load-test-results.md
+
+# Claude/AI tool artifacts
+.claude/
+.npmignore
