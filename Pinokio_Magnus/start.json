@@ -1,0 +1,22 @@
+{
+  "daemon": true,
+  "run": [
+    {
+      "method": "shell.run",
+      "params": {
+        "message": "npm start",
+        "path": ".",
+        "env": {
+          "NODE_ENV": "production",
+          "PORT": "3001"
+        }
+      }
+    },
+    {
+      "method": "local.set",
+      "params": {
+        "url": "http://localhost:3001"
+      }
+    }
+  ]
+}

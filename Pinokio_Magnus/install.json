@@ -1,0 +1,24 @@
+{
+  "run": [
+    {
+      "method": "shell.run",
+      "params": {
+        "message": "npm install",
+        "path": "."
+      }
+    },
+    {
+      "method": "shell.run",
+      "params": {
+        "message": "mkdir -p .magnus/knowledge .magnus/sessions",
+        "path": "."
+      }
+    },
+    {
+      "method": "notify",
+      "params": {
+        "html": "Magnus 13.2 installed successfully! Click 'Start' to launch."
+      }
+    }
+  ]
+}

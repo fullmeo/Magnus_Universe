@@ -1,0 +1,6 @@
+export const PLANCK_MIRROR_PRINCIPLE = 'PLANCK_MIRROR';
+export const HERMETIC_PRINCIPLES = { MENTALISM: 'MENTALISM' };
+export const COSMIC_MEMBRANES = {};
+export const SACRED_GEOMETRY = {};
+export const REVELATION_MECHANISM = {};
+export const HERMETIC_INTEGRATION = {};

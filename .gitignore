@@ -151,3 +151,4 @@ load-test-results.md
 # Claude/AI tool artifacts
 .claude/
 .npmignore
+magnus-15/nul

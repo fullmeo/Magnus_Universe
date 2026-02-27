@@ -1,0 +1,230 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run unit tests
+      run: npm test -- --grep "Magnus132Hermetic"
+
+    - name: Run performance tests
+      run: node --experimental-modules tests/test-performance.js
+
+    - name: Run fuzz tests
+      run: node --experimental-modules tests/test-fuzz.js
+
+    - name: Run mutation tests
+      run: npm run mutate
+
+    - name: Generate coverage report
+      run: npm run coverage
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+
+  load-test:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run load tests
+      run: node --experimental-modules tests/test-load.js
+
+    - name: Performance regression check
+      run: |
+        # Check if performance metrics are within acceptable ranges
+        node --experimental-modules -e "
+        const fs = require('fs');
+        const report = JSON.parse(fs.readFileSync('TEST-COVERAGE-REPORT.md', 'utf8').match(/{.*}/s)[0]);
+        if (report.testResults.memoryStability.growth > 25) {
+          console.error('Memory growth too high:', report.testResults.memoryStability.growth);
+          process.exit(1);
+        }
+        console.log('Performance regression check passed');
+        "
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codecov/codecov-action@v3
+      if: always()
+      with:
+        file: trivy-results.sarif
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, load-test, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build for production
+      run: npm run build
+
+    - name: Run production smoke tests
+      run: npm run test:smoke
+
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add actual deployment commands here
+
+    - name: Run integration tests
+      run: npm run test:integration
+
+    - name: Deploy to production
+      if: github.event_name == 'release'
+      run: |
+        echo "Deploying to production..."
+        # Add production deployment commands here
+
+  regression-monitor:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run full regression suite
+      run: |
+        npm test
+        node --experimental-modules tests/test-performance.js
+        node --experimental-modules tests/test-fuzz.js
+        node --experimental-modules tests/test-load.js
+
+    - name: Check for performance regressions
+      run: |
+        # Compare current metrics against baseline
+        node --experimental-modules -e "
+        const fs = require('fs');
+        const baseline = {
+          mutationScore: 90,
+          testCoverage: 85,
+          memoryGrowth: 25,
+          responseTime: 500
+        };
+
+        // Read current metrics from reports
+        const coverageMatch = fs.readFileSync('TEST-COVERAGE-REPORT.md', 'utf8').match(/Test Coverage Estimate: (\d+)%/);
+        const coverage = coverageMatch ? parseInt(coverageMatch[1]) : 0;
+
+        if (coverage < baseline.testCoverage) {
+          console.error('Coverage regression detected:', coverage, '<', baseline.testCoverage);
+          process.exit(1);
+        }
+
+        console.log('No performance regressions detected');
+        "
+
+    - name: Update regression baseline
+      if: success()
+      run: |
+        # Store current metrics as new baseline
+        cp TEST-COVERAGE-REPORT.md baseline-coverage.md
+        cp MUTATION-TESTING-REPORT.md baseline-mutation.md
+        echo "Regression baseline updated"
+
+  # ------------------------------------------------------------------
+  # Magnus-specific load jobs: short PR smoke + scheduled nightly soak
+  # ------------------------------------------------------------------
+  
+  magnus-load:
+    runs-on: ubuntu-latest
+    needs: [test]
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Prepare logs
+        run: mkdir -p .logs
+
+      - name: Run short load for PRs
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Running Magnus short load (PR)"
+          CONCURRENCY=4 TOTAL=40 MIN_CLARITY=40 VERBOSE=0 node magnus-13-2-load-sim.js
+
+      - name: Run scheduled soak
+        if: github.event_name == 'schedule'
+        run: |
+          echo "Running Magnus scheduled soak (may be long)"
+          CONCURRENCY=100 TOTAL=5000 MIN_CLARITY=40 VERBOSE=0 node magnus-13-2-load-sim.js
+
+      - name: Upload Magnus artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: magnus-artifacts
+          path: ./.logs

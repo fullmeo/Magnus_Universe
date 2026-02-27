@@ -1,0 +1,100 @@
+# Magnus Infinity Docker Compose Configuration
+# Phase 2 Tier 2 - Production Ready Deployment
+
+version: '3.8'
+
+services:
+  # Magnus Infinity CLI Service
+  magnus-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    container_name: magnus-cli
+    command: ["detect", "/projects"]
+    volumes:
+      - ./projects:/projects
+      - ./output:/output
+    environment:
+      - NODE_ENV=production
+      - MAGNUS_LOG_LEVEL=info
+    networks:
+      - magnus-network
+    restart: unless-stopped
+
+  # Magnus Infinity API Service
+  magnus-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: magnus-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./projects:/app/projects
+      - ./output:/app/output
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MAGNUS_LOG_LEVEL=info
+    depends_on:
+      - magnus-13
+    networks:
+      - magnus-network
+    restart: unless-stopped
+
+  # Magnus 13.2 Convergence Service
+  magnus-13:
+    build:
+      context: .
+      dockerfile: Dockerfile.13
+    container_name: magnus-13
+    volumes:
+      - ./projects:/app/projects
+      - ./output:/app/output
+    environment:
+      - NODE_ENV=production
+      - MAGNUS_CONVERGENCE_THRESHOLD=0.85
+      - MAGNUS_RESONANCE_FREQUENCY=432
+    networks:
+      - magnus-network
+    restart: unless-stopped
+
+  # Magnus 14 Scanner Service (optional)
+  magnus-14:
+    build:
+      context: ./magnus/magnus-14
+      dockerfile: Dockerfile.14
+    container_name: magnus-14
+    volumes:
+      - ./projects:/app/projects
+    environment:
+      - NODE_ENV=production
+    networks:
+      - magnus-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (production)
+  nginx:
+    image: nginx:alpine
+    container_name: magnus-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - magnus-api
+    networks:
+      - magnus-network
+    restart: unless-stopped
+
+networks:
+  magnus-network:
+    driver: bridge
+
+volumes:
+  projects:
+    driver: local
+  output:
+    driver: local

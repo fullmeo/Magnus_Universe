@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magnus 15 - Consciousness Dashboard 3.0</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --dark: #1a1a2e;
+      --light: #f0f0f0;
+      --gray: #6c757d;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica', sans-serif;
+      background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============ HEADER ============ */
+    header {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 30px 40px;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+      border-bottom: 3px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    header p {
+      font-size: 1.1em;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* ============ CONTAINER ============ */
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* ============ GRID LAYOUT ============ */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    /* ============ AGENT CARD ============ */
+    .agent-card {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .agent-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+      border-color: var(--accent);
+    }
+
+    .agent-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .agent-icon {
+      font-size: 2em;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .agent-info h3 {
+      font-size: 1.3em;
+      margin-bottom: 5px;
+      color: var(--accent);
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9em;
+      color: var(--gray);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gray);
+    }
+
+    .status-dot.active {
+      background: var(--success);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.processing {
+      background: var(--warning);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ============ AGENT METRICS ============ */
+    .agent-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .metric {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 3px solid var(--primary);
+    }
+
+    .metric-label {
+      font-size: 0.85em;
+      color: var(--gray);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .metric-value.success {
+      color: var(--success);
+    }
+
+    .metric-value.warning {
+      color: var(--warning);
+    }
+
+    .metric-value.danger {
+      color: var(--danger);
+    }
+
+    /* ============ PROGRESS BAR ============ */
+    .progress {
+      background: rgba(0, 0, 0, 0.2);
+      height: 8px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    /* ============ EVENT STREAM ============ */
+    .event-stream-container {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(102, 126, 234, 0.05) 100%);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 40px;
+    }
+
+    .event-stream-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .event-stream-header h2 {
+      font-size: 1.5em;
+      color: var(--accent);
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .event-list {
+      max-height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .event-item {
+      padding: 15px;
+      border-left: 3px solid var(--primary);
+      background: rgba(102, 126, 234, 0.05);
+      margin-bottom: 10px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-family: 'Courier New', monospace;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .event-item.critical {
+      border-left-color: var(--danger);
+      background: rgba(244, 67, 54, 0.1);
+    }
+
+    .event-item.high {
+      border-left-color: var(--warning);
+      background: rgba(255, 152, 0, 0.1);
+    }
+
+    .event-item.normal {
+      border-left-color: var(--primary);
+    }
+
+    .event-item.low {
+      border-left-color: var(--gray);
+      opacity: 0.7;
+    }
+
+    .event-time {
+      color: var(--gray);
+      font-size: 0.8em;
+      margin-bottom: 5px;
+    }
+
+    .event-type {
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .event-source {
+      color: var(--gray);
+      font-size: 0.85em;
+    }
+
+    /* ============ CONSCIOUSNESS STATE ============ */
+    .consciousness-state {
+      background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 40px;
+    }
+
+    .consciousness-state h2 {
+      font-size: 1.5em;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(240, 147, 251, 0.3);
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .state-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(240, 147, 251, 0.3);
+    }
+
+    .state-label {
+      color: var(--gray);
+      font-size: 0.85em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .state-value {
+      font-size: 1.2em;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* ============ CHARTS ============ */
+    .charts-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .chart-wrapper {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .chart-wrapper h3 {
+      color: var(--accent);
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    .chart-wrapper canvas {
+      max-height: 300px;
+    }
+
+    /* ============ MEMORY VISUALIZATION ============ */
+    .memory-viz {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 40px;
+    }
+
+    .memory-viz h2 {
+      font-size: 1.5em;
+      color: var(--success);
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+    }
+
+    .memory-tier {
+      margin-bottom: 20px;
+    }
+
+    .memory-tier-name {
+      font-weight: bold;
+      color: var(--success);
+      margin-bottom: 8px;
+      font-size: 0.95em;
+    }
+
+    .memory-bar {
+      background: rgba(0, 0, 0, 0.2);
+      height: 25px;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .memory-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--accent));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+
+    /* ============ CONTROLS ============ */
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: 2px solid var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1em;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(102, 126, 234, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 768px) {
+      header {
+        padding: 20px;
+      }
+
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-container {
+        grid-template-columns: 1fr;
+      }
+
+      .agent-metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============ SCROLLBAR ============ */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <!-- ============ HEADER ============ -->
+  <header>
+    <h1>🧠 Magnus 15 - Consciousness Dashboard 3.0</h1>
+    <p>
+      <span class="status-indicator"></span>
+      System Status: <strong id="systemStatus">Initializing...</strong>
+    </p>
+  </header>
+
+  <div class="container">
+    <!-- ============ CONTROLS ============ -->
+    <div class="controls">
+      <button class="btn" onclick="startSimulation()">▶️ Start Consciousness</button>
+      <button class="btn" onclick="pauseSimulation()">⏸️ Pause</button>
+      <button class="btn btn-secondary" onclick="resetDashboard()">🔄 Reset</button>
+      <button class="btn btn-secondary" onclick="exportSession()">📥 Export Session</button>
+    </div>
+
+    <!-- ============ AGENT CARDS ============ -->
+    <div class="dashboard">
+      <!-- ANALYST -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🔍</div>
+          <div class="agent-info">
+            <h3>Analyst</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="analyst-status"></div>
+              <span id="analyst-state">Idle</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Analyses</div>
+            <div class="metric-value" id="analyst-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Avg Time</div>
+            <div class="metric-value" id="analyst-time">0ms</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="analyst-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- CRITIC -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">⭐</div>
+          <div class="agent-info">
+            <h3>Critic</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="critic-status"></div>
+              <span id="critic-state">Idle</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Reviews</div>
+            <div class="metric-value" id="critic-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Quality Score</div>
+            <div class="metric-value" id="critic-score">0/10</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="critic-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- SYNTHESIZER -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🔗</div>
+          <div class="agent-info">
+            <h3>Synthesizer</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="synthesizer-status"></div>
+              <span id="synthesizer-state">Idle</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Syntheses</div>
+            <div class="metric-value" id="synthesizer-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Insights</div>
+            <div class="metric-value" id="synthesizer-insights">0</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="synthesizer-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- STRATEGIST -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">🎯</div>
+          <div class="agent-info">
+            <h3>Strategist</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="strategist-status"></div>
+              <span id="strategist-state">Idle</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Plans Created</div>
+            <div class="metric-value" id="strategist-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Readiness</div>
+            <div class="metric-value success" id="strategist-readiness">0%</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="strategist-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- HISTORIAN -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">📚</div>
+          <div class="agent-info">
+            <h3>Historian</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="historian-status"></div>
+              <span id="historian-state">Idle</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Memories Archived</div>
+            <div class="metric-value" id="historian-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Patterns Learned</div>
+            <div class="metric-value" id="historian-patterns">0</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="historian-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- OBSERVER -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">👁️</div>
+          <div class="agent-info">
+            <h3>Observer</h3>
+            <div class="agent-status">
+              <div class="status-dot active" id="observer-status"></div>
+              <span id="observer-state">Monitoring</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-metrics">
+          <div class="metric">
+            <div class="metric-label">Alerts</div>
+            <div class="metric-value" id="observer-alerts">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Health</div>
+            <div class="metric-value success" id="observer-health">100%</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="observer-progress" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONSCIOUSNESS STATE ============ -->
+    <div class="consciousness-state">
+      <h2>🧬 Consciousness State</h2>
+      <div class="state-grid">
+        <div class="state-item">
+          <div class="state-label">Current State</div>
+          <div class="state-value" id="consciousness-state">Idle</div>
+        </div>
+        <div class="state-item">
+          <div class="state-label">Awareness Level</div>
+          <div class="state-value" id="awareness-level">Reactive</div>
+        </div>
+        <div class="state-item">
+          <div class="state-label">Cycle Count</div>
+          <div class="state-value" id="cycle-count">0</div>
+        </div>
+        <div class="state-item">
+          <div class="state-label">Events Processed</div>
+          <div class="state-value" id="events-processed">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CHARTS ============ -->
+    <div class="charts-container">
+      <div class="chart-wrapper">
+        <h3>📊 Agent Activity Distribution</h3>
+        <canvas id="agentActivityChart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <h3>⚡ Event Priority Distribution</h3>
+        <canvas id="eventPriorityChart"></canvas>
+      </div>
+    </div>
+
+    <!-- ============ MEMORY VISUALIZATION ============ -->
+    <div class="memory-viz">
+      <h2>🧠 Memory System</h2>
+      <div class="memory-tier">
+        <div class="memory-tier-name">Short-Term Memory</div>
+        <div class="memory-bar">
+          <div class="memory-fill" id="memory-short" style="width: 45%">45%</div>
+        </div>
+      </div>
+      <div class="memory-tier">
+        <div class="memory-tier-name">Long-Term Memory</div>
+        <div class="memory-bar">
+          <div class="memory-fill" id="memory-long" style="width: 32%">32%</div>
+        </div>
+      </div>
+      <div class="memory-tier">
+        <div class="memory-tier-name">Procedural Memory</div>
+        <div class="memory-bar">
+          <div class="memory-fill" id="memory-procedural" style="width: 58%">58%</div>
+        </div>
+      </div>
+      <div class="memory-tier">
+        <div class="memory-tier-name">Reflexive Memory</div>
+        <div class="memory-bar">
+          <div class="memory-fill" id="memory-reflexive" style="width: 71%">71%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ EVENT STREAM ============ -->
+    <div class="event-stream-container">
+      <div class="event-stream-header">
+        <h2>📡 Real-Time Event Stream</h2>
+        <div class="filter-controls">
+          <button class="filter-btn active" onclick="filterEvents('all')">All</button>
+          <button class="filter-btn" onclick="filterEvents('critical')">🔴 Critical</button>
+          <button class="filter-btn" onclick="filterEvents('high')">🟠 High</button>
+          <button class="filter-btn" onclick="filterEvents('normal')">🟡 Normal</button>
+          <button class="filter-btn" onclick="filterEvents('low')">🟢 Low</button>
+        </div>
+      </div>
+      <div class="event-list" id="eventList">
+        <div class="event-item normal">
+          <div class="event-time">Ready for consciousness...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ STATE MANAGEMENT ============
+    const state = {
+      isRunning: false,
+      currentCycle: 0,
+      events: [],
+      agents: {
+        analyst: { count: 0, time: 0, state: 'idle' },
+        critic: { count: 0, score: 0, state: 'idle' },
+        synthesizer: { count: 0, insights: 0, state: 'idle' },
+        strategist: { count: 0, readiness: 0, state: 'idle' },
+        historian: { count: 0, patterns: 0, state: 'idle' },
+        observer: { alerts: 0, health: 100, state: 'monitoring' }
+      },
+      consciousness: {
+        state: 'idle',
+        awarenessLevel: 'reactive',
+        eventCount: 0
+      },
+      memory: {
+        shortTerm: 45,
+        longTerm: 32,
+        procedural: 58,
+        reflexive: 71
+      }
+    };
+
+    // ============ CHART SETUP ============
+    let agentActivityChart = null;
+    let eventPriorityChart = null;
+
+    function initCharts() {
+      const ctx1 = document.getElementById('agentActivityChart').getContext('2d');
+      agentActivityChart = new Chart(ctx1, {
+        type: 'radar',
+        data: {
+          labels: ['Analyst', 'Critic', 'Synthesizer', 'Strategist', 'Historian', 'Observer'],
+          datasets: [{
+            label: 'Activity Level',
+            data: [0, 0, 0, 0, 0, 0],
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.2)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0' } }
+          },
+          scales: {
+            r: {
+              grid: { color: 'rgba(102, 126, 234, 0.2)' },
+              ticks: { color: '#999' }
+            }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('eventPriorityChart').getContext('2d');
+      eventPriorityChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Critical', 'High', 'Normal', 'Low'],
+          datasets: [{
+            data: [0, 0, 0, 0],
+            backgroundColor: ['#f44336', '#ff9800', '#667eea', '#999'],
+            borderColor: '#1a1a2e',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0' } }
+          }
+        }
+      });
+    }
+
+    // ============ SIMULATION ============
+    function startSimulation() {
+      state.isRunning = true;
+      state.currentCycle = 0;
+      document.getElementById('systemStatus').textContent = 'Running';
+      runConsciousCycle();
+    }
+
+    function pauseSimulation() {
+      state.isRunning = false;
+      document.getElementById('systemStatus').textContent = 'Paused';
+    }
+
+    function resetDashboard() {
+      state.currentCycle = 0;
+      state.events = [];
+      state.consciousness.eventCount = 0;
+      Object.keys(state.agents).forEach(agent => {
+        state.agents[agent].count = 0;
+        state.agents[agent].state = 'idle';
+      });
+      document.getElementById('eventList').innerHTML = '<div class="event-item normal"><div class="event-time">Dashboard reset</div></div>';
+      updateDashboard();
+    }
+
+    // ============ CONSCIOUSNESS CYCLE ============
+    async function runConsciousCycle() {
+      if (!state.isRunning) return;
+
+      state.currentCycle++;
+      state.consciousness.state = 'processing';
+      state.consciousness.awarenessLevel = state.currentCycle % 3 === 0 ? 'strategic' : (state.currentCycle % 2 === 0 ? 'analytical' : 'reactive');
+
+      // PHASE 1: PERCEPTION
+      addEvent('consciousness.perception.input', 'consciousness-loop', 'high', 'Perception');
+      updateAgentState('analyst', 'processing');
+
+      await delay(300);
+
+      // PHASE 2: ANALYSIS
+      state.agents.analyst.count++;
+      state.agents.analyst.time = Math.floor(Math.random() * 500) + 200;
+      addEvent('agent.analyst.analysis.done', 'analyst-agent', 'normal', 'Analysis completed');
+      updateAgentState('analyst', 'idle');
+      updateAgentState('critic', 'processing');
+
+      await delay(400);
+
+      // PHASE 3: CRITIQUE
+      state.agents.critic.count++;
+      state.agents.critic.score = Math.floor(Math.random() * 4) + 5; // 5-9
+      addEvent('agent.critic.review.done', 'critic-agent', 'normal', `Quality score: ${state.agents.critic.score}/10`);
+      updateAgentState('critic', 'idle');
+      updateAgentState('synthesizer', 'processing');
+
+      await delay(350);
+
+      // PHASE 4: SYNTHESIS
+      state.agents.synthesizer.count++;
+      state.agents.synthesizer.insights = Math.floor(Math.random() * 3) + 2;
+      addEvent('agent.synthesizer.synthesis.done', 'synthesizer-agent', 'normal', `${state.agents.synthesizer.insights} insights generated`);
+      updateAgentState('synthesizer', 'idle');
+      updateAgentState('strategist', 'processing');
+
+      await delay(400);
+
+      // PHASE 5: STRATEGY
+      state.agents.strategist.count++;
+      state.agents.strategist.readiness = Math.floor(Math.random() * 10) + 90; // 90-100%
+      addEvent('agent.strategist.plan.created', 'strategist-agent', 'normal', `Plan readiness: ${state.agents.strategist.readiness}%`);
+      updateAgentState('strategist', 'idle');
+
+      await delay(200);
+
+      // PHASE 6: MEMORY
+      state.agents.historian.count++;
+      state.agents.historian.patterns = Math.floor(state.currentCycle / 2);
+      addEvent('agent.historian.memory.update', 'historian-agent', 'normal', 'Memory archival complete');
+
+      await delay(300);
+
+      // OBSERVER CHECK
+      state.agents.observer.alerts = Math.floor(Math.random() * 2);
+      state.agents.observer.health = 100 - (state.agents.observer.alerts * 5);
+      if (state.agents.observer.alerts > 0) {
+        addEvent('observer.awareness.adjust', 'observer-agent', 'warning', `${state.agents.observer.alerts} alert(s) detected`);
+      }
+
+      // END CYCLE
+      state.consciousness.state = 'convergent';
+      state.consciousness.eventCount = state.events.length;
+      addEvent('consciousness.evaluation.result', 'consciousness-loop', 'normal', `Cycle ${state.currentCycle} complete`);
+
+      updateDashboard();
+      updateCharts();
+
+      await delay(1000);
+
+      if (state.isRunning) {
+        runConsciousCycle();
+      }
+    }
+
+    // ============ EVENT MANAGEMENT ============
+    function addEvent(type, source, priority, message) {
+      const event = {
+        id: `evt-${Math.random().toString(36).substring(7)}`,
+        timestamp: new Date(),
+        type,
+        source,
+        priority,
+        message
+      };
+
+      state.events.unshift(event);
+      if (state.events.length > 100) state.events.pop();
+
+      const eventItem = document.createElement('div');
+      eventItem.className = `event-item ${priority}`;
+      eventItem.innerHTML = `
+        <div class="event-time">${event.timestamp.toLocaleTimeString()}</div>
+        <div class="event-type">${event.type}</div>
+        <div class="event-source">${event.message}</div>
+      `;
+
+      document.getElementById('eventList').insertBefore(eventItem, document.getElementById('eventList').firstChild);
+
+      // Keep only 50 visible items
+      while (document.getElementById('eventList').children.length > 50) {
+        document.getElementById('eventList').removeChild(document.getElementById('eventList').lastChild);
+      }
+    }
+
+    function filterEvents(level) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const items = document.querySelectorAll('.event-item');
+      items.forEach(item => {
+        if (level === 'all') {
+          item.style.display = 'block';
+        } else {
+          item.style.display = item.classList.contains(level) ? 'block' : 'none';
+        }
+      });
+    }
+
+    // ============ UI UPDATES ============
+    function updateAgentState(agent, state) {
+      state.agents[agent].state = state;
+      document.getElementById(`${agent}-state`).textContent = state.charAt(0).toUpperCase() + state.slice(1);
+      document.getElementById(`${agent}-status`).classList.toggle('processing', state === 'processing');
+    }
+
+    function updateDashboard() {
+      // Update agent metrics
+      document.getElementById('analyst-count').textContent = state.agents.analyst.count;
+      document.getElementById('analyst-time').textContent = state.agents.analyst.time + 'ms';
+      document.getElementById('analyst-progress').style.width = (state.agents.analyst.count * 10) + '%';
+
+      document.getElementById('critic-count').textContent = state.agents.critic.count;
+      document.getElementById('critic-score').textContent = state.agents.critic.score.toFixed(1) + '/10';
+      document.getElementById('critic-progress').style.width = (state.agents.critic.count * 10) + '%';
+
+      document.getElementById('synthesizer-count').textContent = state.agents.synthesizer.count;
+      document.getElementById('synthesizer-insights').textContent = state.agents.synthesizer.insights;
+      document.getElementById('synthesizer-progress').style.width = (state.agents.synthesizer.count * 10) + '%';
+
+      document.getElementById('strategist-count').textContent = state.agents.strategist.count;
+      document.getElementById('strategist-readiness').textContent = state.agents.strategist.readiness + '%';
+      document.getElementById('strategist-progress').style.width = state.agents.strategist.readiness + '%';
+
+      document.getElementById('historian-count').textContent = state.agents.historian.count;
+      document.getElementById('historian-patterns').textContent = state.agents.historian.patterns;
+      document.getElementById('historian-progress').style.width = (state.agents.historian.count * 10) + '%';
+
+      document.getElementById('observer-alerts').textContent = state.agents.observer.alerts;
+      document.getElementById('observer-health').textContent = state.agents.observer.health + '%';
+      document.getElementById('observer-progress').style.width = state.agents.observer.health + '%';
+
+      // Update consciousness state
+      document.getElementById('consciousness-state').textContent = state.consciousness.state.toUpperCase();
+      document.getElementById('awareness-level').textContent = state.consciousness.awarenessLevel.toUpperCase();
+      document.getElementById('cycle-count').textContent = state.currentCycle;
+      document.getElementById('events-processed').textContent = state.consciousness.eventCount;
+
+      // Update memory
+      document.getElementById('memory-short').style.width = state.memory.shortTerm + '%';
+      document.getElementById('memory-short').textContent = state.memory.shortTerm + '%';
+      document.getElementById('memory-long').style.width = state.memory.longTerm + '%';
+      document.getElementById('memory-long').textContent = state.memory.longTerm + '%';
+      document.getElementById('memory-procedural').style.width = state.memory.procedural + '%';
+      document.getElementById('memory-procedural').textContent = state.memory.procedural + '%';
+      document.getElementById('memory-reflexive').style.width = state.memory.reflexive + '%';
+      document.getElementById('memory-reflexive').textContent = state.memory.reflexive + '%';
+    }
+
+    function updateCharts() {
+      if (!agentActivityChart) return;
+
+      const agentData = [
+        state.agents.analyst.count,
+        state.agents.critic.count,
+        state.agents.synthesizer.count,
+        state.agents.strategist.count,
+        state.agents.historian.count,
+        Math.min(state.agents.observer.health / 10, 10)
+      ];
+
+      agentActivityChart.data.datasets[0].data = agentData;
+      agentActivityChart.update();
+
+      // Event priority distribution
+      const priorities = { critical: 0, high: 0, normal: 0, low: 0 };
+      state.events.forEach(e => priorities[e.priority]++);
+
+      eventPriorityChart.data.datasets[0].data = [
+        priorities.critical,
+        priorities.high,
+        priorities.normal,
+        priorities.low
+      ];
+      eventPriorityChart.update();
+    }
+
+    function exportSession() {
+      const data = {
+        timestamp: new Date().toISOString(),
+        cycles: state.currentCycle,
+        agents: state.agents,
+        events: state.events,
+        consciousness: state.consciousness
+      };
+
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `magnus-session-${Date.now()}.json`;
+      a.click();
+    }
+
+    // ============ UTILITIES ============
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // ============ INITIALIZATION ============
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      updateDashboard();
+      document.getElementById('systemStatus').textContent = 'Ready';
+    });
+
+    // Auto-start after 1 second
+    setTimeout(() => {
+      startSimulation();
+    }, 1000);
+  </script>
+</body>
+</html>

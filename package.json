@@ -5,7 +5,8 @@
   "type": "module",
   "main": "magnus-dashboard/modality-detector.js",
   "bin": {
-    "magnus": "./magnus-dashboard/cli.js"
+    "magnus": "./magnus-dashboard/cli.js",
+    "magnus-cli": "./magnus-cli.js"
   },
   "scripts": {
     "test": "node magnus-dashboard/modality-detector-load-test.js",
@@ -15,7 +16,8 @@
     "generate": "node magnus-dashboard/cli.js generate",
     "build": "echo 'No build step required for pure JavaScript'",
     "lint": "eslint magnus-dashboard --ext .js",
-    "docs:api": "node -e \"console.log('API documentation available at docs/API.md')\""
+    "docs:api": "node -e \"console.log('API documentation available at docs/API.md')\"",
+    "validate:convergence": "node magnus-cli.js --mode validate-convergence"
   },
   "keywords": [
     "magnus",
@@ -24,7 +26,8 @@
     "code-generation",
     "modality-detection",
     "ai",
-    "developer-tools"
+    "developer-tools",
+    "convergence-validation"
   ],
   "author": "Magnus AI",
   "license": "MIT",
@@ -57,6 +60,9 @@
     },
     "./cli": {
       "import": "./magnus-dashboard/cli.js"
+    },
+    "./magnus-cli": {
+      "import": "./magnus-cli.js"
     }
   },
   "funding": {

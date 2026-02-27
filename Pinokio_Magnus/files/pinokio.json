@@ -1,0 +1,46 @@
+{
+  "title": "Magnus 13.2 - Consciousness Orchestrator",
+  "description": "AI-driven development with consciousness framework",
+  "author": "Serigne DIAGNE",
+  "version": "13.2.0",
+  
+  "requirements": {
+    "memory": "4GB minimum",
+    "storage": "500MB",
+    "dependencies": ["Node.js 18+"]
+  },
+  
+  "install": [
+    {
+      "run": "npm install",
+      "path": "."
+    },
+    {
+      "run": "mkdir -p .magnus/knowledge .magnus/sessions",
+      "path": "."
+    }
+  ],
+  
+  "run": [
+    {
+      "cmd": "npm start",
+      "path": ".",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3001"
+      }
+    }
+  ],
+  
+  "web": [
+    {
+      "url": "http://localhost:3001/dashboard.html",
+      "name": "Magnus Dashboard",
+      "description": "Consciousness-driven development interface"
+    }
+  ],
+  
+  "logs": [
+    ".magnus/magnus.log"
+  ]
+}

@@ -1,0 +1,74 @@
+# REMOTION AGENT - DOCKER COMPOSE
+# Development and production configurations
+
+version: '3.8'
+
+services:
+  remotion-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: remotion-agent
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+      - LOG_LEVEL=info
+      - MAGNUS_API_URL=http://magnus-dashboard:3000
+      - MAGNUS_ENABLED=true
+      - SACRED_GEOMETRY_ENABLED=true
+      - FREQUENCY_432HZ_ENABLED=true
+      - GOLDEN_RATIO_MODE=true
+      - REMOTION_CONCURRENCY=4
+      - RENDER_QUALITY=balanced
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    networks:
+      - magnus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/remotion/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Development service with hot reload
+  remotion-agent-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: remotion-agent-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - MAGNUS_ENABLED=false
+    volumes:
+      - ./src:/app/src
+      - ./compositions:/app/compositions
+      - ./output:/app/output
+      - ./logs:/app/logs
+    command: npm run dev
+    networks:
+      - magnus-network
+    profiles:
+      - dev
+
+networks:
+  magnus-network:
+    external: true
+    name: magnus_13_network
+
+volumes:
+  output:
+  logs:
+  cache:

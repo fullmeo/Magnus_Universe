@@ -1,0 +1,59 @@
+{
+  "sessionId": "test-001",
+  "timestamp": "2026-02-27T08:33:46.266Z",
+  "mode": "ORCHESTRATED",
+  "analysis": {
+    "codeQuality": {
+      "score": 100,
+      "details": {
+        "lines": 383,
+        "hasErrorHandling": true,
+        "hasComments": true,
+        "hasTypes": true,
+        "assessment": "GOOD"
+      }
+    },
+    "semanticAlignment": {
+      "score": 80,
+      "details": {
+        "identifierCount": 31,
+        "patterns": [
+          "async-await",
+          "class-based",
+          "error-handling"
+        ],
+        "assessment": "ALIGNED"
+      }
+    },
+    "historicalConvergence": {
+      "pathCount": 0,
+      "averageScore": 50,
+      "converges": false,
+      "reason": "No historical data available"
+    },
+    "blocConvergence": {
+      "available": true,
+      "isRobust": false,
+      "pathCount": 0,
+      "averageScore": 0,
+      "interpretation": {
+        "level": "SINGULAR",
+        "meaning": "Code converge avec intention courante uniquement",
+        "implication": "Solution peut être trop spécifique",
+        "confidence": "À valider"
+      },
+      "score": 50
+    },
+    "feedback": {
+      "text": "test initial",
+      "score": 0.6
+    }
+  },
+  "finalScore": 71,
+  "result": "PARTIAL",
+  "recommendations": [
+    "◐ Solution partially converged",
+    "→ Address quality gaps before integration",
+    "→ Current score: 71%, target: 85%"
+  ]
+}

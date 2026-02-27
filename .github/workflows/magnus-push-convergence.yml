@@ -1,0 +1,184 @@
+name: Magnus Push Convergence
+
+# Déclenché à chaque push sur main ou develop
+# Envoie le diff et les fichiers modifiés à Kilo via webhook
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**.js'
+      - 'examples/**'
+      - '.magnus/**'
+
+jobs:
+  push-convergence:
+    name: Push Code Convergence to Kilo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌌 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for diff analysis
+
+      - name: 🔮 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci || npm install
+
+      # Extract session ID from commit message
+      - name: 📝 Extract Session ID from Commit
+        id: session
+        run: |
+          SESSION_ID="${{ github.sha }}"
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+
+          # Try to extract session-id from commit message
+          if [[ $COMMIT_MSG =~ session-([a-zA-Z0-9_-]+) ]]; then
+            SESSION_ID="session-${BASH_REMATCH[1]}"
+          fi
+
+          echo "SESSION_ID=$SESSION_ID" >> $GITHUB_OUTPUT
+          echo "COMMIT_MSG<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Get the diff
+      - name: 🔍 Analyze Code Changes
+        id: changes
+        run: |
+          # Get modified files
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} || echo "Initial commit")
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Get detailed diff
+          DIFF_CONTENT=$(git diff ${{ github.event.before }}..${{ github.sha }} || git show --stat)
+          echo "DIFF_CONTENT<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Run Magnus CLI validation on changed files
+      - name: 🎯 Run Magnus CLI Validation
+        id: validation
+        continue-on-error: true
+        run: |
+          # Validate JavaScript files
+          JS_FILES=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep '\.js$' || echo "")
+
+          if [ -n "$JS_FILES" ]; then
+            # Take the first JS file for validation
+            FIRST_FILE=$(echo "$JS_FILES" | head -1)
+
+            if [ -f "$FIRST_FILE" ]; then
+              echo "Validating: $FIRST_FILE"
+              node magnus-cli.js \
+                --mode validate-convergence \
+                --session-id "${{ steps.session.outputs.SESSION_ID }}" \
+                --code-path "$FIRST_FILE" \
+                --feedback "Pushed via GitHub Actions" \
+                --output ./.magnus/push-validation-report.json || true
+            fi
+          else
+            echo "No JavaScript files changed"
+          fi
+
+      # Read convergence report if it exists
+      - name: 📊 Read Convergence Report
+        id: report
+        if: always()
+        run: |
+          if [ -f "./.magnus/push-validation-report.json" ]; then
+            REPORT=$(cat ./.magnus/push-validation-report.json)
+            echo "REPORT<<EOF" >> $GITHUB_OUTPUT
+            echo "$REPORT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "REPORT={\"status\": \"no-report\"}" >> $GITHUB_OUTPUT
+          fi
+
+      # Prepare payload for Kilo webhook
+      - name: 🔗 Prepare Kilo Webhook Payload
+        id: payload
+        run: |
+          cat > /tmp/kilo-payload.json << 'EOF'
+          {
+            "event_type": "push_convergence",
+            "orchestrator": "Serigne",
+            "session_id": "${{ steps.session.outputs.SESSION_ID }}",
+            "github": {
+              "repository": "${{ github.repository }}",
+              "branch": "${{ github.ref_name }}",
+              "commit": "${{ github.sha }}",
+              "author": "${{ github.actor }}",
+              "message": "${{ steps.session.outputs.COMMIT_MSG }}",
+              "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            },
+            "changes": {
+              "modified_files": "${{ steps.changes.outputs.CHANGED_FILES }}",
+              "diff_summary": "Available in GitHub"
+            },
+            "convergence_report": ${{ steps.report.outputs.REPORT }},
+            "action_required": "Process convergence analysis and update learning"
+          }
+          EOF
+
+          cat /tmp/kilo-payload.json
+
+      # Send to Kilo via webhook
+      - name: 🚀 Send to Kilo Webhook
+        id: webhook
+        continue-on-error: true
+        run: |
+          WEBHOOK_URL="${{ secrets.KILO_WEBHOOK_1_URL }}"
+
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "⚠️  KILO_WEBHOOK_1_URL not configured"
+            echo "webhook_status=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Send the webhook
+          RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/kilo-payload.json \
+            -w "\n%{http_code}" \
+            -s)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo "webhook_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Webhook sent successfully (HTTP $HTTP_CODE)"
+          else
+            echo "webhook_status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Webhook failed (HTTP $HTTP_CODE): $BODY"
+          fi
+
+      # Summary
+      - name: 📋 Workflow Summary
+        if: always()
+        run: |
+          echo "## Magnus Push Convergence Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Session ID**: ${{ steps.session.outputs.SESSION_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Orchestrator**: Serigne" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Webhook Status**: ${{ steps.webhook.outputs.webhook_status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changed Files" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changes.outputs.CHANGED_FILES }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

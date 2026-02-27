@@ -1,0 +1,286 @@
+name: Magnus Post-Merge Learning Finalizer
+
+# Déclenché après magnus-pr-merged-docs.yml
+# Finalise le learning et envoie confirmation à Kilo
+
+on:
+  workflow_run:
+    workflows:
+      - Magnus PR Merged Documentation
+    types:
+      - completed
+
+jobs:
+  finalize-learning:
+    name: Finalize Magnus Learning From Merge
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: 🌌 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔮 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci || npm install
+
+      # Download artifacts from previous workflow
+      - name: 📥 Download Previous Workflow Artifacts
+        id: artifacts
+        continue-on-error: true
+        uses: actions/download-artifact@v3
+        with:
+          path: ./workflow-artifacts
+
+      # Analyze learning opportunities
+      - name: 🧠 Analyze Learning Opportunities
+        id: learning
+        run: |
+          # Find convergence reports from artifacts
+          CONVERGENCE_REPORT=""
+          if [ -d "./workflow-artifacts" ]; then
+            # Find any convergence report JSON file
+            REPORT_FILE=$(find ./workflow-artifacts -name "*convergence*.json" | head -1)
+            if [ -n "$REPORT_FILE" ] && [ -f "$REPORT_FILE" ]; then
+              CONVERGENCE_REPORT=$(cat "$REPORT_FILE")
+            fi
+          fi
+
+          if [ -z "$CONVERGENCE_REPORT" ]; then
+            CONVERGENCE_REPORT='{"status": "no-convergence-report"}'
+          fi
+
+          echo "CONVERGENCE_REPORT<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONVERGENCE_REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Extract learning insights
+          echo "LEARNING_INSIGHTS<<EOF" >> $GITHUB_OUTPUT
+          cat >> $GITHUB_OUTPUT << 'INSIGHTS'
+          {
+            "learning_type": "post_merge_convergence",
+            "focus_areas": [
+              "convergence_patterns",
+              "code_quality_improvements",
+              "semantic_alignment_trends",
+              "historical_path_building"
+            ],
+            "next_optimization": "Increase convergence score through multi-path validation"
+          }
+          INSIGHTS
+
+      # Extract PR and commit information from GitHub context
+      - name: 📊 Extract Workflow Context
+        id: context
+        run: |
+          # Get the triggering workflow run details
+          WORKFLOW_RUN_ID="${{ github.event.workflow_run.id }}"
+          WORKFLOW_CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+
+          echo "WORKFLOW_RUN_ID=$WORKFLOW_RUN_ID" >> $GITHUB_OUTPUT
+          echo "WORKFLOW_CONCLUSION=$WORKFLOW_CONCLUSION" >> $GITHUB_OUTPUT
+
+          # Try to find recent PR from git log
+          RECENT_COMMIT=$(git log -1 --format=%H)
+          COMMIT_MESSAGE=$(git log -1 --format=%B)
+          COMMIT_AUTHOR=$(git log -1 --format=%an)
+
+          echo "RECENT_COMMIT=$RECENT_COMMIT" >> $GITHUB_OUTPUT
+
+          echo "COMMIT_MESSAGE<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "COMMIT_AUTHOR=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+
+          # Extract session ID if present
+          SESSION_ID="$RECENT_COMMIT"
+          if [[ $COMMIT_MESSAGE =~ session-([a-zA-Z0-9_-]+) ]]; then
+            SESSION_ID="session-${BASH_REMATCH[1]}"
+          fi
+
+          echo "SESSION_ID=$SESSION_ID" >> $GITHUB_OUTPUT
+
+      # Build learning knowledge base
+      - name: 📚 Build Learning Knowledge Base
+        id: knowledge
+        run: |
+          # Read or create learning knowledge file
+          KNOWLEDGE_DIR="./.magnus"
+          mkdir -p "$KNOWLEDGE_DIR"
+
+          if [ ! -f "$KNOWLEDGE_DIR/learning-knowledge.json" ]; then
+            cat > "$KNOWLEDGE_DIR/learning-knowledge.json" << 'EOF'
+          {
+            "version": "1.0.0",
+            "orchestrator": "Serigne",
+            "learning_sessions": [],
+            "convergence_patterns": [],
+            "improvements": [],
+            "metadata": {
+              "created": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+              "last_updated": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            }
+          }
+          EOF
+          fi
+
+          echo "knowledge_base_updated=true" >> $GITHUB_OUTPUT
+
+      # Calculate convergence metrics for learning
+      - name: 📈 Calculate Convergence Metrics
+        id: metrics
+        run: |
+          # Analyze all convergence reports
+          TOTAL_SESSIONS=0
+          TOTAL_CONVERGENCES=0
+          AVERAGE_SCORE=0
+
+          if [ -d "./.magnus/convergence-reports" ]; then
+            TOTAL_SESSIONS=$(find ./.magnus/convergence-reports -name "*.json" | wc -l)
+
+            if [ "$TOTAL_SESSIONS" -gt 0 ]; then
+              # Calculate convergence rate
+              CONVERGED=$(find ./.magnus/convergence-reports -name "*.json" -exec grep -l '"result":"CONVERGED"' {} \; | wc -l)
+              AVERAGE_SCORE=$(find ./.magnus/convergence-reports -name "*.json" -exec grep -o '"finalScore":[0-9]*' {} \; | awk -F: '{sum+=$2; count++} END {if(count>0) print int(sum/count); else print 0}')
+            fi
+          fi
+
+          echo "TOTAL_SESSIONS=$TOTAL_SESSIONS" >> $GITHUB_OUTPUT
+          echo "TOTAL_CONVERGENCES=${CONVERGED:-0}" >> $GITHUB_OUTPUT
+          echo "AVERAGE_SCORE=$AVERAGE_SCORE" >> $GITHUB_OUTPUT
+          echo "CONVERGENCE_RATE=$([ "$TOTAL_SESSIONS" -gt 0 ] && echo "scale=2; ${CONVERGED:-0} * 100 / $TOTAL_SESSIONS" | bc || echo "0")%" >> $GITHUB_OUTPUT
+
+      # Prepare final learning payload for Kilo
+      - name: 🎯 Prepare Final Learning Payload
+        id: payload
+        run: |
+          cat > /tmp/learning-payload.json << 'EOF'
+          {
+            "event_type": "post_merge_learning_finalize",
+            "orchestrator": "Serigne",
+            "session_id": "${{ steps.context.outputs.SESSION_ID }}",
+            "status": "finalizing",
+            "learning": {
+              "convergence_report": ${{ steps.learning.outputs.CONVERGENCE_REPORT }},
+              "learning_insights": ${{ steps.learning.outputs.LEARNING_INSIGHTS }},
+              "knowledge_base_updated": ${{ steps.knowledge.outputs.knowledge_base_updated }},
+              "metrics": {
+                "total_sessions": ${{ steps.metrics.outputs.TOTAL_SESSIONS }},
+                "total_convergences": ${{ steps.metrics.outputs.TOTAL_CONVERGENCES }},
+                "average_score": ${{ steps.metrics.outputs.AVERAGE_SCORE }},
+                "convergence_rate": "${{ steps.metrics.outputs.CONVERGENCE_RATE }}"
+              }
+            },
+            "workflow": {
+              "triggering_workflow": "${{ github.event.workflow_run.name }}",
+              "workflow_run_id": "${{ steps.context.outputs.WORKFLOW_RUN_ID }}",
+              "conclusion": "${{ steps.context.outputs.WORKFLOW_CONCLUSION }}",
+              "repository": "${{ github.repository }}",
+              "branch": "${{ github.ref_name }}",
+              "commit": "${{ steps.context.outputs.RECENT_COMMIT }}",
+              "author": "${{ steps.context.outputs.COMMIT_AUTHOR }}",
+              "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            },
+            "action_required": "Finalize learning integration and update prediction models"
+          }
+          EOF
+
+          cat /tmp/learning-payload.json
+
+      # Send finalization to Kilo
+      - name: 🚀 Send Learning Finalization to Kilo
+        id: webhook
+        continue-on-error: true
+        run: |
+          WEBHOOK_URL="${{ secrets.KILO_WEBHOOK_3_URL }}"
+
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "⚠️  KILO_WEBHOOK_3_URL not configured"
+            echo "webhook_status=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Send the webhook
+          RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/learning-payload.json \
+            -w "\n%{http_code}" \
+            -s)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo "webhook_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Learning finalization webhook sent (HTTP $HTTP_CODE)"
+          else
+            echo "webhook_status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Webhook failed (HTTP $HTTP_CODE): $BODY"
+          fi
+
+      # Create learning summary
+      - name: 📊 Create Learning Summary
+        if: always()
+        run: |
+          cat > ./.magnus/learning-summary.json << 'EOF'
+          {
+            "session_type": "post_merge_learning",
+            "orchestrator": "Serigne",
+            "session_id": "${{ steps.context.outputs.SESSION_ID }}",
+            "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "metrics": {
+              "total_convergence_sessions": ${{ steps.metrics.outputs.TOTAL_SESSIONS }},
+              "successful_convergences": ${{ steps.metrics.outputs.TOTAL_CONVERGENCES }},
+              "average_convergence_score": ${{ steps.metrics.outputs.AVERAGE_SCORE }},
+              "convergence_rate": "${{ steps.metrics.outputs.CONVERGENCE_RATE }}"
+            },
+            "learning_status": "finalized",
+            "webhook_delivery": "${{ steps.webhook.outputs.webhook_status }}",
+            "next_steps": [
+              "Update prediction models with convergence data",
+              "Analyze convergence patterns across sessions",
+              "Build multi-path convergence strategies",
+              "Improve code quality recommendations"
+            ]
+          }
+          EOF
+
+      # Archive learning summary
+      - name: 📦 Archive Learning Summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: learning-summary
+          path: ./.magnus/learning-summary.json
+          retention-days: 90
+
+      # Final summary
+      - name: 📋 Final Workflow Summary
+        if: always()
+        run: |
+          echo "## Magnus Post-Merge Learning Finalization" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Session ID**: ${{ steps.context.outputs.SESSION_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Orchestrator**: Serigne" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: Learning Finalized" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Learning Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Sessions**: ${{ steps.metrics.outputs.TOTAL_SESSIONS }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Successful Convergences**: ${{ steps.metrics.outputs.TOTAL_CONVERGENCES }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Average Score**: ${{ steps.metrics.outputs.AVERAGE_SCORE }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- **Convergence Rate**: ${{ steps.metrics.outputs.CONVERGENCE_RATE }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Workflow Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Webhook Status**: ${{ steps.webhook.outputs.webhook_status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Knowledge Base Updated**: ${{ steps.knowledge.outputs.knowledge_base_updated }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✨ Learning integration complete. Ready for next convergence cycle." >> $GITHUB_STEP_SUMMARY

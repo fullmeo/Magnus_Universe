@@ -1,0 +1,55 @@
+{
+  "sessionId": "test-session-002",
+  "timestamp": "2026-02-27T04:47:38.130Z",
+  "mode": "ORCHESTRATED",
+  "analysis": {
+    "codeQuality": {
+      "score": 85,
+      "details": {
+        "lines": 159,
+        "hasErrorHandling": false,
+        "hasComments": true,
+        "hasTypes": true,
+        "assessment": "GOOD"
+      }
+    },
+    "semanticAlignment": {
+      "score": 50,
+      "details": {
+        "identifierCount": 18,
+        "patterns": [],
+        "assessment": "PARTIAL"
+      }
+    },
+    "historicalConvergence": {
+      "pathCount": 0,
+      "averageScore": 50,
+      "converges": false,
+      "reason": "No historical data available"
+    },
+    "blocConvergence": {
+      "available": true,
+      "isRobust": false,
+      "pathCount": 0,
+      "averageScore": 0,
+      "interpretation": {
+        "level": "SINGULAR",
+        "meaning": "Code converge avec intention courante uniquement",
+        "implication": "Solution peut être trop spécifique",
+        "confidence": "À valider"
+      },
+      "score": 50
+    },
+    "feedback": {
+      "text": "perfect solution",
+      "score": 0.9
+    }
+  },
+  "finalScore": 63,
+  "result": "FAILED",
+  "recommendations": [
+    "✗ Solution did not converge",
+    "→ Refine and retry validation",
+    "→ Current score: 63%, target: 70%+"
+  ]
+}

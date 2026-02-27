@@ -1,0 +1,45 @@
+{
+  "name": "magnus-14-unified",
+  "version": "14.0.0",
+  "description": "Magnus 14 - Unified Consciousness Framework. Where La Boétie meets BlocConvergence. Where consciousness emerges from structured refusal.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/magnus-14-unified.test.js",
+    "demo": "node index.js",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "magnus",
+    "consciousness",
+    "code-generation",
+    "orchestration",
+    "la-boetie",
+    "refusal",
+    "convergence",
+    "philosophy"
+  ],
+  "author": "Serigne Diaw",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serigne-diaw/magnus-14-unified"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./philosophy": "./philosophy/la-boetie-refusal.js",
+    "./core": "./src/magnus-14-core.js",
+    "./engines/bloc-convergence": "./engines/bloc-convergence-engine.js"
+  },
+  "files": [
+    "index.js",
+    "src/",
+    "philosophy/",
+    "engines/",
+    "README.md",
+    "LICENSE"
+  ]
+}

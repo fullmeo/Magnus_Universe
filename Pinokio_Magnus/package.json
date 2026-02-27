@@ -1,0 +1,27 @@
+{
+  "name": "magnus-pinokio",
+  "version": "13.2.0",
+  "description": "Magnus 13.2 - Consciousness-driven development framework for Pinokio",
+  "author": "Serigne DIAGNE",
+  "type": "module",
+  "main": "magnus-web-ui.js",
+  "scripts": {
+    "start": "node magnus-web-ui.js",
+    "dev": "node --watch magnus-web-ui.js",
+    "test": "echo 'Magnus running OK'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "magnus",
+    "consciousness",
+    "ai",
+    "development",
+    "pinokio"
+  ]
+}

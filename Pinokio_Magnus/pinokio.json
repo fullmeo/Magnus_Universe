@@ -1,0 +1,20 @@
+{
+  "cmds": {
+    "pinokio": ">=2.0.0"
+  },
+  "title": "Magnus 13.2",
+  "description": "Consciousness-driven development framework - AI orchestration via Pinokio",
+  "icon": "icon.png",
+  "menu": [
+    {
+      "text": "Install",
+      "href": "install.json",
+      "icon": "fa-solid fa-plug"
+    },
+    {
+      "text": "Start",
+      "href": "start.json",
+      "icon": "fa-solid fa-play"
+    }
+  ]
+}

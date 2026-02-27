@@ -1,0 +1,281 @@
+{
+  "projectId": "test-project-simulation",
+  "timestamp": "2025-12-23T08:09:55.245Z",
+  "estimationLearnings": {
+    "accuracy": "96.33",
+    "complexityAccuracy": "97.14",
+    "effortAccuracy": "96.00",
+    "timelineAccuracy": "95.83",
+    "complexityDrivers": [],
+    "effortDrivers": [
+      {
+        "factor": "unexpected_complexity",
+        "impact": 2
+      },
+      {
+        "factor": "learning_curve",
+        "impact": 0
+      },
+      {
+        "factor": "scope_creep",
+        "impact": 0
+      }
+    ],
+    "adjustmentFactors": {
+      "complexityMultiplier": 1.0285714285714287,
+      "effortMultiplier": 1.04,
+      "timelineMultiplier": 1.0416666666666667
+    }
+  },
+  "decisionLearnings": {
+    "totalDecisions": 2,
+    "successRate": "100.00",
+    "successfulDecisions": [
+      {
+        "decision": "Use modern framework",
+        "clarity": 0.92,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Implement caching",
+        "clarity": 0.88,
+        "complexity": 5,
+        "precedent": true,
+        "outcome": "success"
+      }
+    ],
+    "failedDecisions": [],
+    "successFactors": {
+      "highClarity": 1,
+      "hadPrecedent": 2,
+      "lowComplexity": 0
+    },
+    "failureFactors": {
+      "lowClarity": 0,
+      "noPrecedent": 0,
+      "highComplexity": 0
+    },
+    "patterns": {
+      "clarityCorrelation": 100,
+      "complexityCorrelation": 0,
+      "precedentCorrelation": 100
+    }
+  },
+  "riskLearnings": {
+    "totalRisks": 1,
+    "materialized": 0,
+    "mitigated": 1,
+    "ignored": 0,
+    "materializationRate": 0,
+    "riskPatterns": {
+      "byCategory": {
+        "performance": [
+          {
+            "category": "performance",
+            "description": "Potential scalability issues",
+            "materialized": false,
+            "mitigated": true,
+            "earlySignals": [
+              "load_testing",
+              "optimization"
+            ]
+          }
+        ]
+      },
+      "byDomain": {
+        "undefined": [
+          {
+            "category": "performance",
+            "description": "Potential scalability issues",
+            "materialized": false,
+            "mitigated": true,
+            "earlySignals": [
+              "load_testing",
+              "optimization"
+            ]
+          }
+        ]
+      },
+      "predictors": []
+    },
+    "earlyWarningSignals": []
+  },
+  "architectureLearnings": {
+    "linesOfCode": 3200,
+    "files": 10,
+    "complexity": 7.2,
+    "patterns": {
+      "fileStructure": {
+        "totalFiles": 10,
+        "averageSize": 0,
+        "distribution": {}
+      },
+      "moduleSizes": {
+        "modules": [
+          {
+            "name": "core",
+            "size": 500
+          },
+          {
+            "name": "api",
+            "size": 400
+          },
+          {
+            "name": "ui",
+            "size": 300
+          }
+        ],
+        "averageSize": 400,
+        "largestModule": "core"
+      },
+      "dependencyGraph": {
+        "dependencies": [
+          "core -> api",
+          "ui -> api"
+        ],
+        "depth": 2
+      },
+      "goldenRatioPresence": false,
+      "pythagoreanHarmony": {
+        "found": false,
+        "ratios": []
+      }
+    }
+  },
+  "timeDistributionLearnings": {
+    "totalTime": 50,
+    "distribution": {
+      "understanding": 5,
+      "complexity": 7,
+      "architecture": 9,
+      "implementation": 18,
+      "testing": 6,
+      "optimization": 3,
+      "documentation": 2,
+      "security": 0,
+      "delivery": 0
+    },
+    "bottlenecks": []
+  },
+  "confidence": 100,
+  "applicability": {
+    "domains": [
+      "web_application"
+    ],
+    "similarityThreshold": 0.7,
+    "applicableProjectTypes": [
+      "full_stack"
+    ]
+  },
+  "rawOutcome": {
+    "predicted": {
+      "complexity": 7,
+      "effort": 50,
+      "timeline": 48,
+      "clarity": 0.9
+    },
+    "actual": {
+      "complexity": 7.2,
+      "effort": 52,
+      "timeline": 50,
+      "clarity": 0.9
+    },
+    "decisions": [
+      {
+        "decision": "Use modern framework",
+        "clarity": 0.92,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Implement caching",
+        "clarity": 0.88,
+        "complexity": 5,
+        "precedent": true,
+        "outcome": "success"
+      }
+    ],
+    "risks": [
+      {
+        "category": "performance",
+        "description": "Potential scalability issues",
+        "materialized": false,
+        "mitigated": true,
+        "earlySignals": [
+          "load_testing",
+          "optimization"
+        ]
+      }
+    ],
+    "codeMetrics": {
+      "linesOfCode": 3200,
+      "files": 10,
+      "complexity": 7.2,
+      "modules": [
+        {
+          "name": "core",
+          "size": 500
+        },
+        {
+          "name": "api",
+          "size": 400
+        },
+        {
+          "name": "ui",
+          "size": 300
+        }
+      ],
+      "averageModuleSize": 400,
+      "largestModule": "core",
+      "dependencies": [
+        "core -> api",
+        "ui -> api"
+      ],
+      "dependencyDepth": 2
+    },
+    "phases": {
+      "phase1": {
+        "duration": 5,
+        "predicted": 5
+      },
+      "phase2": {
+        "duration": 7,
+        "predicted": 7
+      },
+      "phase3": {
+        "duration": 9,
+        "predicted": 8
+      },
+      "phase4": {
+        "duration": 18,
+        "predicted": 16
+      },
+      "phase5": {
+        "duration": 6,
+        "predicted": 6
+      },
+      "phase6": {
+        "duration": 3,
+        "predicted": 3
+      },
+      "phase7": {
+        "duration": 2,
+        "predicted": 2
+      },
+      "phase8": {
+        "duration": 0,
+        "predicted": 1
+      },
+      "phase9": {
+        "duration": 0,
+        "predicted": 0
+      }
+    },
+    "domain": "web_application",
+    "projectType": "full_stack",
+    "quality": 92
+  }
+}

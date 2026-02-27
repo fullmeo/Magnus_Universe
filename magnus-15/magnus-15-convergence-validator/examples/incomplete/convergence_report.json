@@ -1,0 +1,59 @@
+{
+  "verdict": "NON_CONVERGED",
+  "scores": {
+    "recognition": 42.0,
+    "inevitability": 55.0,
+    "coherence": 72.0
+  },
+  "details": {
+    "recognition": {
+      "score": 42.0,
+      "components": {
+        "completeness": 30.0,
+        "purity": 30.0,
+        "semantic_alignment": 60.0
+      },
+      "notes": {
+        "completeness": "3/10 constraints traced: load_data, process, count. Missing: validate, filter, transform, aggregate, reports, error handling, batch, export",
+        "purity": "3 functions for 10 requirements = 30% purity",
+        "semantic_alignment": "LLM gives partial credit — code is correct but incomplete"
+      }
+    },
+    "inevitability": {
+      "score": 55.0,
+      "components": {
+        "constraint_saturation": 50.0,
+        "alternative_delta": 60.0,
+        "minimalism": 55.0
+      },
+      "notes": {
+        "constraint_saturation": "Only 3/10 hard constraints satisfied",
+        "alternative_delta": "Many simpler and equivalent alternatives exist for this partial implementation",
+        "minimalism": "Code is too simple relative to declared intent"
+      }
+    },
+    "coherence": {
+      "score": 72.0,
+      "components": {
+        "naming": 100.0,
+        "layer_consistency": 70.0,
+        "error_unity": 100.0,
+        "conceptual_unity": 65.0
+      },
+      "notes": {
+        "naming": "Clean naming on the 3 functions that exist",
+        "layer_consistency": "Incomplete scope makes layer analysis partial",
+        "error_unity": "No error handling at all (by design — shows missing requirement)",
+        "conceptual_unity": "Coherent but incomplete paradigm"
+      }
+    }
+  },
+  "reproducibility": {
+    "model": "claude-3-5-sonnet-20241022",
+    "seed": 42,
+    "validator_version": "1.0-FIXED",
+    "timestamp": "2026-02-23T00:00:00.000000",
+    "purpose": "Intentional NON_CONVERGED example — demonstrates validator correctly detecting incomplete implementation",
+    "note": "LLM components require ANTHROPIC_API_KEY. Run: python convergence_validator.py examples/incomplete"
+  }
+}

@@ -1,0 +1,351 @@
+{
+  "projectId": "tserouf-v4.1",
+  "timestamp": "2025-12-15T10:00:00.000Z",
+  "estimationLearnings": {
+    "accuracy": "96.50",
+    "complexityAccuracy": "98.00",
+    "effortAccuracy": "95.00",
+    "timelineAccuracy": "96.50",
+    "complexityDrivers": [
+      {
+        "factor": "voice_detection",
+        "impact": "high",
+        "adjustment": 2.0
+      },
+      {
+        "factor": "micro_interactions",
+        "impact": "medium",
+        "adjustment": 1.0
+      }
+    ],
+    "effortDrivers": [
+      {
+        "factor": "unexpected_complexity",
+        "impact": 5
+      },
+      {
+        "factor": "learning_curve",
+        "impact": 3
+      },
+      {
+        "factor": "scope_creep",
+        "impact": 0
+      }
+    ],
+    "adjustmentFactors": {
+      "complexityMultiplier": 1.02,
+      "effortMultiplier": 0.99,
+      "timelineMultiplier": 1.01
+    }
+  },
+  "decisionLearnings": {
+    "totalDecisions": 5,
+    "successRate": "100.00",
+    "successfulDecisions": [
+      {
+        "decision": "Use Web Audio API",
+        "clarity": 0.95,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Implement fuzzy matching",
+        "clarity": 0.92,
+        "complexity": 7,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Use local name database",
+        "clarity": 0.88,
+        "complexity": 4,
+        "precedent": false,
+        "outcome": "success"
+      }
+    ],
+    "failedDecisions": [],
+    "successFactors": {
+      "highClarity": 3,
+      "hadPrecedent": 2,
+      "lowComplexity": 1
+    },
+    "failureFactors": {
+      "lowClarity": 0,
+      "noPrecedent": 0,
+      "highComplexity": 0
+    },
+    "patterns": {
+      "clarityCorrelation": 100,
+      "complexityCorrelation": 100,
+      "precedentCorrelation": 100
+    }
+  },
+  "riskLearnings": {
+    "totalRisks": 3,
+    "materialized": 1,
+    "mitigated": 2,
+    "ignored": 0,
+    "materializationRate": 33.33,
+    "riskPatterns": {
+      "byCategory": {
+        "language_processing": [
+          {
+            "category": "language_processing",
+            "description": "Hebrew name database limitations",
+            "materialized": true,
+            "mitigated": false,
+            "earlySignals": [
+              "limited_dataset",
+              "language_specific"
+            ]
+          }
+        ],
+        "audio_analysis": [
+          {
+            "category": "audio_analysis",
+            "description": "Voice quality variance",
+            "materialized": false,
+            "mitigated": true,
+            "earlySignals": [
+              "microphone_quality",
+              "environment_noise"
+            ]
+          }
+        ]
+      },
+      "byDomain": {
+        "hebrew_language": [
+          {
+            "domain": "hebrew_language",
+            "description": "Name database limitation",
+            "materialized": true
+          }
+        ]
+      },
+      "predictors": [
+        {
+          "riskType": "language_processing",
+          "earlySignals": [
+            "limited_dataset",
+            "language_specific"
+          ],
+          "leadTime": 2
+        }
+      ]
+    },
+    "earlyWarningSignals": [
+      "limited_dataset",
+      "language_specific"
+    ]
+  },
+  "architectureLearnings": {
+    "linesOfCode": 2847,
+    "files": 8,
+    "complexity": 7.8,
+    "patterns": {
+      "fileStructure": {
+        "totalFiles": 8,
+        "averageSize": 355,
+        "distribution": {
+          "core": 3,
+          "utils": 2,
+          "ui": 3
+        }
+      },
+      "moduleSizes": {
+        "modules": [
+          {
+            "name": "voice-detector",
+            "size": 450
+          },
+          {
+            "name": "fuzzy-matcher",
+            "size": 380
+          },
+          {
+            "name": "ui-controller",
+            "size": 290
+          }
+        ],
+        "averageSize": 373,
+        "largestModule": "voice-detector"
+      },
+      "dependencyGraph": {
+        "dependencies": [
+          "voice-detector -> fuzzy-matcher",
+          "ui-controller -> voice-detector",
+          "ui-controller -> fuzzy-matcher"
+        ],
+        "depth": 2
+      },
+      "goldenRatioPresence": false,
+      "pythagoreanHarmony": {
+        "found": false,
+        "ratios": []
+      }
+    }
+  },
+  "timeDistributionLearnings": {
+    "totalTime": 80,
+    "distribution": {
+      "understanding": 8,
+      "complexity": 10,
+      "architecture": 12,
+      "implementation": 28,
+      "testing": 10,
+      "optimization": 6,
+      "documentation": 4,
+      "security": 2,
+      "delivery": 0
+    },
+    "bottlenecks": [
+      {
+        "phase": "implementation",
+        "expected": 20,
+        "actual": 28,
+        "overrun": "40.00%"
+      }
+    ]
+  },
+  "confidence": 100,
+  "applicability": {
+    "domains": [
+      "hebrew_language",
+      "voice_processing"
+    ],
+    "similarityThreshold": 0.7,
+    "applicableProjectTypes": [
+      "language_app"
+    ]
+  },
+  "rawOutcome": {
+    "id": "tserouf-v4.1",
+    "predicted": {
+      "complexity": 7.6,
+      "effort": 81,
+      "timeline": 79,
+      "clarity": 0.92
+    },
+    "actual": {
+      "complexity": 7.8,
+      "effort": 80,
+      "timeline": 80,
+      "clarity": 0.92
+    },
+    "decisions": [
+      {
+        "decision": "Use Web Audio API",
+        "clarity": 0.95,
+        "complexity": 6,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Implement fuzzy matching",
+        "clarity": 0.92,
+        "complexity": 7,
+        "precedent": true,
+        "outcome": "success"
+      },
+      {
+        "decision": "Use local name database",
+        "clarity": 0.88,
+        "complexity": 4,
+        "precedent": false,
+        "outcome": "success"
+      }
+    ],
+    "risks": [
+      {
+        "category": "language_processing",
+        "domain": "hebrew_language",
+        "description": "Hebrew name database limitations",
+        "materialized": true,
+        "mitigated": false,
+        "earlySignals": [
+          "limited_dataset",
+          "language_specific"
+        ]
+      },
+      {
+        "category": "audio_analysis",
+        "description": "Voice quality variance",
+        "materialized": false,
+        "mitigated": true,
+        "earlySignals": [
+          "microphone_quality",
+          "environment_noise"
+        ]
+      }
+    ],
+    "codeMetrics": {
+      "linesOfCode": 2847,
+      "files": 8,
+      "complexity": 7.8,
+      "modules": [
+        {
+          "name": "voice-detector",
+          "size": 450
+        },
+        {
+          "name": "fuzzy-matcher",
+          "size": 380
+        },
+        {
+          "name": "ui-controller",
+          "size": 290
+        }
+      ],
+      "averageModuleSize": 373,
+      "largestModule": "voice-detector",
+      "dependencies": [
+        "voice-detector -> fuzzy-matcher",
+        "ui-controller -> voice-detector",
+        "ui-controller -> fuzzy-matcher"
+      ],
+      "dependencyDepth": 2
+    },
+    "phases": {
+      "phase1": {
+        "duration": 8,
+        "predicted": 8
+      },
+      "phase2": {
+        "duration": 10,
+        "predicted": 10
+      },
+      "phase3": {
+        "duration": 12,
+        "predicted": 12
+      },
+      "phase4": {
+        "duration": 28,
+        "predicted": 20
+      },
+      "phase5": {
+        "duration": 10,
+        "predicted": 10
+      },
+      "phase6": {
+        "duration": 6,
+        "predicted": 6
+      },
+      "phase7": {
+        "duration": 4,
+        "predicted": 4
+      },
+      "phase8": {
+        "duration": 2,
+        "predicted": 2
+      },
+      "phase9": {
+        "duration": 0,
+        "predicted": 0
+      }
+    },
+    "domain": "hebrew_language",
+    "projectType": "language_app",
+    "quality": 95
+  }
+}

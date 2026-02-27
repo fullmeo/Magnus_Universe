@@ -1,0 +1,32 @@
+{
+  "ts": 1767271715391,
+  "summary": {
+    "counters": {
+      "analyze": 50,
+      "generation": 50,
+      "validation": 50,
+      "errors": 0
+    },
+    "analyze": {
+      "count": 50,
+      "avg": 3,
+      "p50": 1,
+      "p95": 22,
+      "p99": 30
+    },
+    "generation": {
+      "count": 50,
+      "avg": 2136,
+      "p50": 2150,
+      "p95": 2729,
+      "p99": 2779
+    },
+    "validation": {
+      "count": 50,
+      "avg": 0,
+      "p50": 0,
+      "p95": 1,
+      "p99": 4
+    }
+  }
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magnus 13.2 - Consciousness Orchestrator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    header h1 { font-size: 2em; margin-bottom: 10px; }
+    header p { font-size: 0.95em; opacity: 0.9; }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 30px;
+    }
+    .section {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9em;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover { background: #764ba2; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .result {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 15px;
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 0.85em;
+      line-height: 1.5;
+    }
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .status.ok { background: #4caf50; color: white; }
+    .status.warning { background: #ff9800; color: white; }
+    .status.error { background: #f44336; color: white; }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-text { display: none; color: #666; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎼 Magnus 13.2</h1>
+      <p>Consciousness-Driven Development Framework</p>
+    </header>
+    
+    <div class="content">
+      <!-- Phase 1 -->
+      <div class="section">
+        <h2>Phase 1: Analyse</h2>
+        <textarea id="request" placeholder="Décrivez votre demande...
+
+Exemple: 'Créer une API Express pour une todo app'" rows="5"></textarea>
+        <button onclick="analyzeRequest()">📊 Analyser</button>
+        <div class="spinner" id="spinner1"></div>
+        <div class="loading-text" id="loading1">Analyse...</div>
+        <div class="result" id="result1"></div>
+      </div>
+      
+      <!-- Phase 2 -->
+      <div class="section">
+        <h2>Phase 2: Stratégie</h2>
+        <select id="strategy" disabled>
+          <option value="">-- Analyser d'abord --</option>
+          <option value="FAST_TRACK">⚡ FAST_TRACK</option>
+          <option value="QUALITY_FIRST">✓ QUALITY_FIRST</option>
+          <option value="EXPERT_PATH">🧠 EXPERT_PATH</option>
+        </select>
+        <button onclick="generateCode()" id="generateBtn" disabled>🎬 Générer</button>
+        <div class="spinner" id="spinner2"></div>
+        <div class="loading-text" id="loading2">Génération...</div>
+        <div class="result" id="result2"></div>
+      </div>
+      
+      <!-- Phase 3 -->
+      <div class="section">
+        <h2>Phase 3: Code</h2>
+        <textarea id="code" placeholder="Code généré" rows="5" readonly></textarea>
+        <textarea id="feedback" placeholder="Votre feedback..." rows="3"></textarea>
+        <button onclick="validateConvergence()" id="validateBtn" disabled>✓ Valider</button>
+        <div class="spinner" id="spinner3"></div>
+        <div class="loading-text" id="loading3">Validation...</div>
+        <div class="result" id="result3"></div>
+      </div>
+      
+      <!-- Stats -->
+      <div class="section">
+        <h2>📈 Stats</h2>
+        <button onclick="getStats()">Actualiser</button>
+        <div class="result" id="result4"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentAnalysis = null;
+    let currentSession = null;
+    
+    async function analyzeRequest() {
+      const request = document.getElementById('request').value;
+      if (!request.trim()) { alert('Entrez une demande'); return; }
+      
+      showSpinner(1, true);
+      document.getElementById('result1').innerHTML = '';
+      
+      try {
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ request })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          currentAnalysis = data.analysis;
+          const html = `
+            <div class="status ${data.analysis.canProceed ? 'ok' : 'warning'}">
+              ${data.analysis.canProceed ? '✅ OK' : '⚠️ Clarify'}
+            </div>
+            <p><strong>Clarity:</strong> ${data.analysis.understanding.clarityScore}/100</p>
+            <p><strong>Complexity:</strong> ${data.analysis.complexity.overall.score}/10</p>
+            <p><strong>Recommendation:</strong> ${data.analysis.recommendation.recommendation}</p>
+          `;
+          document.getElementById('result1').innerHTML = html;
+          
+          if (data.analysis.canProceed) {
+            document.getElementById('strategy').disabled = false;
+            document.getElementById('generateBtn').disabled = false;
+          }
+        } else {
+          document.getElementById('result1').innerHTML = `<span class="status error">❌ ${data.error}</span>`;
+        }
+      } catch (e) {
+        document.getElementById('result1').innerHTML = `<span class="status error">❌ ${e.message}</span>`;
+      } finally {
+        showSpinner(1, false);
+      }
+    }
+    
+    async function generateCode() {
+      if (!currentAnalysis) { alert('Analyser d\'abord'); return; }
+      
+      const strategy = document.getElementById('strategy').value;
+      if (!strategy) { alert('Choisir stratégie'); return; }
+      
+      showSpinner(2, true);
+      document.getElementById('result2').innerHTML = '';
+      
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ analysis: currentAnalysis, strategy: { name: strategy } })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          currentSession = data.session;
+          document.getElementById('code').value = '// Code généré par Magnus\n// Exemple de code généré';
+          const html = `
+            <div class="status ok">✅ Session lancée</div>
+            <p><strong>Session:</strong> ${data.session.sessionId.substring(0, 8)}...</p>
+            <p><strong>Strategy:</strong> ${data.session.strategy.name}</p>
+          `;
+          document.getElementById('result2').innerHTML = html;
+          document.getElementById('validateBtn').disabled = false;
+        }
+      } catch (e) {
+        document.getElementById('result2').innerHTML = `<span class="status error">❌ ${e.message}</span>`;
+      } finally {
+        showSpinner(2, false);
+      }
+    }
+    
+    async function validateConvergence() {
+      if (!currentSession) { alert('Générer d\'abord'); return; }
+      
+      showSpinner(3, true);
+      document.getElementById('result3').innerHTML = '';
+      
+      try {
+        const res = await fetch('/api/validate-convergence', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: currentSession.sessionId,
+            code: document.getElementById('code').value,
+            feedback: document.getElementById('feedback').value
+          })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          const html = `
+            <div class="status ok">✅ ${data.convergence.outcome}</div>
+            <p><strong>Recognition:</strong> ${data.convergence.recognition}%</p>
+            <p><strong>Inevitability:</strong> ${data.convergence.inevitability}%</p>
+            <p><strong>Coherence:</strong> ${data.convergence.coherence}%</p>
+          `;
+          document.getElementById('result3').innerHTML = html;
+        }
+      } catch (e) {
+        document.getElementById('result3').innerHTML = `<span class="status error">❌ ${e.message}</span>`;
+      } finally {
+        showSpinner(3, false);
+      }
+    }
+    
+    async function getStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        const html = `<p>Patterns: ${data.stats.patterns}</p><p>Samples: ${data.stats.samples}</p>`;
+        document.getElementById('result4').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    function showSpinner(n, show) {
+      document.getElementById(`spinner${n}`).style.display = show ? 'block' : 'none';
+      document.getElementById(`loading${n}`).style.display = show ? 'block' : 'none';
+    }
+    
+    window.onload = () => { getStats(); };
+  </script>
+</body>
+</html>

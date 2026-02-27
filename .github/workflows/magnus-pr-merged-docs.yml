@@ -1,0 +1,230 @@
+name: Magnus PR Merged Documentation
+
+# Déclenché quand une PR est fermée ET mergée
+# Envoie les données PR + convergence-report.json à Kilo
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - develop
+
+jobs:
+  pr-merged-handler:
+    name: Process PR Merge & Document Convergence
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌌 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔮 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci || npm install
+
+      # Extract session ID from PR title or branch name
+      - name: 📝 Extract Session Information
+        id: pr_info
+        run: |
+          # Extract from PR title
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          # Try to extract session-id
+          SESSION_ID="${{ github.event.pull_request.number }}"
+
+          if [[ $PR_TITLE =~ session-([a-zA-Z0-9_-]+) ]]; then
+            SESSION_ID="session-${BASH_REMATCH[1]}"
+          elif [[ $PR_BRANCH =~ session-([a-zA-Z0-9_-]+) ]]; then
+            SESSION_ID="session-${BASH_REMATCH[1]}"
+          else
+            SESSION_ID="gh-pr-${{ github.event.pull_request.number }}"
+          fi
+
+          echo "SESSION_ID=$SESSION_ID" >> $GITHUB_OUTPUT
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_OUTPUT
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+          # Extract PR body
+          echo "PR_BODY<<EOF" >> $GITHUB_OUTPUT
+          echo "$PR_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Get PR commit range for analysis
+      - name: 🔍 Analyze PR Changes
+        id: pr_changes
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          # Get all files changed
+          CHANGED_FILES=$(git diff --name-only "$BASE_SHA".."$HEAD_SHA" || echo "")
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Get file statistics
+          STATS=$(git diff --stat "$BASE_SHA".."$HEAD_SHA" || echo "")
+          echo "STATS<<EOF" >> $GITHUB_OUTPUT
+          echo "$STATS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Get diff summary
+          ADDITIONS=$(git diff --numstat "$BASE_SHA".."$HEAD_SHA" | awk '{sum+=$1} END {print sum+0}')
+          DELETIONS=$(git diff --numstat "$BASE_SHA".."$HEAD_SHA" | awk '{sum+=$2} END {print sum+0}')
+
+          echo "ADDITIONS=$ADDITIONS" >> $GITHUB_OUTPUT
+          echo "DELETIONS=$DELETIONS" >> $GITHUB_OUTPUT
+
+      # Validate merged code
+      - name: 🎯 Validate Merged Code
+        id: validation
+        continue-on-error: true
+        run: |
+          # Find first JS file to validate
+          JS_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep '\.js$' || echo "")
+
+          if [ -n "$JS_FILES" ]; then
+            FIRST_FILE=$(echo "$JS_FILES" | head -1)
+
+            if [ -f "$FIRST_FILE" ]; then
+              echo "Validating merged file: $FIRST_FILE"
+              node magnus-cli.js \
+                --mode validate-convergence \
+                --session-id "${{ steps.pr_info.outputs.SESSION_ID }}" \
+                --code-path "$FIRST_FILE" \
+                --feedback "Merged via PR #${{ steps.pr_info.outputs.PR_NUMBER }}" \
+                --output ./.magnus/pr-merge-validation-report.json || true
+            fi
+          fi
+
+      # Read convergence report
+      - name: 📊 Read Convergence Report
+        id: convergence_report
+        if: always()
+        run: |
+          if [ -f "./.magnus/pr-merge-validation-report.json" ]; then
+            REPORT=$(cat ./.magnus/pr-merge-validation-report.json)
+          elif [ -f "./.magnus/convergence-report.json" ]; then
+            REPORT=$(cat ./.magnus/convergence-report.json)
+          else
+            REPORT='{"status": "no-report-available"}'
+          fi
+
+          echo "REPORT<<EOF" >> $GITHUB_OUTPUT
+          echo "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Prepare comprehensive PR merge documentation
+      - name: 📋 Prepare PR Merge Documentation
+        id: documentation
+        run: |
+          cat > /tmp/pr-merge-payload.json << 'EOF'
+          {
+            "event_type": "pr_merged",
+            "orchestrator": "Serigne",
+            "session_id": "${{ steps.pr_info.outputs.SESSION_ID }}",
+            "pull_request": {
+              "number": ${{ steps.pr_info.outputs.PR_NUMBER }},
+              "title": "${{ steps.pr_info.outputs.PR_TITLE }}",
+              "author": "${{ steps.pr_info.outputs.PR_AUTHOR }}",
+              "branch": "${{ github.event.pull_request.head.ref }}",
+              "base_branch": "${{ github.event.pull_request.base.ref }}",
+              "merged_at": "${{ github.event.pull_request.merged_at }}",
+              "body": "${{ steps.pr_info.outputs.PR_BODY }}"
+            },
+            "changes": {
+              "modified_files": "${{ steps.pr_changes.outputs.CHANGED_FILES }}",
+              "additions": ${{ steps.pr_changes.outputs.ADDITIONS }},
+              "deletions": ${{ steps.pr_changes.outputs.DELETIONS }},
+              "stats": "${{ steps.pr_changes.outputs.STATS }}"
+            },
+            "convergence_report": ${{ steps.convergence_report.outputs.REPORT }},
+            "github": {
+              "repository": "${{ github.repository }}",
+              "commit": "${{ github.event.pull_request.merge_commit_sha }}",
+              "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            },
+            "action_required": "Document PR merge and update convergence knowledge base"
+          }
+          EOF
+
+          cat /tmp/pr-merge-payload.json
+
+      # Send to Kilo webhook
+      - name: 🚀 Send to Kilo Webhook
+        id: webhook
+        continue-on-error: true
+        run: |
+          WEBHOOK_URL="${{ secrets.KILO_WEBHOOK_2_URL }}"
+
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "⚠️  KILO_WEBHOOK_2_URL not configured"
+            echo "webhook_status=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Send the webhook
+          RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/pr-merge-payload.json \
+            -w "\n%{http_code}" \
+            -s)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo "webhook_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Webhook sent successfully (HTTP $HTTP_CODE)"
+          else
+            echo "webhook_status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Webhook failed (HTTP $HTTP_CODE): $BODY"
+          fi
+
+      # Archive convergence report as artifact
+      - name: 📦 Archive Convergence Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: convergence-report-pr-${{ steps.pr_info.outputs.PR_NUMBER }}
+          path: ./.magnus/pr-merge-validation-report.json
+          retention-days: 30
+
+      # Workflow summary
+      - name: 📋 Workflow Summary
+        if: always()
+        run: |
+          echo "## Magnus PR Merged Documentation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**PR Number**: #${{ steps.pr_info.outputs.PR_NUMBER }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PR Title**: ${{ steps.pr_info.outputs.PR_TITLE }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Author**: ${{ steps.pr_info.outputs.PR_AUTHOR }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Session ID**: ${{ steps.pr_info.outputs.SESSION_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Orchestrator**: Serigne" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changes Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Additions**: ${{ steps.pr_changes.outputs.ADDITIONS }} lines" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deletions**: ${{ steps.pr_changes.outputs.DELETIONS }} lines" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files Modified**: $(echo '${{ steps.pr_changes.outputs.CHANGED_FILES }}' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Files Changed" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.pr_changes.outputs.CHANGED_FILES }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Webhook Status**: ${{ steps.webhook.outputs.webhook_status }}" >> $GITHUB_STEP_SUMMARY
