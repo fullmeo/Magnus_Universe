@@ -170,6 +170,48 @@ jobs:
 
           echo "Network diagnostics complete"
 
+      # Test with alternative webhook service (webhook.cool)
+      - name: 🔄 Test with Alternative Webhook Service
+        id: alt_webhook
+        continue-on-error: true
+        run: |
+          echo "Testing with webhook.cool (alternative service)..."
+          echo ""
+
+          # Test payload
+          TEST_PAYLOAD='{
+            "event_type": "push_convergence_test",
+            "service": "webhook.cool",
+            "timestamp": "'$(date -u +'%Y-%m-%dT%H:%M:%SZ')'",
+            "message": "Testing alternative webhook service from GitHub Actions"
+          }'
+
+          echo "📤 Sending test payload to webhook.cool..."
+          echo "Payload:"
+          echo "$TEST_PAYLOAD" | jq .
+
+          # Send to webhook.cool (no registration needed, logs publicly)
+          RESPONSE=$(curl -X POST "https://webhook.cool/magnus-test" \
+            -H "Content-Type: application/json" \
+            -d "$TEST_PAYLOAD" \
+            -w "\nHTTP_CODE:%{http_code}" \
+            -v 2>&1)
+
+          HTTP_CODE=$(echo "$RESPONSE" | grep "HTTP_CODE:" | cut -d: -f2)
+
+          echo ""
+          echo "Response:"
+          echo "$RESPONSE" | head -50
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo ""
+            echo "✅ Alternative webhook service TEST SUCCESSFUL (HTTP $HTTP_CODE)"
+            echo "📋 View result at: https://webhook.cool/magnus-test"
+          else
+            echo ""
+            echo "⚠️ Alternative service returned HTTP $HTTP_CODE"
+          fi
+
       # Send to Kilo via webhook
       - name: 🚀 Send to Kilo Webhook
         id: webhook
