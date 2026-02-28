@@ -134,6 +134,42 @@ jobs:
 
           cat /tmp/kilo-payload.json
 
+      # Network diagnostics for webhook endpoint
+      - name: 🌐 Network Connectivity Test
+        id: network
+        continue-on-error: true
+        run: |
+          echo "Testing network connectivity to webhook infrastructure..."
+
+          # Test basic connectivity to webhook.site
+          echo "📡 Testing webhook.site connectivity:"
+
+          # Try HTTP HEAD request
+          echo ""
+          echo "1️⃣ Testing HTTP HEAD request:"
+          curl -I http://webhook.site -v -m 10 2>&1 | head -30
+
+          echo ""
+          echo "2️⃣ Testing HTTPS HEAD request:"
+          curl -I https://webhook.site -v -m 10 2>&1 | head -30
+
+          # Test DNS from runner
+          echo ""
+          echo "3️⃣ DNS resolution from GitHub runner:"
+          nslookup webhook.site 1.1.1.1 2>&1 | head -10
+
+          # Test connectivity with simple request
+          echo ""
+          echo "4️⃣ Simple GET request to webhook.site:"
+          curl -v https://webhook.site -m 10 2>&1 | head -40
+
+          echo ""
+          echo "5️⃣ Checking GitHub runner IP visibility:"
+          curl -s https://api.ipify.org
+          echo ""
+
+          echo "Network diagnostics complete"
+
       # Send to Kilo via webhook
       - name: 🚀 Send to Kilo Webhook
         id: webhook
