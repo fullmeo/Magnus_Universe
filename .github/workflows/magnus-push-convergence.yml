@@ -160,30 +160,44 @@ jobs:
 
           # Test connectivity with verbose curl
           echo "📡 Testing webhook connectivity (verbose)..."
-          RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
+
+          # Create temporary file for curl output
+          CURL_OUTPUT="/tmp/curl_debug.txt"
+
+          curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d @/tmp/kilo-payload.json \
-            -w "\n%{http_code}" \
+            -w "\nHTTP_CODE:%{http_code}\nTIME_TOTAL:%{time_total}\nCONNECT_TIME:%{time_connect}\n" \
             -v \
             -m 30 \
-            2>&1)
+            > "$CURL_OUTPUT" 2>&1
 
           CURL_EXIT=$?
 
-          # Extract HTTP code from response
-          HTTP_CODE=$(echo "$RESPONSE" | grep "< HTTP" | awk '{print $3}' | tail -1)
+          echo "Curl exit code: $CURL_EXIT"
+          echo "Curl error codes reference:"
+          echo "  0 = Success"
+          echo "  3 = URL malformed or invalid"
+          echo "  6 = Could not resolve domain"
+          echo "  7 = Failed to connect to host"
+          echo "  28 = Operation timeout"
+          echo "  35 = SSL/TLS connection error"
+          echo "  52 = Empty response from server"
+          echo ""
+
+          # Extract HTTP code
+          HTTP_CODE=$(grep "HTTP_CODE:" "$CURL_OUTPUT" | cut -d: -f2 | head -1)
 
           if [ -z "$HTTP_CODE" ]; then
-            HTTP_CODE="000"
+            HTTP_CODE="NONE"
           fi
 
-          echo "Curl exit code: $CURL_EXIT"
           echo "HTTP response code: $HTTP_CODE"
           echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
 
-          # Show detailed response for debugging
-          echo "Full curl response:"
-          echo "$RESPONSE" | head -50
+          # Show full curl output for debugging
+          echo "📋 Full curl debug output:"
+          cat "$CURL_OUTPUT"
 
           # Determine status
           if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
