@@ -50,3 +50,8 @@ Expected: Check protocol, structure, and domain extraction
 Timestamp: 2026-02-28T09:15:00Z
 Purpose: Validate webhook URL format before curl attempt
 Expected: Check protocol, structure, and domain extraction
+
+=== Network Connectivity Diagnostics ===
+Timestamp: 2026-02-28T09:20:00Z
+Purpose: Test if webhook.site is reachable from GitHub Actions runner
+Tests: HTTP/HTTPS, DNS, IP visibility, connectivity
