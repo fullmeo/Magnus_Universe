@@ -150,28 +150,56 @@ jobs:
           echo "📤 Sending webhook to Kilo..."
           echo "Payload size: $(wc -c < /tmp/kilo-payload.json) bytes"
 
-          # Send the webhook with verbose error handling
+          # Extract domain from URL for debugging
+          WEBHOOK_DOMAIN=$(echo "$WEBHOOK_URL" | sed -E 's|https?://([^/]+).*|\1|')
+          echo "Target domain: $WEBHOOK_DOMAIN"
+
+          # Test DNS resolution
+          echo "🔍 Testing DNS resolution..."
+          nslookup "$WEBHOOK_DOMAIN" 8.8.8.8 2>&1 | head -5 || echo "DNS test unavailable"
+
+          # Test connectivity with verbose curl
+          echo "📡 Testing webhook connectivity (verbose)..."
           RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d @/tmp/kilo-payload.json \
             -w "\n%{http_code}" \
-            -s -m 30 || echo "000")
+            -v \
+            -m 30 \
+            2>&1)
 
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
+          CURL_EXIT=$?
 
+          # Extract HTTP code from response
+          HTTP_CODE=$(echo "$RESPONSE" | grep "< HTTP" | awk '{print $3}' | tail -1)
+
+          if [ -z "$HTTP_CODE" ]; then
+            HTTP_CODE="000"
+          fi
+
+          echo "Curl exit code: $CURL_EXIT"
+          echo "HTTP response code: $HTTP_CODE"
           echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
 
+          # Show detailed response for debugging
+          echo "Full curl response:"
+          echo "$RESPONSE" | head -50
+
+          # Determine status
           if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
             echo "webhook_status=success" >> $GITHUB_OUTPUT
             echo "✅ Webhook sent successfully (HTTP $HTTP_CODE)"
-          elif [ "$HTTP_CODE" = "000" ]; then
-            echo "webhook_status=network_error" >> $GITHUB_OUTPUT
-            echo "⚠️  Network error connecting to Kilo webhook"
+          elif [ "$CURL_EXIT" -ne 0 ]; then
+            echo "webhook_status=connection_error" >> $GITHUB_OUTPUT
+            echo "❌ Connection failed (curl exit: $CURL_EXIT)"
+            echo "Possible causes:"
+            echo "  - Webhook URL is unreachable"
+            echo "  - Network timeout (30s limit)"
+            echo "  - DNS resolution failure"
+            echo "  - TLS/SSL certificate issue"
           else
-            echo "webhook_status=failed" >> $GITHUB_OUTPUT
-            echo "⚠️  Webhook received HTTP $HTTP_CODE"
-            [ -n "$BODY" ] && echo "Response: $BODY"
+            echo "webhook_status=http_error" >> $GITHUB_OUTPUT
+            echo "⚠️  Webhook returned HTTP $HTTP_CODE"
           fi
 
       # Summary
