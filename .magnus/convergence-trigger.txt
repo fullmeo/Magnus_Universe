@@ -30,3 +30,13 @@ Expected: Detailed curl output, DNS info, connection errors
 Timestamp: 2026-02-28T09:05:00Z
 Purpose: Deep debugging of Kilo webhook connectivity
 Expected: Detailed curl output, DNS info, connection errors
+
+=== Full Curl Debug Output ===
+Timestamp: 2026-02-28T09:10:00Z
+Purpose: Show complete curl error codes and diagnostics
+Expected: Full curl verbose output with error code details
+
+=== Full Curl Debug Output ===
+Timestamp: 2026-02-28T09:10:00Z
+Purpose: Show complete curl error codes and diagnostics
+Expected: Full curl verbose output with error code details
