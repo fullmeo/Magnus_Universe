@@ -55,3 +55,13 @@ Expected: Check protocol, structure, and domain extraction
 Timestamp: 2026-02-28T09:20:00Z
 Purpose: Test if webhook.site is reachable from GitHub Actions runner
 Tests: HTTP/HTTPS, DNS, IP visibility, connectivity
+
+=== Alternative Webhook Service Test ===
+Timestamp: 2026-02-28T09:25:00Z
+Purpose: Test webhook delivery with webhook.cool service
+Expected: Compare Kilo vs alternative service results
+
+=== Alternative Webhook Service Test ===
+Timestamp: 2026-02-28T09:25:00Z
+Purpose: Test webhook delivery with webhook.cool service
+Expected: Compare Kilo vs alternative service results
