@@ -147,12 +147,15 @@ jobs:
             exit 0
           fi
 
-          # Send the webhook
+          echo "📤 Sending webhook to Kilo..."
+          echo "Payload size: $(wc -c < /tmp/kilo-payload.json) bytes"
+
+          # Send the webhook with verbose error handling
           RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d @/tmp/kilo-payload.json \
             -w "\n%{http_code}" \
-            -s)
+            -s -m 30 || echo "000")
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)
           BODY=$(echo "$RESPONSE" | sed '$d')
@@ -162,9 +165,13 @@ jobs:
           if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
             echo "webhook_status=success" >> $GITHUB_OUTPUT
             echo "✅ Webhook sent successfully (HTTP $HTTP_CODE)"
+          elif [ "$HTTP_CODE" = "000" ]; then
+            echo "webhook_status=network_error" >> $GITHUB_OUTPUT
+            echo "⚠️  Network error connecting to Kilo webhook"
           else
             echo "webhook_status=failed" >> $GITHUB_OUTPUT
-            echo "❌ Webhook failed (HTTP $HTTP_CODE): $BODY"
+            echo "⚠️  Webhook received HTTP $HTTP_CODE"
+            [ -n "$BODY" ] && echo "Response: $BODY"
           fi
 
       # Summary
