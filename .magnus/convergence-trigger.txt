@@ -40,3 +40,13 @@ Expected: Full curl verbose output with error code details
 Timestamp: 2026-02-28T09:10:00Z
 Purpose: Show complete curl error codes and diagnostics
 Expected: Full curl verbose output with error code details
+
+=== URL Validation Diagnostics ===
+Timestamp: 2026-02-28T09:15:00Z
+Purpose: Validate webhook URL format before curl attempt
+Expected: Check protocol, structure, and domain extraction
+
+=== URL Validation Diagnostics ===
+Timestamp: 2026-02-28T09:15:00Z
+Purpose: Validate webhook URL format before curl attempt
+Expected: Check protocol, structure, and domain extraction
