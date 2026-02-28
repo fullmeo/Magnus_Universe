@@ -20,3 +20,13 @@ Status: Ready for diagnosis
 Timestamp: 2026-02-28T08:55:00Z
 Purpose: Test improved webhook error logging
 Status: Ready for diagnosis
+
+=== Enhanced Webhook Diagnostics ===
+Timestamp: 2026-02-28T09:05:00Z
+Purpose: Deep debugging of Kilo webhook connectivity
+Expected: Detailed curl output, DNS info, connection errors
+
+=== Enhanced Webhook Diagnostics ===
+Timestamp: 2026-02-28T09:05:00Z
+Purpose: Deep debugging of Kilo webhook connectivity
+Expected: Detailed curl output, DNS info, connection errors
