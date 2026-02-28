@@ -150,9 +150,32 @@ jobs:
           echo "📤 Sending webhook to Kilo..."
           echo "Payload size: $(wc -c < /tmp/kilo-payload.json) bytes"
 
+          # Validate URL format
+          echo "🔐 URL Validation:"
+          echo "  Length: ${#WEBHOOK_URL} characters"
+
+          # Check if it's a valid URL format
+          if [[ "$WEBHOOK_URL" =~ ^https?:// ]]; then
+            echo "  ✅ Protocol detected (http/https)"
+          else
+            echo "  ❌ ERROR: Invalid protocol - URL must start with http:// or https://"
+          fi
+
+          if [[ "$WEBHOOK_URL" == *"://"* ]]; then
+            echo "  ✅ URL structure appears valid"
+          else
+            echo "  ❌ ERROR: Invalid URL structure"
+          fi
+
           # Extract domain from URL for debugging
           WEBHOOK_DOMAIN=$(echo "$WEBHOOK_URL" | sed -E 's|https?://([^/]+).*|\1|')
-          echo "Target domain: $WEBHOOK_DOMAIN"
+          echo "  Target domain: $WEBHOOK_DOMAIN"
+
+          if [ -z "$WEBHOOK_DOMAIN" ]; then
+            echo "  ❌ ERROR: Could not extract domain from URL"
+            echo "webhook_status=invalid_url" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
           # Test DNS resolution
           echo "🔍 Testing DNS resolution..."
