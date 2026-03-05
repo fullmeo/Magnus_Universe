@@ -76,7 +76,8 @@ class DashboardServer {
         `font-src 'self' data: https:; ` +
         `connect-src 'self' ws: wss: https://unpkg.com https://cdn.jsdelivr.net; ` +
         `base-uri 'self'; ` +
-        `form-action 'self'`
+        `form-action 'self'; ` +
+        `frame-ancestors 'none'`
       );
       res.setHeader('X-Frame-Options', 'DENY');
       res.setHeader('X-Content-Type-Options', 'nosniff');
