@@ -27,5 +27,9 @@
   },
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0"
   }
 }
