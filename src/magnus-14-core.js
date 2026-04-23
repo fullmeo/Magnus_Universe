@@ -3,7 +3,7 @@
  * Persistent state management and storage for the Magnus Universe framework
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
@@ -16,10 +16,6 @@ const __dirname = dirname(__filename);
 // ---------------------------------------------------------------------------
 
 const STORAGE_DIR = join(__dirname, '..', '.magnus-state');
-const SESSION_FILE = join(STORAGE_DIR, 'sessions.json');
-const CONFIG_FILE = join(STORAGE_DIR, 'config.json');
-const MANIFEST_FILE = join(STORAGE_DIR, 'manifestations.json');
-const CYCLE_LOG_FILE = join(STORAGE_DIR, 'cycle-log.json');
 
 const STORAGE_SCHEMA_VERSION = 1;
 
@@ -94,11 +90,12 @@ export class MagnusCore {
    * @param {string} [options.manifestFile] - Override default manifestations path
    */
   constructor(options = {}) {
-    this.storageDir   = options.storageDir   || STORAGE_DIR;
-    this.sessionFile  = options.sessionFile  || SESSION_FILE;
-    this.configFile   = options.configFile   || CONFIG_FILE;
-    this.manifestFile = options.manifestFile || MANIFEST_FILE;
-    this.cycleLogFile = options.cycleLogFile || CYCLE_LOG_FILE;
+    this.storageDir   = options.storageDir || STORAGE_DIR;
+    // Derive file paths from storageDir so overriding storageDir is sufficient
+    this.sessionFile  = options.sessionFile  || join(this.storageDir, 'sessions.json');
+    this.configFile   = options.configFile   || join(this.storageDir, 'config.json');
+    this.manifestFile = options.manifestFile || join(this.storageDir, 'manifestations.json');
+    this.cycleLogFile = options.cycleLogFile || join(this.storageDir, 'cycle-log.json');
 
     /** @type {Array<{source:string,phase:string,message:string,timestamp:string}>} */
     this._storageErrors = [];
@@ -357,6 +354,55 @@ export class MagnusCore {
   /** True if any storage read/parse/validate/migrate error has been recorded. */
   hasStorageErrors() {
     return this._storageErrors.length > 0;
+  }
+
+  /**
+   * Returns a structured health report suitable for a monitoring endpoint.
+   *
+   * For each storage file: existence, size in bytes, last-modified timestamp.
+   * For counted collections: current in-memory item count.
+   * Overall status: 'ok' | 'degraded' (any storage errors recorded).
+   *
+   * @returns {{
+   *   status: 'ok'|'degraded',
+   *   storageDir: string,
+   *   storage: object,
+   *   errors: Array,
+   *   timestamp: string
+   * }}
+   */
+  healthReport() {
+    const files = [
+      { label: 'sessions',       path: this.sessionFile,  count: this.state.sessions.length },
+      { label: 'config',         path: this.configFile,   count: null },
+      { label: 'manifestations', path: this.manifestFile, count: this.state.manifestations.length },
+      { label: 'cycleLog',       path: this.cycleLogFile, count: this.state.cycleLog.length }
+    ];
+
+    const storage = {};
+    for (const { label, path, count } of files) {
+      const entry = { exists: existsSync(path) };
+      if (entry.exists) {
+        try {
+          const stat = statSync(path);
+          entry.sizeBytes     = stat.size;
+          entry.lastModified  = stat.mtime.toISOString();
+        } catch (err) {
+          entry.statError = err.message;
+        }
+      }
+      if (count !== null) entry.count = count;
+      storage[label] = entry;
+    }
+
+    const errors = this.getStorageErrors();
+    return {
+      status:     errors.length > 0 ? 'degraded' : 'ok',
+      storageDir: this.storageDir,
+      storage,
+      errors,
+      timestamp:  new Date().toISOString()
+    };
   }
 }
 

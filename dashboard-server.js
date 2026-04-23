@@ -7,10 +7,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-const crypto = require('crypto');
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,10 +17,12 @@ const DEFAULT_HOST = 'localhost';
 
 class DashboardServer {
   constructor(options = {}) {
-    this.port = options.port || DEFAULT_PORT;
-    this.host = options.host || DEFAULT_HOST;
-    this.app = express();
+    this.port   = options.port || DEFAULT_PORT;
+    this.host   = options.host || DEFAULT_HOST;
+    this.core   = options.core || null;   // optional MagnusCore instance
+    this.app    = express();
     this.server = null;
+    this._startedAt = new Date().toISOString();
 
     this.setupMiddleware();
     this.setupRoutes();
@@ -66,7 +65,7 @@ class DashboardServer {
     // Content Security Policy — nonce-based approach prevents XSS and injection
     // -------------------------------------------------------------------------
     this.app.use((req, res, next) => {
-      const nonce = crypto.randomUUID();
+      const nonce = randomUUID();
       res.setHeader(
         'Content-Security-Policy',
         `default-src 'self'; ` +
@@ -88,17 +87,40 @@ class DashboardServer {
   }
 
   setupRoutes() {
-    // Health check
+    // Basic liveness probe — always fast, no I/O
     this.app.get('/health', (req, res) => {
-      res.json({ status: 'ok', timestamp: new Date().toISOString() });
+      const body = {
+        status:    'ok',
+        uptime:    process.uptime(),
+        startedAt: this._startedAt,
+        timestamp: new Date().toISOString()
+      };
+      if (this.core) {
+        const storageStatus = this.core.hasStorageErrors() ? 'degraded' : 'ok';
+        body.storage = storageStatus;
+        body.storageErrors = this.core.getStorageErrors().length;
+      }
+      res.json(body);
+    });
+
+    // Detailed storage health — reads file stats from disk
+    this.app.get('/health/storage', (req, res) => {
+      if (!this.core) {
+        return res.status(503).json({
+          error: 'MagnusCore not attached — pass { core } to DashboardServer constructor'
+        });
+      }
+      const report = this.core.healthReport();
+      const httpStatus = report.status === 'ok' ? 200 : 207;
+      res.status(httpStatus).json(report);
     });
 
     // Dashboard index — exposes nonce to templates
     this.app.get('/', (req, res) => {
       res.json({
-        name: 'Magnus Universe Dashboard',
+        name:    'Magnus Universe Dashboard',
         version: '1.0.0',
-        nonce: res.locals.nonce
+        nonce:   res.locals.nonce
       });
     });
 
