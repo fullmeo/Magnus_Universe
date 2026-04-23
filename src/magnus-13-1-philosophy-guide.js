@@ -82,12 +82,13 @@ export class PhilosophyGuide {
    */
   reflect(decision, reasoning) {
     console.log(`💭 Reflecting on decision: ${decision}`);
+    const safeReasoning = typeof reasoning === 'string' ? reasoning : String(reasoning ?? '');
 
     return {
       decision,
       reasoning,
-      philosophicalAlignment: this.assessAlignment(reasoning),
-      suggestion: this.suggestRefinement(reasoning)
+      philosophicalAlignment: this.assessAlignment(safeReasoning),
+      suggestion: this.suggestRefinement(safeReasoning)
     };
   }
 
@@ -98,7 +99,6 @@ export class PhilosophyGuide {
     const alignmentScore = {};
 
     for (const [pillar, principle] of Object.entries(this.philosophicalPillars)) {
-      // Simple keyword matching for demonstration
       const keywords = this.extractKeywords(principle);
       const matchCount = keywords.filter(kw =>
         reasoning.toLowerCase().includes(kw.toLowerCase())

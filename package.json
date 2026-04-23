@@ -25,6 +25,7 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
