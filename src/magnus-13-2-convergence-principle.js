@@ -28,6 +28,7 @@ export class ConvergencePrinciple {
     };
 
     this.quantumStates = new Map();
+    this.maxQuantumStates = config.maxQuantumStates || 1000;
     this.maxPatternHistory = 1000; // Memory limit for harmonicPatterns
 
     // Unity feedback memory - stores invariants that influence future cycles
@@ -402,6 +403,22 @@ export class ConvergencePrinciple {
   }
 
   /**
+   * Prune quantumStates to maxQuantumStates, keeping the most recent entries.
+   * Called automatically after each planckMirror() to prevent unbounded growth.
+   */
+  _pruneQuantumStates() {
+    if (this.quantumStates.size <= this.maxQuantumStates) return;
+
+    const keep = Math.floor(this.maxQuantumStates * 0.8); // retain 80 %
+    const entries = Array.from(this.quantumStates.entries());
+    this.quantumStates.clear();
+    for (const [key, value] of entries.slice(-keep)) {
+      this.quantumStates.set(key, value);
+    }
+    console.warn(`⚠️ quantumStates pruned → ${this.quantumStates.size} états conservés`);
+  }
+
+  /**
    * Apply Planck's Mirror theorem
    * Reflects pattern through quantum mirror
    *
@@ -423,6 +440,7 @@ export class ConvergencePrinciple {
     // Store in quantum states
     const stateId = `state_${Date.now()}_${this.quantumStates.size}`;
     this.quantumStates.set(stateId, mirrored);
+    this._pruneQuantumStates();
 
     console.log(`   Quantum state stored: ${stateId}`);
 
