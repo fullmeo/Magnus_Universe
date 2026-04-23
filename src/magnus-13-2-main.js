@@ -83,23 +83,27 @@ export class Magnus {
       cycles: []
     };
 
-    // Execute cycle
-    const cycleResult = this.cycle.executeCycle(intention);
-    session.cycles.push(cycleResult);
+    // Execute cycles until convergence or MAX_ITERATIONS
+    let cycleResult = null;
+    let currentIntention = intention;
+    let iterations = 0;
+    const MAX_ITERATIONS = 50;
 
-    // Continue cycles until convergence if needed
-    let iterations = 1;
-    const maxIterations = 5;
-
-    while (
-      cycleResult.manifestation.harmonic < this.config.convergenceThreshold &&
-      iterations < maxIterations
-    ) {
-      console.log(`\n🔄 Harmonic below threshold, initiating refinement cycle...\n`);
-      const refinedIntention = this.refineIntention(intention, cycleResult);
-      const refinedCycle = this.cycle.executeCycle(refinedIntention);
-      session.cycles.push(refinedCycle);
+    while (iterations < MAX_ITERATIONS) {
       iterations++;
+      cycleResult = this.cycle.executeCycle(currentIntention);
+      session.cycles.push(cycleResult);
+
+      if (cycleResult.manifestation.harmonic >= this.config.convergenceThreshold) {
+        break;
+      }
+
+      console.log(`\n🔄 Harmonic below threshold, initiating refinement cycle...\n`);
+      currentIntention = this.refineIntention(intention, cycleResult);
+    }
+
+    if (iterations >= MAX_ITERATIONS) {
+      console.warn('⚠️ Convergence max iterations atteinte');
     }
 
     session.endTime = Date.now();
