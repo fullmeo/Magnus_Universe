@@ -134,3 +134,8 @@ screenshots/
 .magnus-cache/
 quantum-states/
 convergence-logs/
+
+# Magnus session data
+.magnus-state/
+*.state.json
+*.quantum.json
