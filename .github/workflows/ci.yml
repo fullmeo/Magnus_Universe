@@ -63,6 +63,52 @@ jobs:
         echo "Checking philosophical alignment..."
         echo "✅ Code resonates at 432 Hz"
 
+  triz-analysis:
+    name: TRIZ Principle Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🌌 Checkout Magnus Universe
+      uses: actions/checkout@v4
+
+    - name: 🔮 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: 📦 Install dependencies
+      run: npm ci || npm install
+
+    - name: 🧠 Run TRIZ hybrid analysis
+      run: |
+        cd magnus/magnus-14
+        npm run analyze:triz:hybrid > triz-output.json
+        echo "✅ TRIZ analysis complete"
+
+    - name: 📊 Generate TRIZ report
+      run: |
+        cd magnus/magnus-14
+        node triz-ci-formatter.js triz-output.json
+
+    - name: 📈 Add TRIZ summary to workflow
+      if: always()
+      run: |
+        echo "## 🧠 TRIZ Analysis Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ -f "magnus/magnus-14/TRIZ_REPORT.md" ]; then
+          head -50 "magnus/magnus-14/TRIZ_REPORT.md" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View full report in artifacts]" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: 📦 Upload TRIZ reports as artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: triz-analysis-reports
+        path: magnus/magnus-14/TRIZ_REPORT.md
+        retention-days: 30
+
   harmonic-validation:
     name: Harmonic Resonance Validation
     runs-on: ubuntu-latest
@@ -145,7 +191,7 @@ jobs:
   release-check:
     name: Release Readiness
     runs-on: ubuntu-latest
-    needs: [test, lint, harmonic-validation, documentation, philosophical-alignment]
+    needs: [test, lint, triz-analysis, harmonic-validation, documentation, philosophical-alignment]
     if: github.ref == 'refs/heads/main'
 
     steps:
